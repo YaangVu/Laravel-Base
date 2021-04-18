@@ -1,0 +1,19 @@
+{
+    "name": "yaangvu/laravel-base",
+    "description": "Laravel Toprate Base",
+    "type": "library",
+    "require": {
+        "php": "^8.0",
+        "illuminate/database": "9.x-dev",
+        "illuminate/support": "9.x-dev",
+        "illuminate/contracts": "9.x-dev",
+        "illuminate/pagination": "9.x-dev"
+    },
+    "authors": [
+        {
+            "name": "Yaang Vu",
+            "email": "yaangvu@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
