@@ -4,10 +4,10 @@
     "type": "library",
     "require": {
         "php": "^8.0",
-        "illuminate/database": "9.x-dev",
-        "illuminate/support": "9.x-dev",
-        "illuminate/contracts": "9.x-dev",
-        "illuminate/pagination": "9.x-dev"
+        "illuminate/database": "^8.0",
+        "illuminate/support": "^8.0",
+        "illuminate/contracts": "^8.0",
+        "illuminate/pagination": "^8.0"
     },
     "authors": [
         {
