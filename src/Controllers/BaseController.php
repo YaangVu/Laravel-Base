@@ -2,10 +2,10 @@
 
 namespace YaangVu\LaravelBase\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Laravel\Lumen\Routing\Controller;
 use YaangVu\LaravelBase\Services\impl\BaseService;
 
 class BaseController extends Controller

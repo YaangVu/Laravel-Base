@@ -2,8 +2,8 @@
 
 namespace YaangVu\LaravelBase\Helpers;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
@@ -115,7 +115,7 @@ class QueryHelper
      */
     public static function limit(): int
     {
-        return request('limit') ?? config('base-service.limit');
+        return request('limit') ?? config('laravel-base.limit') ?? 10;
     }
 
     /**
