@@ -29,7 +29,7 @@ class QueryHelper
 
     public array $params = [];
 
-    protected string|array $relations = '';
+    protected ?string $relations = '';
 
     public function __construct()
     {
@@ -146,7 +146,7 @@ class QueryHelper
      *
      * @return Builder|Model
      */
-    public function buildQuery(Model $model, string $alias = ''): Model|Builder
+    public function buildQuery(Model $model, string $alias = ''): Builder
     {
         $tableName = Str::snake(class_basename($model)) . 's';
         if ($alias)
@@ -184,19 +184,21 @@ class QueryHelper
     /**
      * Append excluded operators
      *
-     * @param array $externalExcludedOperators
+     * @param array $operators
      *
      * @return void
      */
-    public function addExcludedOperators(array $externalExcludedOperators): void
+    public function addExcludedOperators(array $operators): void
     {
-        array_push($this->excludedOperators, ...$externalExcludedOperators);
+        array_push($this->excludedOperators, ...$operators);
     }
 
     /**
+     * Set Relations Entity
+     *
      * @param string|array $relations
      */
-    public function with(string|array $relations): void
+    public function with($relations): void
     {
         $this->relations = $relations;
     }

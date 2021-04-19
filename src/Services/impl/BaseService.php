@@ -2,13 +2,12 @@
 
 namespace YaangVu\LaravelBase\Services\impl;
 
-use YaangVu\LaravelBase\Exceptions\NotfoundException;
-use YaangVu\LaravelBase\Exceptions\SystemException;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use YaangVu\LaravelBase\Exceptions\NotfoundException;
+use YaangVu\LaravelBase\Exceptions\SystemException;
 use YaangVu\LaravelBase\Helpers\QueryHelper;
 use YaangVu\LaravelBase\Services\BaseServiceInterface;
 
@@ -19,7 +18,7 @@ abstract class BaseService implements BaseServiceInterface
 
     protected QueryHelper $queryHelper;
 
-    public Model|Builder $model;
+    public Model $model;
 
     public static $currentUser;
 
@@ -46,7 +45,7 @@ abstract class BaseService implements BaseServiceInterface
         try {
             return $data->paginate(QueryHelper::limit());
         } catch (Exception $e) {
-            throw new SystemException($e?->getMessage() ?? __('system-500'), $e);
+            throw new SystemException($e->getMessage() ?? __('system-500'), $e);
         }
     }
 
@@ -57,7 +56,7 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @return Model
      */
-    public function get(int|string $id): Model
+    public function get($id): Model
     {
         try {
             return $this->model->findOrFail($id);
@@ -67,7 +66,7 @@ abstract class BaseService implements BaseServiceInterface
                 $e
             );
         } catch (Exception $e) {
-            throw new SystemException($e?->getMessage() ?? __('system-500'), $e);
+            throw new SystemException($e->getMessage() ?? __('system-500'), $e);
         }
     }
 
@@ -78,7 +77,7 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @return bool
      */
-    public function delete(int|string $id): bool
+    public function delete($id): bool
     {
         $data = $this->get($id);
         try {
@@ -111,7 +110,7 @@ abstract class BaseService implements BaseServiceInterface
 
             return $this->model;
         } catch (Exception $e) {
-            throw new SystemException($e?->getMessage() ?? __('system-500'), $e);
+            throw new SystemException($e->getMessage() ?? __('system-500'), $e);
         }
     }
 
@@ -123,7 +122,7 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @return Model
      */
-    public function update(int|string $id, object $request): Model
+    public function update($id, object $request): Model
     {
         if ($this->updateRequestValidate($id, $request) !== true)
             return $this->model;
@@ -138,7 +137,7 @@ abstract class BaseService implements BaseServiceInterface
 
             return $model;
         } catch (Exception $e) {
-            throw new SystemException($e?->getMessage() ?? __('system-500'), $e);
+            throw new SystemException($e->getMessage() ?? __('system-500'), $e);
         }
     }
 
@@ -163,7 +162,7 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @return bool
      */
-    public function updateRequestValidate(int|string $id, object $request): bool
+    public function updateRequestValidate($id, object $request): bool
     {
         // Do validate update request
         return true;
@@ -174,7 +173,7 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @param string|array $relations
      */
-    public function with(string|array $relations)
+    public function with($relations)
     {
         $this->queryHelper->with($relations);
     }

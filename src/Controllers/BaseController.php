@@ -42,11 +42,11 @@ class BaseController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param $id
      *
      * @return JsonResponse
      */
-    public function show(int|string $id): JsonResponse
+    public function show($id): JsonResponse
     {
         return response()->json($this->service->get($id));
     }
@@ -54,12 +54,12 @@ class BaseController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param int     $id
+     * @param         $id
      * @param Request $request
      *
      * @return JsonResponse
      */
-    public function update(int|string $id, Request $request): JsonResponse
+    public function update($id, Request $request): JsonResponse
     {
         return response()->json($this->service->update($id, $request));
     }
@@ -67,11 +67,11 @@ class BaseController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param $id
      *
      * @return JsonResponse
      */
-    public function destroy(int|string $id): JsonResponse
+    public function destroy($id): JsonResponse
     {
         return response()->json($this->service->delete($id));
     }
