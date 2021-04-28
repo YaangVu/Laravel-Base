@@ -5,7 +5,7 @@ namespace YaangVu\LaravelBase\Exceptions;
 use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Response;
-use Log;
+use Illuminate\Support\Facades\Log;
 
 
 class BaseException extends HttpResponseException

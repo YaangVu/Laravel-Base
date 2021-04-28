@@ -24,14 +24,14 @@ interface BaseServiceInterface
      *
      * @param int|string $id
      */
-    public function get($id): Model;
+    public function get(int|string $id): Model;
 
     /**
      * Delete a Entity via ID
      *
      * @param int|string $id
      */
-    public function delete($id): bool;
+    public function delete(int|string $id): bool;
 
     /**
      * Store new Entity
@@ -46,7 +46,7 @@ interface BaseServiceInterface
      * @param int|string $id
      * @param object     $request
      */
-    public function update($id, object $request): Model;
+    public function update(int|string $id, object $request): Model;
 
     /**
      * Validate store request
@@ -59,14 +59,14 @@ interface BaseServiceInterface
      * @param int|string $id
      * @param object     $request
      */
-    public function updateRequestValidate($id, object $request);
+    public function updateRequestValidate(int|string $id, object $request);
 
     /**
      * Set relation
      *
-     * @param string|array $relations
+     * @param array|string $relations
      */
-    public function with($relations);
+    public function with(array|string $relations);
 
     /**
      * Get Current User logged in

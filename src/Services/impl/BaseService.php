@@ -6,7 +6,7 @@ use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use YaangVu\LaravelBase\Exceptions\NotfoundException;
+use YaangVu\LaravelBase\Exceptions\NotFoundException;
 use YaangVu\LaravelBase\Exceptions\SystemException;
 use YaangVu\LaravelBase\Helpers\QueryHelper;
 use YaangVu\LaravelBase\Services\BaseServiceInterface;
@@ -56,12 +56,12 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @return Model
      */
-    public function get($id): Model
+    public function get(int|string $id): Model
     {
         try {
             return $this->model->findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            throw new NotfoundException(
+            throw new NotFoundException(
                 ['message' => __('not-exist' . ": $id", ['attribute' => __('entity')])],
                 $e
             );
@@ -77,7 +77,7 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @return bool
      */
-    public function delete($id): bool
+    public function delete(int|string $id): bool
     {
         $data = $this->get($id);
         try {
@@ -122,7 +122,7 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @return Model
      */
-    public function update($id, object $request): Model
+    public function update(int|string $id, object $request): Model
     {
         if ($this->updateRequestValidate($id, $request) !== true)
             return $this->model;
@@ -162,7 +162,7 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @return bool
      */
-    public function updateRequestValidate($id, object $request): bool
+    public function updateRequestValidate(int|string $id, object $request): bool
     {
         // Do validate update request
         return true;
@@ -171,9 +171,9 @@ abstract class BaseService implements BaseServiceInterface
     /**
      * Set relation
      *
-     * @param string|array $relations
+     * @param array|string $relations
      */
-    public function with($relations)
+    public function with(array|string $relations)
     {
         $this->queryHelper->with($relations);
     }

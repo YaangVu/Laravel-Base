@@ -6,7 +6,7 @@ namespace YaangVu\LaravelBase\Exceptions;
 use Exception;
 use Illuminate\Http\Response;
 
-class NotfoundException extends BaseException
+class NotFoundException extends BaseException
 {
     public function __construct(string|array $message, Exception $e = null)
     {

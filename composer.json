@@ -1,6 +1,6 @@
 {
     "name": "yaangvu/laravel-base",
-    "description": "Laravel Toprate Base",
+    "description": "Laravel YaangVu Base",
     "keywords": [
         "laravel",
         "lumen",
@@ -10,15 +10,15 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^7.4|^8.0",
-        "illuminate/database": "^6|^7|^8|^9",
-        "illuminate/support": "^6|^7|^8|^9",
-        "illuminate/contracts": "^6|^7|^8|^9",
-        "illuminate/pagination": "^6|^7|^8|^9"
+        "php": "^8.0",
+        "illuminate/database": "^7|^8|^9",
+        "illuminate/support": "^7|^8|^9",
+        "illuminate/contracts": "^7|^8|^9",
+        "illuminate/pagination": "^7|^8|^9",
+        "illuminate/http": "^7|^8|^9"
     },
     "require-dev": {
-        "laravel/framework": "^6|^7|^8",
-        "phpunit/phpunit": "^6|^7|^8"
+        "phpunit/phpunit": "^7|^8|^9"
     },
     "authors": [
         {
