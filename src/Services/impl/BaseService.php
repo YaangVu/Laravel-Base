@@ -20,7 +20,7 @@ abstract class BaseService implements BaseServiceInterface
 
     public Model $model;
 
-    public static $currentUser;
+    public static object $currentUser;
 
     public function __construct()
     {
@@ -181,17 +181,17 @@ abstract class BaseService implements BaseServiceInterface
     /**
      * Get Current User logged in
      */
-    public static function currentUser()
+    public static function currentUser(): object
     {
         return self::$currentUser;
     }
 
     /**
-     * @param  $user
+     * @param object $user
      *
      * @return void
      */
-    public static function setCurrentUser($user): void
+    public static function setCurrentUser(object $user): void
     {
         self::$currentUser = $user;
     }

@@ -144,7 +144,7 @@ class QueryHelper
      *
      * @param String $alias
      *
-     * @return Builder|Model
+     * @return Builder
      */
     public function buildQuery(Model $model, string $alias = ''): Builder
     {
@@ -196,9 +196,9 @@ class QueryHelper
     /**
      * Set Relations Entity
      *
-     * @param string|array $relations
+     * @param array|string $relations
      */
-    public function with($relations): void
+    public function with(array|string $relations): void
     {
         $this->relations = $relations;
     }
