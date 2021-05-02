@@ -4,7 +4,7 @@
 namespace YaangVu\LaravelBase\Helpers;
 
 
-class RouteHelper
+class RouterHelper
 {
     public static function resource($router, string $name, string $controller): void
     {
