@@ -77,4 +77,78 @@ interface BaseServiceInterface
      * @param object $user
      */
     public static function setCurrentUser(object $user): void;
+
+    /**
+     * @param object $request
+     *
+     * @return mixed
+     */
+    public function preAdd(object $request): mixed;
+
+    /**
+     * @param object $request
+     * @param Model  $model
+     *
+     * @return mixed
+     */
+    public function postAdd(object $request, Model $model): mixed;
+
+    /**
+     * @param int|string $id
+     * @param object     $request
+     *
+     * @return mixed
+     */
+    public function preUpdate(int|string $id, object $request): mixed;
+
+    /**
+     * @param int|string $id
+     * @param object     $request
+     * @param Model      $model
+     *
+     * @return mixed
+     */
+    public function postUpdate(int|string $id, object $request, Model $model): mixed;
+
+    /**
+     * @param int|string $id
+     *
+     * @return mixed
+     */
+    public function preGet(int|string $id): mixed;
+
+    /**
+     * @param int|string $id
+     * @param Model      $model
+     *
+     * @return mixed
+     */
+    public function postGet(int|string $id, Model $model): mixed;
+
+    /**
+     * @return mixed
+     */
+    public function preGetAll(): mixed;
+
+    /**
+     * @param Model $model
+     *
+     * @return mixed
+     */
+    public function postGetAll(Model $model): mixed;
+
+    /**
+     * @param int|string $id
+     *
+     * @return mixed
+     */
+    public function preDelete(int|string $id): mixed;
+
+    /**
+     * @param int|string $id
+     *
+     * @return mixed
+     */
+    public function postDelete(int|string $id): mixed;
+
 }

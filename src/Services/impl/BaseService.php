@@ -6,8 +6,11 @@ use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use stdClass;
+use YaangVu\LaravelBase\Exceptions\BadRequestException;
 use YaangVu\LaravelBase\Exceptions\NotFoundException;
 use YaangVu\LaravelBase\Exceptions\SystemException;
 use YaangVu\LaravelBase\Helpers\QueryHelper;
@@ -65,7 +68,7 @@ abstract class BaseService implements BaseServiceInterface
             return $this->model->findOrFail($id);
         } catch (ModelNotFoundException $e) {
             throw new NotFoundException(
-                ['message' => __("base.not-exist", ['attribute' => __('entity')]) . ": $id"],
+                ['message' => __("not-exist", ['attribute' => __('entity')]) . ": $id"],
                 $e
             );
         } catch (Exception $e) {
@@ -152,13 +155,16 @@ abstract class BaseService implements BaseServiceInterface
      * Validate store request
      *
      * @param object $request
+     * @param array  $rules
      *
-     * @return bool
+     * @return bool|array
      */
-    public function storeRequestValidate(object $request): bool|array
+    public function storeRequestValidate(object $request, array $rules = []): bool|array
     {
-        // Do validate store request
-        return true;
+        if (!$rules || !$request)
+            return true;
+
+        return $this->_doValidate($request, $rules);
     }
 
     /**
@@ -166,12 +172,42 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @param int|string $id
      * @param object     $request
+     * @param array      $rules
      *
-     * @return bool
+     * @return bool|array
      */
-    public function updateRequestValidate(int|string $id, object $request): bool
+    public function updateRequestValidate(int|string $id, object $request, array $rules = []): bool|array
     {
-        // Do validate update request
+        if (!$rules || !$id || !$request)
+            return true;
+
+        return $this->_doValidate($request, $rules);
+    }
+
+    /**
+     * @param object $request
+     * @param array  $rules
+     *
+     * @return bool|array
+     */
+    private function _doValidate(object $request, array $rules = []): bool|array
+    {
+        if ($request instanceof Request)
+            $request = $request->all();
+        elseif ($request instanceof Model)
+            $request = $request->toArray();
+        else
+            $request = (array)$request;
+
+        $validator = Validator::make($request, $rules);
+
+        if ($validator?->fails()) {
+            if ($this->validateThrowAble)
+                throw new BadRequestException($validator->errors()->toArray(), new Exception());
+            else
+                return $validator->errors()->toArray();
+        }
+
         return true;
     }
 
@@ -201,5 +237,108 @@ abstract class BaseService implements BaseServiceInterface
     public static function setCurrentUser(object $user): void
     {
         self::$currentUser = $user;
+    }
+
+    /**
+     * @param object $request
+     *
+     * @return mixed
+     */
+    public function preAdd(object $request): mixed
+    {
+        // TODO: Implement preAdd() method.
+    }
+
+    /**
+     * @param object $request
+     * @param Model  $model
+     *
+     * @return mixed
+     */
+    public function postAdd(object $request, Model $model): mixed
+    {
+        // TODO: Implement postAdd() method.
+    }
+
+    /**
+     * @param int|string $id
+     *
+     * @return mixed
+     */
+    public function preGet(int|string $id): mixed
+    {
+        // TODO: Implement preGet() method.
+    }
+
+    /**
+     * @param int|string $id
+     * @param Model      $model
+     *
+     * @return mixed
+     */
+    public function postGet(int|string $id, Model $model): mixed
+    {
+        // TODO: Implement postGet() method.
+    }
+
+    /**
+     * @return mixed
+     */
+    public function preGetAll(): mixed
+    {
+        // TODO: Implement preGetAll() method.
+    }
+
+    /**
+     * @param Model $model
+     *
+     * @return mixed
+     */
+    public function postGetAll(Model $model): mixed
+    {
+        // TODO: Implement postGetAll() method.
+    }
+
+    /**
+     * @param int|string $id
+     * @param object     $request
+     *
+     * @return mixed
+     */
+    public function preUpdate(int|string $id, object $request): mixed
+    {
+        // TODO: Implement preUpdate() method.
+    }
+
+    /**
+     * @param int|string $id
+     * @param object     $request
+     * @param Model      $model
+     *
+     * @return mixed
+     */
+    public function postUpdate(int|string $id, object $request, Model $model): mixed
+    {
+        // TODO: Implement postUpdate() method.
+    }
+
+    /**
+     * @param int|string $id
+     *
+     * @return mixed
+     */
+    public function preDelete(int|string $id): mixed
+    {
+        // TODO: Implement preDelete() method.
+    }
+
+    /**
+     * @param int|string $id
+     *
+     * @return mixed
+     */
+    public function postDelete(int|string $id): mixed
+    {
+        // TODO: Implement postDelete() method.
     }
 }
