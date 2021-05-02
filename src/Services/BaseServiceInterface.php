@@ -80,75 +80,56 @@ interface BaseServiceInterface
 
     /**
      * @param object $request
-     *
-     * @return mixed
      */
-    public function preAdd(object $request): mixed;
+    public function preAdd(object $request);
 
     /**
      * @param object $request
      * @param Model  $model
-     *
-     * @return mixed
      */
-    public function postAdd(object $request, Model $model): mixed;
+    public function postAdd(object $request, Model $model);
 
     /**
      * @param int|string $id
      * @param object     $request
-     *
-     * @return mixed
      */
-    public function preUpdate(int|string $id, object $request): mixed;
+    public function preUpdate(int|string $id, object $request);
 
     /**
      * @param int|string $id
      * @param object     $request
      * @param Model      $model
-     *
-     * @return mixed
      */
-    public function postUpdate(int|string $id, object $request, Model $model): mixed;
+    public function postUpdate(int|string $id, object $request, Model $model);
 
     /**
      * @param int|string $id
-     *
-     * @return mixed
      */
-    public function preGet(int|string $id): mixed;
+    public function preGet(int|string $id);
 
     /**
      * @param int|string $id
      * @param Model      $model
-     *
-     * @return mixed
      */
-    public function postGet(int|string $id, Model $model): mixed;
+    public function postGet(int|string $id, Model $model);
 
     /**
-     * @return mixed
      */
-    public function preGetAll(): mixed;
+    public function preGetAll();
 
     /**
-     * @param Model $model
-     *
-     * @return mixed
+     * @param object $model
      */
-    public function postGetAll(Model $model): mixed;
+    public function postGetAll(object $model);
 
     /**
      * @param int|string $id
-     *
-     * @return mixed
      */
-    public function preDelete(int|string $id): mixed;
+    public function preDelete(int|string $id);
 
     /**
      * @param int|string $id
-     *
-     * @return mixed
      */
-    public function postDelete(int|string $id): mixed;
+    public function postDelete(int|string $id);
 
 }

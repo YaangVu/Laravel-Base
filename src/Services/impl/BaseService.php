@@ -47,9 +47,13 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function getAll(): LengthAwarePaginator
     {
+        $this->preGetAll();
         $data = $this->queryHelper->buildQuery($this->model);
         try {
-            return $data->paginate(QueryHelper::limit());
+            $response = $data->paginate(QueryHelper::limit());
+            $this->postGetAll($response);
+
+            return $response;
         } catch (Exception $e) {
             throw new SystemException($e->getMessage() ?? __('system-500'), $e);
         }
@@ -64,8 +68,12 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function get(int|string $id): Model
     {
+        $this->preGet($id);
         try {
-            return $this->model->findOrFail($id);
+            $entity = $this->model->findOrFail($id);
+            $this->postGet($id, $entity);
+
+            return $entity;
         } catch (ModelNotFoundException $e) {
             throw new NotFoundException(
                 ['message' => __("not-exist", ['attribute' => __('entity')]) . ": $id"],
@@ -85,9 +93,13 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function delete(int|string $id): bool
     {
+        $this->preDelete($id);
         $data = $this->get($id);
         try {
-            return $data->delete();
+            $deleted = $data->delete();
+            $this->postDelete($id);
+
+            return $deleted;
         } catch (Exception $e) {
             throw new SystemException(
                 ['message' => __('can-not-del', ['attribute' => __('entity')]) . ": $id"],
@@ -105,6 +117,7 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function add(object $request): Model
     {
+        $this->preAdd($request);
         if ($this->storeRequestValidate($request) !== true)
             return $this->model;
 
@@ -117,6 +130,7 @@ abstract class BaseService implements BaseServiceInterface
 
         try {
             $this->model->save();
+            $this->postAdd($request, $this->model);
 
             return $this->model;
         } catch (Exception $e) {
@@ -134,6 +148,7 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function update(int|string $id, object $request): Model
     {
+        $this->preUpdate($id, $request);
         if ($this->updateRequestValidate($id, $request) !== true)
             return $this->model;
 
@@ -144,6 +159,7 @@ abstract class BaseService implements BaseServiceInterface
             $model->$fillAble = $request->$fillAble ?? $model->$fillAble;
         try {
             $model->save();
+            $this->postUpdate($id, $request, $model);
 
             return $model;
         } catch (Exception $e) {
@@ -241,10 +257,8 @@ abstract class BaseService implements BaseServiceInterface
 
     /**
      * @param object $request
-     *
-     * @return mixed
      */
-    public function preAdd(object $request): mixed
+    public function preAdd(object $request)
     {
         // TODO: Implement preAdd() method.
     }
@@ -252,20 +266,16 @@ abstract class BaseService implements BaseServiceInterface
     /**
      * @param object $request
      * @param Model  $model
-     *
-     * @return mixed
      */
-    public function postAdd(object $request, Model $model): mixed
+    public function postAdd(object $request, Model $model)
     {
         // TODO: Implement postAdd() method.
     }
 
     /**
      * @param int|string $id
-     *
-     * @return mixed
      */
-    public function preGet(int|string $id): mixed
+    public function preGet(int|string $id)
     {
         // TODO: Implement preGet() method.
     }
@@ -273,28 +283,23 @@ abstract class BaseService implements BaseServiceInterface
     /**
      * @param int|string $id
      * @param Model      $model
-     *
-     * @return mixed
      */
-    public function postGet(int|string $id, Model $model): mixed
+    public function postGet(int|string $id, Model $model)
     {
         // TODO: Implement postGet() method.
     }
 
     /**
-     * @return mixed
      */
-    public function preGetAll(): mixed
+    public function preGetAll()
     {
         // TODO: Implement preGetAll() method.
     }
 
     /**
-     * @param Model $model
-     *
-     * @return mixed
+     * @param object $model
      */
-    public function postGetAll(Model $model): mixed
+    public function postGetAll(object $model)
     {
         // TODO: Implement postGetAll() method.
     }
@@ -302,10 +307,8 @@ abstract class BaseService implements BaseServiceInterface
     /**
      * @param int|string $id
      * @param object     $request
-     *
-     * @return mixed
      */
-    public function preUpdate(int|string $id, object $request): mixed
+    public function preUpdate(int|string $id, object $request)
     {
         // TODO: Implement preUpdate() method.
     }
@@ -314,30 +317,24 @@ abstract class BaseService implements BaseServiceInterface
      * @param int|string $id
      * @param object     $request
      * @param Model      $model
-     *
-     * @return mixed
      */
-    public function postUpdate(int|string $id, object $request, Model $model): mixed
+    public function postUpdate(int|string $id, object $request, Model $model)
     {
         // TODO: Implement postUpdate() method.
     }
 
     /**
      * @param int|string $id
-     *
-     * @return mixed
      */
-    public function preDelete(int|string $id): mixed
+    public function preDelete(int|string $id)
     {
         // TODO: Implement preDelete() method.
     }
 
     /**
      * @param int|string $id
-     *
-     * @return mixed
      */
-    public function postDelete(int|string $id): mixed
+    public function postDelete(int|string $id)
     {
         // TODO: Implement postDelete() method.
     }
