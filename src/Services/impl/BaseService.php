@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Auth;
 use YaangVu\LaravelBase\Exceptions\NotFoundException;
 use YaangVu\LaravelBase\Exceptions\SystemException;
 use YaangVu\LaravelBase\Helpers\QueryHelper;
@@ -183,7 +184,7 @@ abstract class BaseService implements BaseServiceInterface
      */
     public static function currentUser(): object
     {
-        return self::$currentUser;
+        return self::$currentUser ?? Auth::user();
     }
 
     /**
