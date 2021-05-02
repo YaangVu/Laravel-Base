@@ -104,8 +104,12 @@ abstract class BaseService implements BaseServiceInterface
             return $this->model;
 
         $fillAbles = $this->model->getFillable();
+        // Set data to new entity
         foreach ($fillAbles as $fillAble)
             $this->model->$fillAble = $request->$fillAble ?? null;
+        // Set created_by is current user
+        $this->model->created_by = self::$currentUser->id;
+
         try {
             $this->model->save();
 
