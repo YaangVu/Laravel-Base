@@ -7,6 +7,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
+use stdClass;
 use YaangVu\LaravelBase\Exceptions\NotFoundException;
 use YaangVu\LaravelBase\Exceptions\SystemException;
 use YaangVu\LaravelBase\Helpers\QueryHelper;
@@ -27,6 +28,7 @@ abstract class BaseService implements BaseServiceInterface
     {
         $this->queryHelper = new QueryHelper();
         $this->createModel();
+        self::$currentUser = new stdClass();
     }
 
     /**
@@ -63,7 +65,7 @@ abstract class BaseService implements BaseServiceInterface
             return $this->model->findOrFail($id);
         } catch (ModelNotFoundException $e) {
             throw new NotFoundException(
-                ['message' => __('not-exist' . ": $id", ['attribute' => __('entity')])],
+                ['message' => __("base.not-exist", ['attribute' => __('entity')]) . ": $id"],
                 $e
             );
         } catch (Exception $e) {
@@ -85,7 +87,7 @@ abstract class BaseService implements BaseServiceInterface
             return $data->delete();
         } catch (Exception $e) {
             throw new SystemException(
-                ['message' => __('can-not-del' . ": $id", ['attribute' => __('entity')])],
+                ['message' => __('can-not-del', ['attribute' => __('entity')]) . ": $id"],
                 $e
             );
         }
@@ -108,7 +110,7 @@ abstract class BaseService implements BaseServiceInterface
         foreach ($fillAbles as $fillAble)
             $this->model->$fillAble = $request->$fillAble ?? null;
         // Set created_by is current user
-        $this->model->created_by = self::$currentUser->id;
+        $this->model->created_by = self::currentUser()?->id ?? null;
 
         try {
             $this->model->save();
@@ -153,7 +155,7 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @return bool
      */
-    public function storeRequestValidate(object $request): bool
+    public function storeRequestValidate(object $request): bool|array
     {
         // Do validate store request
         return true;
