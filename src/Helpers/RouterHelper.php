@@ -6,7 +6,7 @@ namespace YaangVu\LaravelBase\Helpers;
 
 class RouterHelper
 {
-    public static function resource($router, string $name, string $controller): void
+    public static function resource($router, string $name, string $controller, array $options = []): void
     {
         $router->get("$name", "$controller@index");
         $router->get("$name/{id}", "$controller@show");
