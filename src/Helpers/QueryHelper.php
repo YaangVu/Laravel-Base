@@ -2,24 +2,35 @@
 
 namespace YaangVu\LaravelBase\Helpers;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use YaangVu\LaravelBase\Constants\DataCastConstant;
+use YaangVu\LaravelBase\Constants\OperatorConstant;
 
-class QueryHelper
+class QueryHelper extends Model
 {
     private array $operatorPatterns;
 
+    /**
+     * Operators to query into DB
+     * @var array
+     */
     private array $operators
         = [
-            '__gt' => '>', // Greater than
-            '__ge' => '>=', // Greater than or equal
-            '__lt' => '<', // Less than
-            '__le' => '<=', // Less than or equal
-            '__~'  => 'like' // Like
+            '__gt' => OperatorConstant::GT, // Greater than
+            '__ge' => OperatorConstant::GE, // Greater than or equal
+            '__lt' => OperatorConstant::LT, // Less than
+            '__le' => OperatorConstant::LE, // Less than or equal
+            '__~'  => OperatorConstant::LIKE // Like
         ];
 
+    /**
+     * Operators were excluded
+     * @var array|string[]
+     */
     private array $excludedOperators
         = [
             'limit',
@@ -27,9 +38,19 @@ class QueryHelper
             'order_by'
         ];
 
-    public array $params = [];
+    /**
+     * Params will be cast to data type
+     * @var array
+     */
+    public array $castParams
+        = [
+            'date'       => DataCastConstant::DATE,
+            'created_at' => DataCastConstant::DATETIME,
+            'updated_at' => DataCastConstant::DATETIME,
+            'age'        => DataCastConstant::NUMBER
+        ];
 
-    protected ?string $relations = '';
+    public array $params = [];
 
     public function __construct()
     {
@@ -41,21 +62,58 @@ class QueryHelper
      * Add more conditions
      *
      * @param array $param
+     *
+     * @return QueryHelper
      */
-    public function addParam(array $param)
+    public function addParams(array $param): static
     {
         $this->params = array_merge($this->params, $param);
+
+        return $this;
     }
 
     /**
      * Remove one condition
      *
      * @param string $param
+     *
+     * @return QueryHelper
      */
-    public function removeParam(string $param)
+    public function removeParam(string $param): static
     {
         if (key_exists($param, $this->params))
             unset($this->params[$param]);
+
+        return $this;
+    }
+
+    /**
+     * Add more cast params
+     *
+     * @param array $castParams
+     *
+     * @return QueryHelper
+     */
+    public function addCastParams(array $castParams): static
+    {
+        $this->params = array_merge($this->castParams, $castParams);
+
+        return $this;
+    }
+
+    /**
+     * Remove cast param
+     *
+     * @param string $castParam
+     *
+     * @return QueryHelper
+     */
+    public function removeCastParam(string $castParam): static
+    {
+        if (key_exists($castParam, $this->castParams))
+            unset($this->params[$castParam]);
+
+        return $this;
     }
 
     /**
@@ -70,42 +128,76 @@ class QueryHelper
         }
 
         $conditions = [];
-        foreach ($this->params as $keyParam => $valueParam) {
-            if ($valueParam === '' || $valueParam === null) continue;
+        foreach ($this->params as $paramKey => $paramValue) {
+            if ($paramValue === '' || $paramValue === null) continue;
 
             // Basic query with equal clause
-            if (!Str::endsWith($keyParam, $this->operatorPatterns)) {
+            if (!Str::endsWith($paramKey, $this->operatorPatterns)) {
                 $conditions[] = [
-                    'column'   => $keyParam,
-                    'operator' => '=',
-                    'value'    => $valueParam
+                    'column'   => $paramKey,
+                    'operator' => OperatorConstant::EQUAL,
+                    'value'    => $this->_castParamValue($paramKey, $paramValue)
                 ];
                 continue;
             }
 
             foreach ($this->operators as $keyOperator => $operator) {
-                $clause = explode($keyOperator, $keyParam);
-                // If $keyParam not match $keyOperator then continue
-                if (count($clause) == 1)
+                if (!Str::endsWith($paramKey, $keyOperator))
                     continue;
 
-                $tmp = explode('__', $clause[0]);
-                if (count($tmp) == 1)
-                    $column = $clause[0];
-                else
-                    $column = $tmp[0] . '.' . $tmp[1];
+                /**
+                 * Get column from $paramKey
+                 * $paramKey will be format with: {table}__{column}{operatorPatent}. Such as: user__age__lt OR age__lt OR age
+                 */
+                $column = Str::replaceLast($keyOperator, '', $paramKey);
 
-                // If $keyParam match $keyOperator
+                /**
+                 * Format column name to query
+                 * Column fre convert will be format with: {table}__{column}. Such as user__age OR age
+                 */
+                $tmp = explode('__', $column);
+
+                if (count($tmp) == 1)
+                    $column = $tmp[0];
+                else
+                    $column = "$tmp[0].$tmp[1]";
+
+                // If $paramKey match $keyOperator
+                $value        = $this->_castParamValue($column, $paramValue);
                 $conditions[] = [
                     'column'   => $column,
                     'operator' => $operator,
-                    'value'    => $operator === 'like' ? "%$valueParam%" : $valueParam
+                    'value'    => $operator === 'like' ? "%$value%" : $value
                 ];
 
             }
         }
 
         return $conditions;
+    }
+
+    /**
+     * Cast data to specific DataType
+     *
+     * @param $column
+     * @param $value
+     *
+     * @return float|int|Carbon
+     */
+    private function _castParamValue($column, $value): float|int|Carbon
+    {
+        if (!key_exists($column, $this->castParams))
+            return $value;
+
+        $dataType = $this->castParams[$column];
+
+        return match ($dataType) {
+            DataCastConstant::DATE => Carbon::createFromDate($value),
+            DataCastConstant::DATETIME => Carbon::parse($value),
+            DataCastConstant::NUMBER, DataCastConstant::DOUBLE => (double)$value,
+            DataCastConstant::INT => (int)$value,
+            default => (string)$value
+        };
     }
 
     /**
@@ -186,20 +278,12 @@ class QueryHelper
      *
      * @param array $operators
      *
-     * @return void
+     * @return QueryHelper
      */
-    public function addExcludedOperators(array $operators): void
+    public function addExcludedOperators(array $operators): static
     {
         array_push($this->excludedOperators, ...$operators);
-    }
 
-    /**
-     * Set Relations Entity
-     *
-     * @param array|string $relations
-     */
-    public function with(array|string $relations): void
-    {
-        $this->relations = $relations;
+        return $this;
     }
 }
