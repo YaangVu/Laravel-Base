@@ -182,9 +182,9 @@ class QueryHelper extends Model
      * @param $column
      * @param $value
      *
-     * @return float|int|Carbon
+     * @return float|int|Carbon|string
      */
-    private function _castParamValue($column, $value): float|int|Carbon
+    private function _castParamValue($column, $value): float|int|Carbon|string
     {
         if (!key_exists($column, $this->castParams))
             return $value;
