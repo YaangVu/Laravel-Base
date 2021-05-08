@@ -10,15 +10,15 @@ use Illuminate\Support\Str;
 use YaangVu\LaravelBase\Constants\DataCastConstant;
 use YaangVu\LaravelBase\Constants\OperatorConstant;
 
-class QueryHelper extends Model
+class QueryHelper
 {
-    private array $operatorPatterns;
+    protected array $operatorPatterns;
 
     /**
      * Operators to query into DB
      * @var array
      */
-    private array $operators
+    protected array $operators
         = [
             '__gt' => OperatorConstant::GT, // Greater than
             '__ge' => OperatorConstant::GE, // Greater than or equal
@@ -31,7 +31,7 @@ class QueryHelper extends Model
      * Operators were excluded
      * @var array|string[]
      */
-    private array $excludedOperators
+    protected array $excludedOperators
         = [
             'limit',
             'page',
@@ -42,7 +42,7 @@ class QueryHelper extends Model
      * Params will be cast to data type
      * @var array
      */
-    public array $castParams
+    protected array $castParams
         = [
             'date'       => DataCastConstant::DATE,
             'created_at' => DataCastConstant::DATETIME,
@@ -50,7 +50,9 @@ class QueryHelper extends Model
             'age'        => DataCastConstant::NUMBER
         ];
 
-    public array $params = [];
+    protected array $params = [];
+
+    protected array $relations = [];
 
     public function __construct()
     {
@@ -285,5 +287,15 @@ class QueryHelper extends Model
         array_push($this->excludedOperators, ...$operators);
 
         return $this;
+    }
+
+    /**
+     * Add relations for query
+     *
+     * @param string|array $relations
+     */
+    public function with(string|array $relations)
+    {
+        $this->relations = (array)$relations;
     }
 }
