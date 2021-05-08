@@ -25,13 +25,12 @@ abstract class BaseService implements BaseServiceInterface
 
     public Model $model;
 
-    public static object $currentUser;
+    public static object|null $currentUser = null;
 
     public function __construct()
     {
         $this->queryHelper = new QueryHelper();
         $this->createModel();
-        self::$currentUser = new stdClass();
     }
 
     /**
