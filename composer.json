@@ -1,35 +1,42 @@
 {
-    "name": "yaangvu/laravel-base",
-    "description": "Laravel YaangVu Base",
-    "keywords": [
-        "laravel",
-        "lumen",
-        "base",
-        "toprate",
-        "api"
-    ],
-    "license": "MIT",
-    "require": {
-        "php": "^8.0",
-        "illuminate/database": "^7|^8|^9",
-        "illuminate/support": "^7|^8|^9",
-        "illuminate/contracts": "^7|^8|^9",
-        "illuminate/pagination": "^7|^8|^9",
-        "illuminate/http": "^7|^8|^9"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^7|^8|^9"
-    },
-    "authors": [
-        {
-            "name": "Yaang Vu",
-            "email": "yaangvu@gmail.com"
-        }
-    ],
-    "minimum-stability": "dev",
-    "autoload": {
-        "psr-4": {
-            "YaangVu\\LaravelBase\\": "src/"
-        }
+  "name": "yaangvu/laravel-base",
+  "description": "Laravel YaangVu Base",
+  "keywords": [
+    "laravel",
+    "lumen",
+    "base",
+    "toprate",
+    "api"
+  ],
+  "license": "MIT",
+  "require": {
+    "php": "^8.0",
+    "illuminate/database": "^7|^8|^9",
+    "illuminate/support": "^7|^8|^9",
+    "illuminate/contracts": "^7|^8|^9",
+    "illuminate/pagination": "^7|^8|^9",
+    "illuminate/http": "^7|^8|^9"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7|^8|^9"
+  },
+  "authors": [
+    {
+      "name": "Yaang Vu",
+      "email": "yaangvu@gmail.com"
     }
+  ],
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "YaangVu\\LaravelBase\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "YaangVu\\LaravelBase\\Providers\\LaravelBaseServiceProvider"
+      ]
+    }
+  }
 }

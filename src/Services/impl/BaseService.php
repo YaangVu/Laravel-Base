@@ -117,7 +117,7 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function add(object $request): Model
     {
-        $this->preAdd($request);
+        $request = $this->preAdd($request) ?? $request;
         if ($this->storeRequestValidate($request) !== true)
             return $this->model;
 
@@ -148,7 +148,7 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function update(int|string $id, object $request): Model
     {
-        $this->preUpdate($id, $request);
+        $request = $this->preUpdate($id, $request) ?? $request;
         if ($this->updateRequestValidate($id, $request) !== true)
             return $this->model;
 
