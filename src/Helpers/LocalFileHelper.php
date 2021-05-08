@@ -5,6 +5,7 @@ namespace YaangVu\LaravelBase\Helpers;
 
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class LocalFileHelper implements FileHelper
@@ -18,7 +19,7 @@ class LocalFileHelper implements FileHelper
      *
      * @return string|null
      */
-    public function upload(object $request, string $keyFile, string $prefix = 'other'): ?string
+    public static function upload(object $request, string $keyFile, string $prefix = 'other'): ?string
     {
         if (!($request instanceof Request))
             return null;
@@ -29,7 +30,7 @@ class LocalFileHelper implements FileHelper
         $originalFilename    = $request->file($keyFile)->getClientOriginalName();
         $originalFilenameArr = explode('.', $originalFilename);
         $fileExt             = end($originalFilenameArr);
-        $destinationPath     = "/upload/$prefix/";
+        $destinationPath     = "/uploads/$prefix/";
         $fileName            = time() . '-' . Str::random() . '.' . $fileExt;
         if ($request->file($keyFile)->move('.' . $destinationPath, $fileName)) {
             return $destinationPath . $fileName;
@@ -48,12 +49,12 @@ class LocalFileHelper implements FileHelper
      *
      * @return string|null
      */
-    public function update(string $oldPath, object $request, string $keyFile, string $prefix = 'other'): ?string
+    public static function update(string $oldPath, object $request, string $keyFile, string $prefix = 'other'): ?string
     {
         // Delete old file
-        $this->delete($oldPath);
+        self::delete($oldPath);
 
-        return $this->upload($request, $keyFile, $prefix);
+        return self::upload($request, $keyFile, $prefix);
     }
 
     /**
@@ -61,8 +62,20 @@ class LocalFileHelper implements FileHelper
      *
      * @param string $path
      */
-    public function delete(string $path)
+    public static function delete(string $path)
     {
         // TODO: Implement delete() method.
+    }
+
+    public static function getFileUrl(string $path): ?string
+    {
+        if ($path) {
+            if (filter_var($path, FILTER_VALIDATE_URL))
+                return $path;
+            else
+                return Storage::url($path);
+        } else {
+            return null;
+        }
     }
 }
