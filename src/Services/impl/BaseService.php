@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use stdClass;
 use YaangVu\LaravelBase\Exceptions\BadRequestException;
 use YaangVu\LaravelBase\Exceptions\NotFoundException;
 use YaangVu\LaravelBase\Exceptions\SystemException;
@@ -239,7 +238,7 @@ abstract class BaseService implements BaseServiceInterface
     /**
      * Get Current User logged in
      */
-    public static function currentUser(): object
+    public static function currentUser(): object|null
     {
         return self::$currentUser ?? Auth::user();
     }
