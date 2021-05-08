@@ -35,7 +35,7 @@
   "extra": {
     "laravel": {
       "providers": [
-        "YaangVu\\LaravelBase\\Providers\\LaravelBaseServiceProvider"
+        "YaangVu\\LaravelBase\\LaravelBaseServiceProvider"
       ]
     }
   }

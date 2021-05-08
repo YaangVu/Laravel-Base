@@ -1,6 +1,6 @@
 <?php
 
-namespace YaangVu\LaravelBase\Providers;
+namespace YaangVu\LaravelBase;
 
 use Illuminate\Support\ServiceProvider;
 
