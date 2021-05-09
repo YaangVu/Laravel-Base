@@ -52,7 +52,7 @@ class QueryHelper
 
     protected array $params = [];
 
-    protected array $relations = [];
+    public array $relations = [];
 
     public function __construct()
     {

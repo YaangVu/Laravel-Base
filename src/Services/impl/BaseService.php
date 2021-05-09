@@ -4,10 +4,12 @@ namespace YaangVu\LaravelBase\Services\impl;
 
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use YaangVu\LaravelBase\Exceptions\BadRequestException;
 use YaangVu\LaravelBase\Exceptions\NotFoundException;
@@ -22,7 +24,7 @@ abstract class BaseService implements BaseServiceInterface
 
     protected QueryHelper $queryHelper;
 
-    public Model $model;
+    public Model|Builder $model;
 
     public static object|null $currentUser = null;
 
@@ -68,6 +70,9 @@ abstract class BaseService implements BaseServiceInterface
     {
         $this->preGet($id);
         try {
+            if ($this->queryHelper->relations)
+                $this->model = $this->model->with($this->queryHelper->relations);
+
             $entity = $this->model->findOrFail($id);
             $this->postGet($id, $entity);
 
@@ -128,7 +133,8 @@ abstract class BaseService implements BaseServiceInterface
                 $this->model->$fillAble = $request->$fillAble;
 
         // Set created_by is current user
-        $this->model->created_by = self::currentUser()?->id ?? null;
+        if (Schema::hasColumn($this->model->getTable(), 'created_by'))
+            $this->model->created_by = self::currentUser()?->id ?? null;
 
         try {
             $this->model->save();

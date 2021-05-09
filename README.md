@@ -1,11 +1,15 @@
 # Laravel Base Package
+
 This base will help to create simple API (CRUD) for 1 specific entity, such as User
+
 ## Install
+
 `composer require yaangvu/laravel-base`
 
 ## Initial
 
 ### Directory structure
+
 ```
 .
 ├── src
@@ -37,12 +41,14 @@ This base will help to create simple API (CRUD) for 1 specific entity, such as U
 ```
 
 ### Route
+
 ```
 use YaangVu\LaravelBase\Helpers\RouterHelper;
 RouterHelper::resource($router, '/users', 'UserController');
 ```
 
 ### Service
+
 ```
 use App\Models\User;
 use YaangVu\LaravelBase\Services\impl\BaseService;
@@ -58,6 +64,7 @@ class UserService extends BaseService
 ```
 
 ### Controller
+
 ```
 use App\Services\UserService;
 use YaangVu\LaravelBase\Controllers\BaseController;
@@ -73,7 +80,9 @@ class UserController extends BaseController
 ```
 
 ### Model
+
 To insert or update an entity, you must define columns can give data
+
 ```
 class User extends Model
 {
@@ -87,7 +96,9 @@ class User extends Model
 ## Usage
 
 ### Dynamic query parameters
+
 #### Operators supported
+
 ```
 $operators
         = [
@@ -98,20 +109,29 @@ $operators
             '__~'  => OperatorConstant::LIKE // Like
         ];
 ```
+
 #### To query, you can add more params with format:
+
 `{param-name}{operator} = {value}`
+
 #### Example:
-1. `username = admin`
-2. `name__~ = super`
-3. `age__gt = 18`
+
+1. `username = admin` ----> `username` equal `admin`
+2. `name__~ = super`  ---->  `name` like `%super%`
+3. `age__gt = 18`     ---->  `age` gather than `18`
+
 #### Full request example
+
 Request to query user with `username=admin` and `name LIKE %super%` and `age > 18`
+
 ```
 curl --location --request GET 'http://localhost:8000/api/v1/users?username=admin&name__~=super&age__gt=18'
 ```
 
 ### Validate before Add an entity
+
 Support full Laravel validation: [Validation](https://laravel.com/docs/master/validation)
+
 ```
 class UserService extends BaseService
 {
@@ -119,7 +139,6 @@ class UserService extends BaseService
     {
         $rules = [
             'username' => 'required|max:255|unique:users',
-            //
         ];
 
         return parent::storeRequestValidate($request, $rules);
@@ -128,7 +147,9 @@ class UserService extends BaseService
 ```
 
 ### Validate before Update an entity
+
 Support full Laravel validation: [Validation](https://laravel.com/docs/master/validation)
+
 ```
 class UserService extends BaseService
 {
@@ -144,7 +165,9 @@ class UserService extends BaseService
 ```
 
 ### Service Observe
+
 It supports these observe function:
+
 1. `preAdd`
 2. `postAdd`
 3. `preUpdate`
@@ -157,6 +180,7 @@ It supports these observe function:
 10. `postGetAll`
 
 ### Upload file
+
 ```
 use YaangVu\LaravelBase\Helpers\LocalFileHelper;
 
