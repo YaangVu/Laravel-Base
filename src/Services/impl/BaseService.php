@@ -116,13 +116,17 @@ abstract class BaseService implements BaseServiceInterface
     public function add(object $request): Model
     {
         $request = $this->preAdd($request) ?? $request;
+
+        // Validate
         if ($this->storeRequestValidate($request) !== true)
             return $this->model;
 
-        $fillAbles = $this->model->getFillable();
         // Set data to new entity
+        $fillAbles = $this->model->getFillable();
         foreach ($fillAbles as $fillAble)
-            $this->model->$fillAble = $request->$fillAble ?? null;
+            if (isset($request->$fillAble))
+                $this->model->$fillAble = $request->$fillAble;
+
         // Set created_by is current user
         $this->model->created_by = self::currentUser()?->id ?? null;
 
@@ -147,14 +151,18 @@ abstract class BaseService implements BaseServiceInterface
     public function update(int|string $id, object $request): Model
     {
         $request = $this->preUpdate($id, $request) ?? $request;
+
+        // Validate
         if ($this->updateRequestValidate($id, $request) !== true)
             return $this->model;
 
         $model = $this->get($id);
 
+        // Set data for updated entity
         $fillAbles = $model->getFillable();
         foreach ($fillAbles as $fillAble)
-            $model->$fillAble = $request->$fillAble ?? $model->$fillAble;
+            if (isset($request->$fillAble))
+                $model->$fillAble = $request->$fillAble;
         try {
             $model->save();
             $this->postUpdate($id, $request, $model);

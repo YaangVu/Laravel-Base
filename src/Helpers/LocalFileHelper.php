@@ -21,10 +21,7 @@ class LocalFileHelper implements FileHelper
      */
     public static function upload(object $request, string $keyFile, string $prefix = 'other'): ?string
     {
-        if (!($request instanceof Request))
-            return null;
-
-        if (!$request->hasFile($keyFile))
+        if (!($request instanceof Request) || !$request->hasFile($keyFile))
             return null;
 
         $originalFilename    = $request->file($keyFile)->getClientOriginalName();
