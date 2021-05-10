@@ -5,7 +5,6 @@ namespace YaangVu\LaravelBase\Helpers;
 
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class LocalFileHelper implements FileHelper
@@ -70,7 +69,10 @@ class LocalFileHelper implements FileHelper
             if (filter_var($path, FILTER_VALIDATE_URL))
                 return $path;
             else
-                return Storage::url($path);
+                $host = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http")
+                    . "://$_SERVER[HTTP_HOST]";
+
+            return "$host/$path";
         } else {
             return null;
         }
