@@ -92,6 +92,7 @@ abstract class BaseService implements BaseServiceInterface
      * Get Entity via Code
      *
      * @param string $code
+     *
      * @return Model
      */
 
@@ -130,7 +131,7 @@ abstract class BaseService implements BaseServiceInterface
 
     /**
      * @param string $code
-     * @param Model $model
+     * @param Model  $model
      */
     public function postGetByCode(string $code, Model $model)
     {
@@ -200,7 +201,7 @@ abstract class BaseService implements BaseServiceInterface
      * Update an Entity via ID
      *
      * @param int|string $id
-     * @param object $request
+     * @param object     $request
      *
      * @return Model
      */
@@ -233,7 +234,7 @@ abstract class BaseService implements BaseServiceInterface
      * Validate store request
      *
      * @param object $request
-     * @param array $rules
+     * @param array  $rules
      *
      * @return bool|array
      */
@@ -249,8 +250,8 @@ abstract class BaseService implements BaseServiceInterface
      * Validate update request
      *
      * @param int|string $id
-     * @param object $request
-     * @param array $rules
+     * @param object     $request
+     * @param array      $rules
      *
      * @return bool|array
      */
@@ -264,7 +265,7 @@ abstract class BaseService implements BaseServiceInterface
 
     /**
      * @param object $request
-     * @param array $rules
+     * @param array  $rules
      *
      * @return bool|array
      */
@@ -327,7 +328,7 @@ abstract class BaseService implements BaseServiceInterface
 
     /**
      * @param object $request
-     * @param Model $model
+     * @param Model  $model
      */
     public function postAdd(object $request, Model $model)
     {
@@ -344,7 +345,7 @@ abstract class BaseService implements BaseServiceInterface
 
     /**
      * @param int|string $id
-     * @param Model $model
+     * @param Model      $model
      */
     public function postGet(int|string $id, Model $model)
     {
@@ -368,7 +369,7 @@ abstract class BaseService implements BaseServiceInterface
 
     /**
      * @param int|string $id
-     * @param object $request
+     * @param object     $request
      */
     public function preUpdate(int|string $id, object $request)
     {
@@ -377,8 +378,8 @@ abstract class BaseService implements BaseServiceInterface
 
     /**
      * @param int|string $id
-     * @param object $request
-     * @param Model $model
+     * @param object     $request
+     * @param Model      $model
      */
     public function postUpdate(int|string $id, object $request, Model $model)
     {

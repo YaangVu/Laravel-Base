@@ -40,7 +40,7 @@ interface BaseServiceInterface
 
     /**
      * @param string $code
-     * @param Model      $model
+     * @param Model  $model
      */
     public function postGetByCode(string $code, Model $model);
 
