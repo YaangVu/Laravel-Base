@@ -91,26 +91,23 @@ abstract class BaseService implements BaseServiceInterface
     /**
      * Get Entity via Code
      *
-     * @param string $column
      * @param string $code
      * @return Model
      */
 
-    public function getByColumn(string $column, string $code): Model
+    public function getByCode(string $code): Model
     {
-        $condition = [
-            $column => $code
-        ];
-        $this->preGetByColumn($condition);
+        $this->preGetByCode($code);
         try {
             if ($this->queryHelper->relations)
                 $this->model = $this->model->with($this->queryHelper->relations);
 
-            if (Schema::hasColumn($this->model->getTable(), $column))
+            $codeField = $this->model->code;
+            if (Schema::hasColumn($this->model->getTable(), $codeField))
                 throw new BadRequestException(__("not-exist", ['attribute' => __('entity')]));
 
-            $entity = $this->model->where($column, $code)->get();
-            $this->postGetByColumn($condition, $entity);
+            $entity = $this->model->where($codeField, $code)->get();
+            $this->postGetByCode($code, $entity);
 
             return $entity;
         } catch (ModelNotFoundException $e) {
@@ -124,20 +121,20 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
-     * @param array $condition
+     * @param string $code
      */
-    public function preGetByColumn(array $condition)
+    public function preGetByCode(string $code)
     {
-        // TODO: Implement preGetByColumn() method.
+        // TODO: Implement preGetByCode() method.
     }
 
     /**
-     * @param array $condition
+     * @param string $code
      * @param Model $model
      */
-    public function postGetByColumn(array $condition, Model $model)
+    public function postGetByCode(string $code, Model $model)
     {
-        // TODO: Implement postGetByColumn() method.
+        // TODO: Implement postGetByCode() method.
     }
 
     /**

@@ -31,10 +31,9 @@ interface BaseServiceInterface
     /**
      * Get Entity via Code
      *
-     * @param string $column
      * @param string $code
      */
-    public function getByColumn(string $column, string $code): Model;
+    public function getByCode(string $code): Model;
 
     /**
      * @param string $code
