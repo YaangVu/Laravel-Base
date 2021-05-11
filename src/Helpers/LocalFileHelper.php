@@ -56,14 +56,14 @@ class LocalFileHelper implements FileHelper
     /**
      * Delete file from public folder
      *
-     * @param string $path
+     * @param string|null $path
      */
     public static function delete(string $path)
     {
         // TODO: Implement delete() method.
     }
 
-    public static function getFileUrl(string $path): ?string
+    public static function getFileUrl(string|null $path = null): ?string
     {
         if ($path) {
             if (filter_var($path, FILTER_VALIDATE_URL))
