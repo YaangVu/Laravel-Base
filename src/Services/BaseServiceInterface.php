@@ -5,8 +5,6 @@ namespace YaangVu\LaravelBase\Services;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
-use PhpParser\Node\Scalar\String_;
 
 interface BaseServiceInterface
 {
