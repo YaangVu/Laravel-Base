@@ -28,6 +28,7 @@ abstract class BaseService implements BaseServiceInterface
 
     public static object|null $currentUser = null;
 
+
     public function __construct()
     {
         $this->queryHelper = new QueryHelper();
@@ -85,6 +86,58 @@ abstract class BaseService implements BaseServiceInterface
         } catch (Exception $e) {
             throw new SystemException($e->getMessage() ?? __('system-500'), $e);
         }
+    }
+
+    /**
+     * Get Entity via Code
+     *
+     * @param string $column
+     * @param string $code
+     * @return Model
+     */
+
+    public function getByColumn(string $column, string $code): Model
+    {
+        $condition = [
+            $column => $code
+        ];
+        $this->preGetByColumn($condition);
+        try {
+            if ($this->queryHelper->relations)
+                $this->model = $this->model->with($this->queryHelper->relations);
+
+            if (Schema::hasColumn($this->model->getTable(), $column))
+                throw new BadRequestException(__("not-exist", ['attribute' => __('entity')]));
+
+            $entity = $this->model->where($column, $code)->get();
+            $this->postGetByColumn($condition, $entity);
+
+            return $entity;
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundException(
+                ['message' => __("not-exist", ['attribute' => __('entity')]) . ": $code"],
+                $e
+            );
+        } catch (Exception $e) {
+            throw new SystemException($e->getMessage() ?? __('system-500'), $e);
+        }
+    }
+
+    /**
+     * @param array $condition
+     */
+    public function preGetByColumn(array $condition)
+    {
+        // TODO: Implement preGetByColumn() method.
+    }
+
+    /**
+     * @param array $condition
+     * @param Model $model
+     */
+    public function postGetByColumn(array $condition, Model $model)
+    {
+        // TODO: Implement postGetByColumn() method.
     }
 
     /**
@@ -150,7 +203,7 @@ abstract class BaseService implements BaseServiceInterface
      * Update an Entity via ID
      *
      * @param int|string $id
-     * @param object     $request
+     * @param object $request
      *
      * @return Model
      */
@@ -183,7 +236,7 @@ abstract class BaseService implements BaseServiceInterface
      * Validate store request
      *
      * @param object $request
-     * @param array  $rules
+     * @param array $rules
      *
      * @return bool|array
      */
@@ -199,8 +252,8 @@ abstract class BaseService implements BaseServiceInterface
      * Validate update request
      *
      * @param int|string $id
-     * @param object     $request
-     * @param array      $rules
+     * @param object $request
+     * @param array $rules
      *
      * @return bool|array
      */
@@ -214,7 +267,7 @@ abstract class BaseService implements BaseServiceInterface
 
     /**
      * @param object $request
-     * @param array  $rules
+     * @param array $rules
      *
      * @return bool|array
      */
@@ -277,7 +330,7 @@ abstract class BaseService implements BaseServiceInterface
 
     /**
      * @param object $request
-     * @param Model  $model
+     * @param Model $model
      */
     public function postAdd(object $request, Model $model)
     {
@@ -294,7 +347,7 @@ abstract class BaseService implements BaseServiceInterface
 
     /**
      * @param int|string $id
-     * @param Model      $model
+     * @param Model $model
      */
     public function postGet(int|string $id, Model $model)
     {
@@ -318,7 +371,7 @@ abstract class BaseService implements BaseServiceInterface
 
     /**
      * @param int|string $id
-     * @param object     $request
+     * @param object $request
      */
     public function preUpdate(int|string $id, object $request)
     {
@@ -327,8 +380,8 @@ abstract class BaseService implements BaseServiceInterface
 
     /**
      * @param int|string $id
-     * @param object     $request
-     * @param Model      $model
+     * @param object $request
+     * @param Model $model
      */
     public function postUpdate(int|string $id, object $request, Model $model)
     {

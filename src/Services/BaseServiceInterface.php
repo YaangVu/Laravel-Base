@@ -5,6 +5,8 @@ namespace YaangVu\LaravelBase\Services;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+use PhpParser\Node\Scalar\String_;
 
 interface BaseServiceInterface
 {
@@ -25,6 +27,25 @@ interface BaseServiceInterface
      * @param int|string $id
      */
     public function get(int|string $id): Model;
+
+    /**
+     * Get Entity via Code
+     *
+     * @param string $column
+     * @param string $code
+     */
+    public function getByColumn(string $column, string $code): Model;
+
+    /**
+     * @param string $code
+     */
+    public function preGetByCode(string $code);
+
+    /**
+     * @param string $code
+     * @param Model      $model
+     */
+    public function postGetByCode(string $code, Model $model);
 
     /**
      * Delete a Entity via ID
