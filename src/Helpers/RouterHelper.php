@@ -19,5 +19,6 @@ class RouterHelper
         $router->put("$name/{id}", "$controller@update");
         $router->patch("$name/{id}", "$controller@update");
         $router->delete("$name/{id}", "$controller@destroy");
+        $router->get("$name/code/{code}", "$controller@showByCode");
     }
 }

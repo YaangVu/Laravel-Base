@@ -75,4 +75,17 @@ class BaseController extends Controller
     {
         return response()->json($this->service->delete($id));
     }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param $code
+     *
+     * @return JsonResponse
+     */
+    public function showByCode($code): JsonResponse
+    {
+        return response()->json($this->service->getByCode($code));
+    }
+
 }

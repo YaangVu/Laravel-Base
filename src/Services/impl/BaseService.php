@@ -88,6 +88,56 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
+     * Get Entity via Code
+     *
+     * @param string $code
+     *
+     * @return Model
+     */
+
+    public function getByCode(string $code): Model
+    {
+        $this->preGetByCode($code);
+        try {
+            if ($this->queryHelper->relations)
+                $this->model = $this->model->with($this->queryHelper->relations);
+
+            $codeField = $this->model->code;
+            if (!Schema::hasColumn($this->model->getTable(), $codeField))
+                throw new BadRequestException(__("not-exist", ['attribute' => __('entity')]));
+
+            $entity = $this->model->where($codeField, $code)->first();
+            $this->postGetByCode($code, $entity);
+
+            return $entity;
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundException(
+                ['message' => __("not-exist", ['attribute' => __('entity')]) . ": $code"],
+                $e
+            );
+        } catch (Exception $e) {
+            throw new SystemException($e->getMessage() ?? __('system-500'), $e);
+        }
+    }
+
+    /**
+     * @param string $code
+     */
+    public function preGetByCode(string $code)
+    {
+        // TODO: Implement preGetByCode() method.
+    }
+
+    /**
+     * @param string $code
+     * @param Model  $model
+     */
+    public function postGetByCode(string $code, Model $model)
+    {
+        // TODO: Implement postGetByCode() method.
+    }
+
+    /**
      * Delete a Entity via ID
      *
      * @param int|string $id

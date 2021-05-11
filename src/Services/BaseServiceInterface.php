@@ -27,6 +27,24 @@ interface BaseServiceInterface
     public function get(int|string $id): Model;
 
     /**
+     * Get Entity via Code
+     *
+     * @param string $code
+     */
+    public function getByCode(string $code): Model;
+
+    /**
+     * @param string $code
+     */
+    public function preGetByCode(string $code);
+
+    /**
+     * @param string $code
+     * @param Model  $model
+     */
+    public function postGetByCode(string $code, Model $model);
+
+    /**
      * Delete a Entity via ID
      *
      * @param int|string $id
