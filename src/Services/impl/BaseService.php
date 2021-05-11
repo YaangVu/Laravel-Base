@@ -103,7 +103,7 @@ abstract class BaseService implements BaseServiceInterface
                 $this->model = $this->model->with($this->queryHelper->relations);
 
             $codeField = $this->model->code;
-            if (Schema::hasColumn($this->model->getTable(), $codeField))
+            if (!Schema::hasColumn($this->model->getTable(), $codeField))
                 throw new BadRequestException(__("not-exist", ['attribute' => __('entity')]));
 
             $entity = $this->model->where($codeField, $code)->get();
