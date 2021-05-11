@@ -28,7 +28,6 @@ abstract class BaseService implements BaseServiceInterface
 
     public static object|null $currentUser = null;
 
-
     public function __construct()
     {
         $this->queryHelper = new QueryHelper();
