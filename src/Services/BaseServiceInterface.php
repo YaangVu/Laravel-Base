@@ -80,6 +80,14 @@ interface BaseServiceInterface
     public function updateRequestValidate(int|string $id, object $request);
 
     /**
+     * @param object $request
+     * @param array  $rules
+     *
+     * @return bool|array
+     */
+    public function doValidate(object $request, array $rules = []);
+
+    /**
      * Set relation
      *
      * @param array|string $relations

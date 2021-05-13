@@ -242,7 +242,7 @@ abstract class BaseService implements BaseServiceInterface
         if (!$rules || !$request)
             return true;
 
-        return $this->_doValidate($request, $rules);
+        return $this->doValidate($request, $rules);
     }
 
     /**
@@ -259,7 +259,7 @@ abstract class BaseService implements BaseServiceInterface
         if (!$rules || !$id || !$request)
             return true;
 
-        return $this->_doValidate($request, $rules);
+        return $this->doValidate($request, $rules);
     }
 
     /**
@@ -268,7 +268,7 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @return bool|array
      */
-    private function _doValidate(object $request, array $rules = []): bool|array
+    public function doValidate(object $request, array $rules = []): bool|array
     {
         if ($request instanceof Request)
             $request = $request->all();
