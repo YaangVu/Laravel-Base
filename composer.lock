@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f7c9d99d61878646742a23813a65680d",
+    "content-hash": "29d82d6a4b06fd3ba802f61128c59c54",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -2938,6 +2938,57 @@
                 }
             ],
             "time": "2020-11-12T00:07:28+00:00"
+        },
+        {
+            "name": "yaangvu/laravel-exception",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/YaangVu/laravel-exception.git",
+                "reference": "1ddc8da31f4d3972b6d81ed115fac61ab8d2dbce"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/YaangVu/laravel-exception/zipball/1ddc8da31f4d3972b6d81ed115fac61ab8d2dbce",
+                "reference": "1ddc8da31f4d3972b6d81ed115fac61ab8d2dbce",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7|^8|^9"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "YaangVu\\Exceptions\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Yaang Vu",
+                    "email": "yaangvu@gmail.com"
+                }
+            ],
+            "description": "Laravel YaangVu Base Exception",
+            "keywords": [
+                "base",
+                "exception",
+                "laravel",
+                "lumen",
+                "toprate"
+            ],
+            "support": {
+                "issues": "https://github.com/YaangVu/laravel-exception/issues",
+                "source": "https://github.com/YaangVu/laravel-exception/tree/v1.0.0"
+            },
+            "time": "2021-05-13T09:01:12+00:00"
         }
     ],
     "packages-dev": [
@@ -4978,7 +5029,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "yaangvu/laravel-exception": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

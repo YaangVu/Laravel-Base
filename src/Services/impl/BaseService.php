@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
-use YaangVu\LaravelBase\Exceptions\BadRequestException;
-use YaangVu\LaravelBase\Exceptions\NotFoundException;
-use YaangVu\LaravelBase\Exceptions\SystemException;
+use YaangVu\Exceptions\BadRequestException;
+use YaangVu\Exceptions\NotFoundException;
+use YaangVu\Exceptions\SystemException;
 use YaangVu\LaravelBase\Helpers\QueryHelper;
 use YaangVu\LaravelBase\Services\BaseServiceInterface;
 
