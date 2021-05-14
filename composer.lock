@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "29d82d6a4b06fd3ba802f61128c59c54",
+    "content-hash": "262e531fa83dd0f65a44f51e11fb4327",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -2941,25 +2941,26 @@
         },
         {
             "name": "yaangvu/laravel-exception",
-            "version": "dev-master",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/YaangVu/laravel-exception.git",
-                "reference": "1ddc8da31f4d3972b6d81ed115fac61ab8d2dbce"
+                "reference": "258bc06916fee035aee380be725316d3c019a00c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/YaangVu/laravel-exception/zipball/1ddc8da31f4d3972b6d81ed115fac61ab8d2dbce",
-                "reference": "1ddc8da31f4d3972b6d81ed115fac61ab8d2dbce",
+                "url": "https://api.github.com/repos/YaangVu/laravel-exception/zipball/258bc06916fee035aee380be725316d3c019a00c",
+                "reference": "258bc06916fee035aee380be725316d3c019a00c",
                 "shasum": ""
             },
             "require": {
+                "illuminate/http": "9.x-dev",
+                "illuminate/support": "9.x-dev",
                 "php": "^8.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "^7|^8|^9"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -2986,9 +2987,9 @@
             ],
             "support": {
                 "issues": "https://github.com/YaangVu/laravel-exception/issues",
-                "source": "https://github.com/YaangVu/laravel-exception/tree/v1.0.0"
+                "source": "https://github.com/YaangVu/laravel-exception/tree/v1.0.1"
             },
-            "time": "2021-05-13T09:01:12+00:00"
+            "time": "2021-05-14T07:10:10+00:00"
         }
     ],
     "packages-dev": [
@@ -5026,9 +5027,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "yaangvu/laravel-exception": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

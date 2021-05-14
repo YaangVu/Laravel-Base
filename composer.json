@@ -16,7 +16,7 @@
     "illuminate/contracts": "^7|^8|^9",
     "illuminate/pagination": "^7|^8|^9",
     "illuminate/http": "^7|^8|^9",
-    "yaangvu/laravel-exception": "dev-master"
+    "yaangvu/laravel-exception": "^1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^7|^8|^9"
