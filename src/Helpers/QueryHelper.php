@@ -242,7 +242,7 @@ class QueryHelper
      */
     public function buildQuery(Model $model, string $alias = ''): Builder
     {
-        $tableName = Str::snake(class_basename($model)) . 's';
+        $tableName = $model->getTable();
         if ($alias)
             $model = $model->from($tableName, $alias);
 
