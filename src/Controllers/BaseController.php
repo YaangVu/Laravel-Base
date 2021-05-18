@@ -77,6 +77,18 @@ class BaseController extends Controller
     }
 
     /**
+     * Remove the specified resource from storage by code
+     *
+     * @param $id
+     *
+     * @return JsonResponse
+     */
+    public function deleteByCode($code): JsonResponse
+    {
+        return response()->json($this->service->deleteByCode($code));
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param $code
@@ -88,4 +100,27 @@ class BaseController extends Controller
         return response()->json($this->service->getByCode($code));
     }
 
+    /**
+     * Remove multiple the specified resource from storage by ids
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function deleteByIds(Request $request): JsonResponse
+    {
+        return response()->json($this->service->deleteByIds($request));
+    }
+
+    /**
+     * Remove multiple the specified resource from storage by codes
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function deleteByCodes(Request $request): JsonResponse
+    {
+        return response()->json($this->service->deleteByCodes($request));
+    }
 }
