@@ -264,7 +264,7 @@ abstract class BaseService implements BaseServiceInterface
     {
         $this->preDeleteByIds($request);
         $this->doValidate($request, ['ids' => 'required|array']);
-        $idField = $this->model->id;
+        $idField = $this->model->getKey();
         if (!Schema::hasColumn($this->model->getTable(), $idField))
             throw new BadRequestException(__("not-exist", ['attribute' => __('entity')]));
 
