@@ -162,6 +162,30 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
+     * Delete a Entity via Code
+     *
+     * @param string $code
+     *
+     * @return bool
+     */
+    public function deleteByCode(string $code): bool
+    {
+        $this->preDeleteByCode($code);
+        $data = $this->getByCode($code);
+        try {
+            $deleted = $data->delete();
+            $this->postDeleteByCode($code);
+
+            return $deleted;
+        } catch (Exception $e) {
+            throw new SystemException(
+                ['message' => __('can-not-del', ['attribute' => __('entity')]) . ": $code"],
+                $e
+            );
+        }
+    }
+
+    /**
      * Store new Entity
      *
      * @param object $request
@@ -224,6 +248,58 @@ abstract class BaseService implements BaseServiceInterface
             $this->postUpdate($id, $request, $model);
 
             return $model;
+        } catch (Exception $e) {
+            throw new SystemException($e->getMessage() ?? __('system-500'), $e);
+        }
+    }
+
+    /**
+     * Delete multiple Entity via IDs
+     *
+     * @param object $request
+     *
+     * @return bool
+     */
+    public function deleteByIds(object $request): bool
+    {
+        $this->preDeleteByIds($request);
+        $this->doValidate($request, ['ids' => 'required|array']);
+        $idField = $this->model->getKey();
+        if (!Schema::hasColumn($this->model->getTable(), $idField))
+            throw new BadRequestException(__("not-exist", ['attribute' => __('entity')]));
+
+        $data = $this->model->whereIn($idField, $request->ids);
+        try {
+            $deleted = $data->delete();
+            $this->postDeleteByIds($request);
+
+            return $deleted;
+        } catch (Exception $e) {
+            throw new SystemException($e->getMessage() ?? __('system-500'), $e);
+        }
+    }
+
+    /**
+     * Delete multiple Entity via Codes
+     *
+     * @param object $request
+     *
+     * @return bool
+     */
+    public function deleteByCodes(object $request): bool
+    {
+        $this->preDeleteByCodes($request);
+        $this->doValidate($request, ['codes' => 'required|array']);
+        $codeField = $this->model->code;
+        if (!Schema::hasColumn($this->model->getTable(), $codeField))
+            throw new BadRequestException(__("not-exist", ['attribute' => __('entity')]));
+
+        $data = $this->model->whereIn($codeField, $request->codes);
+        try {
+            $deleted = $data->delete();
+            $this->postDeleteByCodes($request);
+
+            return $deleted;
         } catch (Exception $e) {
             throw new SystemException($e->getMessage() ?? __('system-500'), $e);
         }
@@ -400,4 +476,53 @@ abstract class BaseService implements BaseServiceInterface
     {
         // TODO: Implement postDelete() method.
     }
+
+    /**
+     * @param string $code
+     */
+    public function preDeleteByCode(string $code)
+    {
+        // TODO: Implement preDelete() method.
+    }
+
+    /**
+     * @param string $code
+     */
+    public function postDeleteByCode(string $code)
+    {
+        // TODO: Implement postDelete() method.
+    }
+
+    /**
+     * @param object $request
+     */
+    public function preDeleteByIds(object $request)
+    {
+        // TODO: Implement preDelete() method.
+    }
+
+    /**
+     * @param object $request
+     */
+    public function postDeleteByIds(object $request)
+    {
+        // TODO: Implement postDelete() method.
+    }
+
+    /**
+     * @param object $request
+     */
+    public function preDeleteByCodes(object $request)
+    {
+        // TODO: Implement preDelete() method.
+    }
+
+    /**
+     * @param object $request
+     */
+    public function postDeleteByCodes(object $request)
+    {
+        // TODO: Implement postDelete() method.
+    }
+
 }
