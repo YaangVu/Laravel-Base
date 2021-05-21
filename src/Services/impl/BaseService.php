@@ -357,7 +357,7 @@ abstract class BaseService implements BaseServiceInterface
 
         if ($validator?->fails()) {
             if ($this->validateThrowAble)
-                throw new BadRequestException($validator->errors()->toArray(), new Exception());
+                throw new BadRequestException(['messages' => $validator->errors()->toArray()], new Exception());
             else
                 return $validator->errors()->toArray();
         }
