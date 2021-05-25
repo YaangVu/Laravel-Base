@@ -26,6 +26,10 @@ abstract class BaseService implements BaseServiceInterface
 
     public Model|Builder $model;
 
+    public static ?Model $entity;
+
+    public static ?Model $entityByCode;
+
     public static object|null $currentUser = null;
 
     public function __construct()
@@ -73,7 +77,8 @@ abstract class BaseService implements BaseServiceInterface
             if ($this->queryHelper->relations)
                 $this->model = $this->model->with($this->queryHelper->relations);
 
-            $entity = $this->model->findOrFail($id);
+            self::$entity = $entity = self::$entity ?? $this->model->findOrFail($id);
+
             $this->postGet($id, $entity);
 
             return $entity;
@@ -106,7 +111,8 @@ abstract class BaseService implements BaseServiceInterface
             if (!Schema::hasColumn($this->model->getTable(), $codeField))
                 throw new BadRequestException(__("not-exist", ['attribute' => __('entity')]));
 
-            $entity = $this->model->where($codeField, $code)->firstOrFail();
+            self::$entityByCode = $entity = $entityByCode ?? $this->model->where($codeField, $code)->firstOrFail();
+
             $this->postGetByCode($code, $entity);
 
             return $entity;
