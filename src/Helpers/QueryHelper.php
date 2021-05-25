@@ -170,7 +170,9 @@ class QueryHelper
                 $conditions[] = [
                     'column'   => $column,
                     'operator' => $operator,
-                    'value'    => $operator === 'like' ? "%$value%" : $value
+                    'value'    => $operator === OperatorConstant::I_LIKE || $operator === OperatorConstant::LIKE
+                        ? "%$value%"
+                        : $value
                 ];
 
             }
