@@ -54,9 +54,9 @@ class QueryHelper
 
     public array $relations = [];
 
-    public function __construct()
+    public function __construct($dbType = 'mysql')
     {
-        $this->initDataForSpecificDatabase(env('DB_CONNECTION', 'mysql'));
+        $this->initDataForSpecificDatabase($dbType);
         $this->params           = request()->all();
         $this->operatorPatterns = array_keys($this->operators);
     }
@@ -302,9 +302,9 @@ class QueryHelper
         $this->relations = (array)$relations;
     }
 
-    public function initDataForSpecificDatabase(string $db = 'mysql')
+    public function initDataForSpecificDatabase(string $dbType = 'mysql')
     {
-        $this->operators = match ($db) {
+        $this->operators = match ($dbType) {
             'pgsql' => [
                 '__gt' => OperatorConstant::GT, // Greater than
                 '__ge' => OperatorConstant::GE, // Greater than or equal

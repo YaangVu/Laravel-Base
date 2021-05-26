@@ -30,7 +30,7 @@ abstract class BaseService implements BaseServiceInterface
 
     public function __construct()
     {
-        $this->queryHelper = new QueryHelper();
+        $this->queryHelper = new QueryHelper($this->model->getConnectionName());
         $this->createModel();
     }
 
@@ -95,6 +95,11 @@ abstract class BaseService implements BaseServiceInterface
      * @return Model
      */
 
+    /**
+     * @param string $code
+     *
+     * @return Model
+     */
     public function getByCode(string $code): Model
     {
         $this->preGetByCode($code);
