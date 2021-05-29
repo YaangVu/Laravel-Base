@@ -54,9 +54,13 @@ class QueryHelper
 
     public array $relations = [];
 
-    public function __construct($dbType = 'mysql')
+    public string $driverConnectionName = 'mysql';
+
+    public function __construct($driverConnectionName = 'mysql')
     {
-        $this->initDataForSpecificDatabase($dbType);
+        if ($driverConnectionName)
+            $this->driverConnectionName = $driverConnectionName;
+        $this->initDataForSpecificDatabase();
         $this->params           = request()->all();
         $this->operatorPatterns = array_keys($this->operators);
     }
@@ -302,9 +306,9 @@ class QueryHelper
         $this->relations = (array)$relations;
     }
 
-    public function initDataForSpecificDatabase(string $dbType = 'mysql')
+    public function initDataForSpecificDatabase()
     {
-        $this->operators = match ($dbType) {
+        $this->operators = match ($this->driverConnectionName) {
             'pgsql' => [
                 '__gt' => OperatorConstant::GT, // Greater than
                 '__ge' => OperatorConstant::GE, // Greater than or equal

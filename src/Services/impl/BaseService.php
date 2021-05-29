@@ -31,7 +31,7 @@ abstract class BaseService implements BaseServiceInterface
     public function __construct()
     {
         $this->createModel();
-        $this->queryHelper = new QueryHelper($this->model->getConnectionName());
+        $this->queryHelper = new QueryHelper($this->model->getConnection()->getDriverName());
     }
 
     /**
@@ -207,9 +207,18 @@ abstract class BaseService implements BaseServiceInterface
 
         // Set data to new entity
         $fillAbles = $this->model->getFillable();
-        foreach ($fillAbles as $fillAble)
-            if (isset($request->$fillAble))
-                $this->model->$fillAble = $request->$fillAble;
+        if ($fillAbles === '*') { // Insert all data to DB
+            if ($request instanceof Request)
+                $requestArr = $request->toArray();
+            else
+                $requestArr = (array)$request;
+
+            foreach ($requestArr as $column => $value)
+                $this->model->{$column} = $value;
+        } else // Only insert specific data
+            foreach ($fillAbles as $fillAble)
+                if (isset($request->$fillAble))
+                    $this->model->$fillAble = $request->$fillAble;
 
         // Set created_by is current user
         if (Schema::hasColumn($this->model->getTable(), 'created_by'))
@@ -245,9 +254,18 @@ abstract class BaseService implements BaseServiceInterface
 
         // Set data for updated entity
         $fillAbles = $model->getFillable();
-        foreach ($fillAbles as $fillAble)
-            if (isset($request->$fillAble))
-                $model->$fillAble = $request->$fillAble;
+        if ($fillAbles == '*') { // Insert all data to DB
+            if ($request instanceof Request)
+                $requestArr = $request->toArray();
+            else
+                $requestArr = (array)$request;
+
+            foreach ($requestArr as $column => $value)
+                $this->model->{$column} = $value;
+        } else
+            foreach ($fillAbles as $fillAble)
+                if (isset($request->$fillAble))
+                    $model->$fillAble = $request->$fillAble;
         try {
             $model->save();
             $this->postUpdate($id, $request, $model);
