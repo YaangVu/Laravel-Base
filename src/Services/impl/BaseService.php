@@ -207,7 +207,7 @@ abstract class BaseService implements BaseServiceInterface
 
         // Set data to new entity
         $fillAbles = $this->model->getFillable();
-        if ($fillAbles === '*') { // Insert all data to DB
+        if ($fillAbles === ['*']) { // Insert all data to DB
             if ($request instanceof Request)
                 $requestArr = $request->toArray();
             else
@@ -254,7 +254,7 @@ abstract class BaseService implements BaseServiceInterface
 
         // Set data for updated entity
         $fillAbles = $model->getFillable();
-        if ($fillAbles == '*') { // Insert all data to DB
+        if ($fillAbles === ['*']) { // Insert all data to DB
             if ($request instanceof Request)
                 $requestArr = $request->toArray();
             else
