@@ -20,7 +20,7 @@ use YaangVu\LaravelBase\Services\BaseServiceInterface;
 abstract class BaseService implements BaseServiceInterface
 {
 
-    public bool $validateThrowAble = true;
+    public static bool $validateThrowAble = true;
 
     protected QueryHelper $queryHelper;
 
@@ -367,7 +367,7 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @return bool|array
      */
-    public function doValidate(object $request, array $rules = []): bool|array
+    public static function doValidate(object $request, array $rules = []): bool|array
     {
         if ($request instanceof Request)
             $request = $request->all();
@@ -379,7 +379,7 @@ abstract class BaseService implements BaseServiceInterface
         $validator = Validator::make($request, $rules);
 
         if ($validator?->fails()) {
-            if ($this->validateThrowAble)
+            if (self::$validateThrowAble)
                 throw new BadRequestException(['messages' => $validator->errors()->toArray()], new Exception());
             else
                 return $validator->errors()->toArray();

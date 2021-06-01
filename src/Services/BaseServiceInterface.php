@@ -112,7 +112,7 @@ interface BaseServiceInterface
      *
      * @return bool|array
      */
-    public function doValidate(object $request, array $rules = []);
+    public static function doValidate(object $request, array $rules = []): bool|array;
 
     /**
      * Set relation
