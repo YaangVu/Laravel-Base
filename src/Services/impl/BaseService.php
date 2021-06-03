@@ -266,7 +266,7 @@ abstract class BaseService implements BaseServiceInterface
                 $requestArr = (array)$request;
 
             foreach ($requestArr as $column => $value)
-                $this->model->{$column} = $this->_handleRequestData($value) ?? $model->{$column};
+                $model->{$column} = $this->_handleRequestData($value) ?? $model->{$column};
         } else
             foreach ($fillAbles as $fillAble)
                 if (isset($request->$fillAble))
