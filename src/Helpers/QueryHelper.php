@@ -56,6 +56,8 @@ class QueryHelper
 
     public string $driverConnectionName = 'mysql';
 
+    private string $primaryKey = 'id';
+
     public function __construct($driverConnectionName = 'mysql')
     {
         if ($driverConnectionName)
@@ -274,9 +276,9 @@ class QueryHelper
             $model = $model->orderBy($order['column'], $order['type']);
         } else {
             if ($alias)
-                $model = $model->orderBy("$alias.id", 'DESC');
+                $model = $model->orderBy("$alias.$this->primaryKey", 'DESC');
             else
-                $model = $model->orderBy('id', 'DESC');
+                $model = $model->orderBy($this->primaryKey, 'DESC');
         }
 
         return $model;
@@ -317,6 +319,11 @@ class QueryHelper
                 '__~'  => OperatorConstant::I_LIKE // iLike
             ],
             default => $this->operators,
+        };
+
+        $this->primaryKey = match ($this->driverConnectionName) {
+            'mongodb', 'mongo' => '_id',
+            default => 'id'
         };
     }
 }
