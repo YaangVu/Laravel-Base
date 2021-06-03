@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use YaangVu\Exceptions\BadRequestException;
@@ -94,12 +95,6 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @return Model
      */
-
-    /**
-     * @param string $code
-     *
-     * @return Model
-     */
     public function getByCode(string $code): Model
     {
         $this->preGetByCode($code);
@@ -151,14 +146,17 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function delete(int|string $id): bool
     {
+        DB::beginTransaction();
         $this->preDelete($id);
         $data = $this->get($id);
         try {
             $deleted = $data->delete();
             $this->postDelete($id);
+            DB::commit();
 
             return $deleted;
         } catch (Exception $e) {
+            DB::rollBack();
             throw new SystemException(
                 ['message' => __('can-not-del', ['attribute' => __('entity')]) . ": $id"],
                 $e
@@ -175,14 +173,17 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function deleteByCode(string $code): bool
     {
+        DB::beginTransaction();
         $this->preDeleteByCode($code);
         $data = $this->getByCode($code);
         try {
             $deleted = $data->delete();
             $this->postDeleteByCode($code);
+            DB::commit();
 
             return $deleted;
         } catch (Exception $e) {
+            DB::rollBack();
             throw new SystemException(
                 ['message' => __('can-not-del', ['attribute' => __('entity')]) . ": $code"],
                 $e
@@ -199,6 +200,7 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function add(object $request): Model
     {
+        DB::beginTransaction();
         $request = $this->preAdd($request) ?? $request;
 
         // Validate
@@ -214,11 +216,12 @@ abstract class BaseService implements BaseServiceInterface
                 $requestArr = (array)$request;
 
             foreach ($requestArr as $column => $value)
-                $this->model->{$column} = $value;
+                $this->model->{$column} = gettype($value) !== 'string' ? $value : trim($value);
         } else // Only insert specific data
             foreach ($fillAbles as $fillAble)
                 if (isset($request->$fillAble))
-                    $this->model->$fillAble = $request->$fillAble;
+                    $this->model->$fillAble
+                        = gettype($request->$fillAble) !== 'string' ? $request->$fillAble : trim($request->$fillAble);
 
         // Set created_by is current user
         if (Schema::hasColumn($this->model->getTable(), 'created_by'))
@@ -227,9 +230,11 @@ abstract class BaseService implements BaseServiceInterface
         try {
             $this->model->save();
             $this->postAdd($request, $this->model);
+            DB::commit();
 
             return $this->model;
         } catch (Exception $e) {
+            DB::rollBack();
             throw new SystemException($e->getMessage() ?? __('system-500'), $e);
         }
     }
@@ -244,6 +249,7 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function update(int|string $id, object $request): Model
     {
+        DB::beginTransaction();
         $request = $this->preUpdate($id, $request) ?? $request;
 
         // Validate
@@ -260,18 +266,28 @@ abstract class BaseService implements BaseServiceInterface
             else
                 $requestArr = (array)$request;
 
-            foreach ($requestArr as $column => $value)
-                $this->model->{$column} = $value;
+            foreach ($requestArr as $column => $value) {
+                if (gettype($value) !== 'string')
+                    $this->model->{$column} = $value ?? $model->{$column};
+                else
+                    $this->model->{$column} = trim($value) ?? $model->{$column};
+            }
         } else
             foreach ($fillAbles as $fillAble)
-                if (isset($request->$fillAble))
-                    $model->$fillAble = $request->$fillAble;
+                if (isset($request->$fillAble)) {
+                    if (gettype($request->$fillAble) !== 'string')
+                        $model->$fillAble = $request->$fillAble ?? $model->$fillAble;
+                    else
+                        $model->$fillAble = trim($request->$fillAble) ?? $model->$fillAble;
+                }
         try {
             $model->save();
             $this->postUpdate($id, $request, $model);
+            DB::commit();
 
             return $model;
         } catch (Exception $e) {
+            DB::rollBack();
             throw new SystemException($e->getMessage() ?? __('system-500'), $e);
         }
     }
