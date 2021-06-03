@@ -216,12 +216,11 @@ abstract class BaseService implements BaseServiceInterface
                 $requestArr = (array)$request;
 
             foreach ($requestArr as $column => $value)
-                $this->model->{$column} = gettype($value) !== 'string' ? $value : trim($value);
+                $this->model->{$column} = $this->_handleRequestData($value);
         } else // Only insert specific data
             foreach ($fillAbles as $fillAble)
                 if (isset($request->$fillAble))
-                    $this->model->$fillAble
-                        = gettype($request->$fillAble) !== 'string' ? $request->$fillAble : trim($request->$fillAble);
+                    $this->model->$fillAble = $this->_handleRequestData($request->$fillAble);
 
         // Set created_by is current user
         if (Schema::hasColumn($this->model->getTable(), 'created_by'))
@@ -266,20 +265,12 @@ abstract class BaseService implements BaseServiceInterface
             else
                 $requestArr = (array)$request;
 
-            foreach ($requestArr as $column => $value) {
-                if (gettype($value) !== 'string')
-                    $this->model->{$column} = $value ?? $model->{$column};
-                else
-                    $this->model->{$column} = trim($value) ?? $model->{$column};
-            }
+            foreach ($requestArr as $column => $value)
+                $this->model->{$column} = $this->_handleRequestData($value) ?? $model->{$column};
         } else
             foreach ($fillAbles as $fillAble)
-                if (isset($request->$fillAble)) {
-                    if (gettype($request->$fillAble) !== 'string')
-                        $model->$fillAble = $request->$fillAble ?? $model->$fillAble;
-                    else
-                        $model->$fillAble = trim($request->$fillAble) ?? $model->$fillAble;
-                }
+                if (isset($request->$fillAble))
+                    $model->$fillAble = $this->_handleRequestData($request->$fillAble) ?? $model->$fillAble;
         try {
             $model->save();
             $this->postUpdate($id, $request, $model);
@@ -562,6 +553,19 @@ abstract class BaseService implements BaseServiceInterface
     public function postDeleteByCodes(object $request)
     {
         // TODO: Implement postDelete() method.
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    private function _handleRequestData(mixed $value): mixed
+    {
+        if (gettype($value) === 'string')
+            return trim($value);
+        else
+            return $value;
     }
 
 }
