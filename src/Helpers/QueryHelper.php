@@ -24,7 +24,8 @@ class QueryHelper
             '__ge' => OperatorConstant::GE, // Greater than or equal
             '__lt' => OperatorConstant::LT, // Less than
             '__le' => OperatorConstant::LE, // Less than or equal
-            '__~'  => OperatorConstant::LIKE // Like
+            '__~'  => OperatorConstant::LIKE, // Like
+            '__eq' => OperatorConstant::EQUAL // equal
         ];
 
     /**
@@ -55,8 +56,6 @@ class QueryHelper
     public array $relations = [];
 
     public string $driverConnectionName = 'mysql';
-
-    private string $primaryKey = 'id';
 
     public function __construct($driverConnectionName = 'mysql')
     {
@@ -142,8 +141,9 @@ class QueryHelper
 
             // Basic query with equal clause
             if (!Str::endsWith($paramKey, $this->operatorPatterns)) {
+                $column       = $this->_formatColumn($paramKey);
                 $conditions[] = [
-                    'column'   => $paramKey,
+                    'column'   => $column,
                     'operator' => OperatorConstant::EQUAL,
                     'value'    => $this->_castParamValue($paramKey, $paramValue)
                 ];
@@ -160,16 +160,7 @@ class QueryHelper
                  */
                 $column = Str::replaceLast($keyOperator, '', $paramKey);
 
-                /**
-                 * Format column name to query
-                 * Column fre convert will be format with: {table}__{column}. Such as user__age OR age
-                 */
-                $tmp = explode('__', $column);
-
-                if (count($tmp) == 1)
-                    $column = $tmp[0];
-                else
-                    $column = "$tmp[0].$tmp[1]";
+                $column = $this->_formatColumn($column);
 
                 // If $paramKey match $keyOperator
                 $value        = $this->_castParamValue($column, $paramValue);
@@ -185,6 +176,24 @@ class QueryHelper
         }
 
         return $conditions;
+    }
+
+    /**
+     * Format column name to query
+     * Column fre convert will be format with: {table}__{column}. Such as user__age OR age
+     *
+     * @param string $column
+     *
+     * @return string
+     */
+    private function _formatColumn(string $column): string
+    {
+        $tmp = explode('__', $column);
+
+        if (count($tmp) == 1)
+            return $tmp[0];
+        else
+            return "$tmp[0].$tmp[1]";
     }
 
     /**
@@ -249,7 +258,7 @@ class QueryHelper
      *
      * @return Builder
      */
-    public function buildQuery(Model $model, string $alias = ''): Builder
+    public function buildQuery(Model|Builder $model, string $alias = ''): Builder
     {
         $tableName = $model->getTable();
         if ($alias)
@@ -276,9 +285,9 @@ class QueryHelper
             $model = $model->orderBy($order['column'], $order['type']);
         } else {
             if ($alias)
-                $model = $model->orderBy("$alias.$this->primaryKey", 'DESC');
+                $model = $model->orderBy("$alias.id", 'DESC');
             else
-                $model = $model->orderBy($this->primaryKey, 'DESC');
+                $model = $model->orderBy('id', 'DESC');
         }
 
         return $model;
@@ -310,20 +319,12 @@ class QueryHelper
 
     public function initDataForSpecificDatabase()
     {
-        $this->operators = match ($this->driverConnectionName) {
-            'pgsql' => [
-                '__gt' => OperatorConstant::GT, // Greater than
-                '__ge' => OperatorConstant::GE, // Greater than or equal
-                '__lt' => OperatorConstant::LT, // Less than
-                '__le' => OperatorConstant::LE, // Less than or equal
-                '__~'  => OperatorConstant::I_LIKE // iLike
-            ],
-            default => $this->operators,
-        };
-
-        $this->primaryKey = match ($this->driverConnectionName) {
-            'mongodb', 'mongo' => '_id',
-            default => 'id'
-        };
+        switch ($this->driverConnectionName) {
+            case 'pgsql':
+                $this->operators['__~'] = OperatorConstant::I_LIKE; // iLike
+                break;
+            default:
+                break;
+        }
     }
 }
