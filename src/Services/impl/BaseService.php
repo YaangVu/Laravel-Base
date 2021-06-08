@@ -17,6 +17,7 @@ use YaangVu\Exceptions\NotFoundException;
 use YaangVu\Exceptions\SystemException;
 use YaangVu\LaravelBase\Helpers\QueryHelper;
 use YaangVu\LaravelBase\Services\BaseServiceInterface;
+use function Webmozart\Assert\Tests\StaticAnalysis\inArray;
 
 abstract class BaseService implements BaseServiceInterface
 {
@@ -209,6 +210,7 @@ abstract class BaseService implements BaseServiceInterface
 
         // Set data to new entity
         $fillAbles = $this->model->getFillable();
+        $guarded   = $this->model->getGuarded();
         if ($fillAbles === ['*']) { // Insert all data to DB
             if ($request instanceof Request)
                 $requestArr = $request->toArray();
@@ -216,10 +218,11 @@ abstract class BaseService implements BaseServiceInterface
                 $requestArr = (array)$request;
 
             foreach ($requestArr as $column => $value)
-                $this->model->{$column} = $this->_handleRequestData($value);
+                if (!inArray($column, $guarded))
+                    $this->model->{$column} = $this->_handleRequestData($value);
         } else // Only insert specific data
             foreach ($fillAbles as $fillAble)
-                if (isset($request->$fillAble))
+                if (isset($request->$fillAble) && !inArray($fillAble, $guarded))
                     $this->model->$fillAble = $this->_handleRequestData($request->$fillAble);
 
         // Set created_by is current user
@@ -259,6 +262,7 @@ abstract class BaseService implements BaseServiceInterface
 
         // Set data for updated entity
         $fillAbles = $model->getFillable();
+        $guarded   = $this->model->getGuarded();
         if ($fillAbles === ['*']) { // Insert all data to DB
             if ($request instanceof Request)
                 $requestArr = $request->toArray();
@@ -266,10 +270,11 @@ abstract class BaseService implements BaseServiceInterface
                 $requestArr = (array)$request;
 
             foreach ($requestArr as $column => $value)
-                $model->{$column} = $this->_handleRequestData($value) ?? $model->{$column};
+                if (!inArray($column, $guarded))
+                    $model->{$column} = $this->_handleRequestData($value) ?? $model->{$column};
         } else
             foreach ($fillAbles as $fillAble)
-                if (isset($request->$fillAble))
+                if (isset($request->$fillAble) && !inArray($fillAble, $guarded))
                     $model->$fillAble = $this->_handleRequestData($request->$fillAble) ?? $model->$fillAble;
         try {
             $model->save();
