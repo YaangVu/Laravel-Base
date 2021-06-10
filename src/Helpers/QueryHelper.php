@@ -284,7 +284,7 @@ class QueryHelper
         if ($order) {
             $model = $model->orderBy($order['column'], $order['type']);
         } else {
-            $primaryKey = $model->getKey();
+            $primaryKey = $model->getKeyName();
             $model      = $model->orderBy(($alias ? "$alias." : "") . $primaryKey, 'DESC');
         }
 
