@@ -260,7 +260,9 @@ class QueryHelper
      */
     public function buildQuery(Model|Builder $model, string $alias = ''): Builder
     {
-        $tableName = $model->getTable();
+        $tableName  = $model->getTable();
+        $primaryKey = $model->getKeyName();
+
         if ($alias)
             $model = $model->from($tableName, $alias);
 
@@ -284,8 +286,7 @@ class QueryHelper
         if ($order) {
             $model = $model->orderBy($order['column'], $order['type']);
         } else {
-            $primaryKey = $model->getKeyName();
-            $model      = $model->orderBy(($alias ? "$alias." : "") . $primaryKey, 'DESC');
+            $model = $model->orderBy(($alias ? "$alias." : "") . $primaryKey, 'DESC');
         }
 
         return $model;
