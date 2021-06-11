@@ -203,13 +203,14 @@ abstract class BaseService implements BaseServiceInterface
         DB::beginTransaction();
         $request = $this->preAdd($request) ?? $request;
 
+        // Set data to new entity
+        $fillAbles = $this->model->getFillable();
+        $guarded   = $this->model->getGuarded();
+
         // Validate
         if ($this->storeRequestValidate($request) !== true)
             return $this->model;
 
-        // Set data to new entity
-        $fillAbles = $this->model->getFillable();
-        $guarded   = $this->model->getGuarded();
         if ($fillAbles === ['*']) { // Insert all data to DB
             if ($request instanceof Request)
                 $requestArr = $request->toArray();
@@ -253,15 +254,16 @@ abstract class BaseService implements BaseServiceInterface
         DB::beginTransaction();
         $request = $this->preUpdate($id, $request) ?? $request;
 
+        // Set data for updated entity
+        $fillAbles = $this->model->getFillable();
+        $guarded   = $this->model->getGuarded();
+
         // Validate
         if ($this->updateRequestValidate($id, $request) !== true)
             return $this->model;
 
         $model = $this->get($id);
 
-        // Set data for updated entity
-        $fillAbles = $model->getFillable();
-        $guarded   = $this->model->getGuarded();
         if ($fillAbles === ['*']) { // Insert all data to DB
             if ($request instanceof Request)
                 $requestArr = $request->toArray();
