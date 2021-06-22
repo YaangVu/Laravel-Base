@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use YaangVu\Constant\DbConnectionConstant;
 use YaangVu\Exceptions\BadRequestException;
 use YaangVu\Exceptions\NotFoundException;
 use YaangVu\Exceptions\SystemException;
@@ -226,8 +227,7 @@ abstract class BaseService implements BaseServiceInterface
                     $this->model->$fillAble = $this->_handleRequestData($request->$fillAble);
 
         // Set created_by is current user
-        if (Schema::hasColumn($this->model->getTable(), 'created_by'))
-            $this->model->created_by = self::currentUser()?->id ?? null;
+        $this->model->created_by = self::currentUser()?->id ?? null;
 
         try {
             $this->model->save();
