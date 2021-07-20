@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
-use YaangVu\Constant\DbConnectionConstant;
 use YaangVu\Exceptions\BadRequestException;
 use YaangVu\Exceptions\NotFoundException;
 use YaangVu\Exceptions\SystemException;
@@ -90,30 +89,26 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
-     * Get Entity via Code
+     * Get Entity via uuid
      *
-     * @param string $code
+     * @param string $uuid
      *
      * @return Model
      */
-    public function getByCode(string $code): Model
+    public function getByUuid(string $uuid): Model
     {
-        $this->preGetByCode($code);
+        $this->preGetByUuid($uuid);
         try {
             if ($this->queryHelper->relations)
                 $this->model = $this->model->with($this->queryHelper->relations);
 
-            $codeField = $this->model->code;
-            if (!Schema::hasColumn($this->model->getTable(), $codeField))
-                throw new BadRequestException(__("not-exist", ['attribute' => __('entity')]));
-
-            $entity = $this->model->where($codeField, $code)->firstOrFail();
-            $this->postGetByCode($code, $entity);
+            $entity = $this->model->where('uuid', $uuid)->firstOrFail();
+            $this->postGetByUuid($uuid, $entity);
 
             return $entity;
         } catch (ModelNotFoundException $e) {
             throw new NotFoundException(
-                ['message' => __("not-exist", ['attribute' => __('entity')]) . ": $code"],
+                ['message' => __("not-exist", ['attribute' => __('entity')]) . ": $uuid"],
                 $e
             );
         } catch (Exception $e) {
@@ -122,20 +117,20 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
-     * @param string $code
+     * @param string $uuid
      */
-    public function preGetByCode(string $code)
+    public function preGetByUuid(string $uuid)
     {
-        // TODO: Implement preGetByCode() method.
+        // TODO: Implement preGetByUuid() method.
     }
 
     /**
-     * @param string $code
+     * @param string $uuid
      * @param Model  $model
      */
-    public function postGetByCode(string $code, Model $model)
+    public function postGetByUuid(string $uuid, Model $model)
     {
-        // TODO: Implement postGetByCode() method.
+        // TODO: Implement postGetByUuid() method.
     }
 
     /**
@@ -166,27 +161,27 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
-     * Delete a Entity via Code
+     * Delete a Entity via uuid
      *
-     * @param string $code
+     * @param string $uuid
      *
      * @return bool
      */
-    public function deleteByCode(string $code): bool
+    public function deleteByUuid(string $uuid): bool
     {
         DB::beginTransaction();
-        $this->preDeleteByCode($code);
-        $data = $this->getByCode($code);
+        $this->preDeleteByUuid($uuid);
+        $data = $this->getByUuid($uuid);
         try {
             $deleted = $data->delete();
-            $this->postDeleteByCode($code);
+            $this->postDeleteByUuid($uuid);
             DB::commit();
 
             return $deleted;
         } catch (Exception $e) {
             DB::rollBack();
             throw new SystemException(
-                ['message' => __('can-not-del', ['attribute' => __('entity')]) . ": $code"],
+                ['message' => __('can-not-del', ['attribute' => __('entity')]) . ": $uuid"],
                 $e
             );
         }
@@ -316,24 +311,21 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
-     * Delete multiple Entity via Codes
+     * Delete multiple Entity via Uuids
      *
      * @param object $request
      *
      * @return bool
      */
-    public function deleteByCodes(object $request): bool
+    public function deleteByUuids(object $request): bool
     {
-        $this->preDeleteByCodes($request);
-        $this->doValidate($request, ['codes' => 'required|array']);
-        $codeField = $this->model->code;
-        if (!Schema::hasColumn($this->model->getTable(), $codeField))
-            throw new BadRequestException(__("not-exist", ['attribute' => __('entity')]));
+        $this->preDeleteByUuids($request);
+        $this->doValidate($request, ['uuids' => 'required|array']);
 
-        $data = $this->model->whereIn($codeField, $request->codes);
+        $data = $this->model->whereIn('uuid', $request->uuids);
         try {
             $deleted = $data->delete();
-            $this->postDeleteByCodes($request);
+            $this->postDeleteByUuids($request);
 
             return $deleted;
         } catch (Exception $e) {
@@ -514,17 +506,17 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
-     * @param string $code
+     * @param string $uuid
      */
-    public function preDeleteByCode(string $code)
+    public function preDeleteByUuid(string $uuid)
     {
         // TODO: Implement preDelete() method.
     }
 
     /**
-     * @param string $code
+     * @param string $uuid
      */
-    public function postDeleteByCode(string $code)
+    public function postDeleteByUuid(string $uuid)
     {
         // TODO: Implement postDelete() method.
     }
@@ -548,7 +540,7 @@ abstract class BaseService implements BaseServiceInterface
     /**
      * @param object $request
      */
-    public function preDeleteByCodes(object $request)
+    public function preDeleteByUuids(object $request)
     {
         // TODO: Implement preDelete() method.
     }
@@ -556,7 +548,7 @@ abstract class BaseService implements BaseServiceInterface
     /**
      * @param object $request
      */
-    public function postDeleteByCodes(object $request)
+    public function postDeleteByUuids(object $request)
     {
         // TODO: Implement postDelete() method.
     }
