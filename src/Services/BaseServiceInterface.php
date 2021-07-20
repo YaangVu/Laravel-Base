@@ -27,38 +27,11 @@ interface BaseServiceInterface
     public function get(int|string $id): Model;
 
     /**
-     * Get Entity via Code
-     *
-     * @param string $code
-     */
-    public function getByCode(string $code): Model;
-
-    /**
-     * @param string $code
-     */
-    public function preGetByCode(string $code);
-
-    /**
-     * @param string $code
-     * @param Model  $model
-     */
-    public function postGetByCode(string $code, Model $model);
-
-    /**
      * Delete a Entity via ID
      *
      * @param int|string $id
      */
     public function delete(int|string $id): bool;
-
-    /**
-     * Delete a Entity via Code
-     *
-     * @param string $code
-     *
-     * @return bool
-     */
-    public function deleteByCode(string $code): bool;
 
     /**
      * Store new Entity
@@ -83,15 +56,6 @@ interface BaseServiceInterface
      * @return bool
      */
     public function deleteByIds(object $request): bool;
-
-    /**
-     * Delete multiple Entity via Codes
-     *
-     * @param object $request
-     *
-     * @return bool
-     */
-    public function deleteByCodes(object $request): bool;
 
     /**
      * Validate store request
@@ -186,16 +150,6 @@ interface BaseServiceInterface
     public function postDelete(int|string $id);
 
     /**
-     * @param string $code
-     */
-    public function preDeleteByCode(string $code);
-
-    /**
-     * @param string $code
-     */
-    public function postDeleteByCode(string $code);
-
-    /**
      * @param object $request
      */
     public function preDeleteByIds(object $request);
@@ -204,15 +158,5 @@ interface BaseServiceInterface
      * @param object $request
      */
     public function postDeleteByIds(object $request);
-
-    /**
-     * @param object $request
-     */
-    public function preDeleteByCodes(object $request);
-
-    /**
-     * @param object $request
-     */
-    public function postDeleteByCodes(object $request);
 
 }
