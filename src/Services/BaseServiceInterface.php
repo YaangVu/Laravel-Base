@@ -27,22 +27,22 @@ interface BaseServiceInterface
     public function get(int|string $id): Model;
 
     /**
-     * Get Entity via Code
+     * Get Entity via Uuid
      *
-     * @param string $code
+     * @param string $uuid
      */
-    public function getByCode(string $code): Model;
+    public function getByUuid(string $uuid): Model;
 
     /**
-     * @param string $code
+     * @param string $uuid
      */
-    public function preGetByCode(string $code);
+    public function preGetByUuid(string $uuid);
 
     /**
-     * @param string $code
+     * @param string $uuid
      * @param Model  $model
      */
-    public function postGetByCode(string $code, Model $model);
+    public function postGetByUuid(string $uuid, Model $model);
 
     /**
      * Delete a Entity via ID
@@ -52,13 +52,13 @@ interface BaseServiceInterface
     public function delete(int|string $id): bool;
 
     /**
-     * Delete a Entity via Code
+     * Delete a Entity via Uuid
      *
-     * @param string $code
+     * @param string $uuid
      *
      * @return bool
      */
-    public function deleteByCode(string $code): bool;
+    public function deleteByUuid(string $uuid): bool;
 
     /**
      * Store new Entity
@@ -85,13 +85,13 @@ interface BaseServiceInterface
     public function deleteByIds(object $request): bool;
 
     /**
-     * Delete multiple Entity via Codes
+     * Delete multiple Entity via Uuids
      *
      * @param object $request
      *
      * @return bool
      */
-    public function deleteByCodes(object $request): bool;
+    public function deleteByUuids(object $request): bool;
 
     /**
      * Validate store request
@@ -186,14 +186,14 @@ interface BaseServiceInterface
     public function postDelete(int|string $id);
 
     /**
-     * @param string $code
+     * @param string $uuid
      */
-    public function preDeleteByCode(string $code);
+    public function preDeleteByUuid(string $uuid);
 
     /**
-     * @param string $code
+     * @param string $uuid
      */
-    public function postDeleteByCode(string $code);
+    public function postDeleteByUuid(string $uuid);
 
     /**
      * @param object $request
@@ -208,11 +208,11 @@ interface BaseServiceInterface
     /**
      * @param object $request
      */
-    public function preDeleteByCodes(object $request);
+    public function preDeleteByUuids(object $request);
 
     /**
      * @param object $request
      */
-    public function postDeleteByCodes(object $request);
+    public function postDeleteByUuids(object $request);
 
 }
