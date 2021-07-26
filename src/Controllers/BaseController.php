@@ -83,9 +83,9 @@ class BaseController extends Controller
      *
      * @return JsonResponse
      */
-    public function deleteByCode($code): JsonResponse
+    public function deleteByUuid($code): JsonResponse
     {
-        return response()->json($this->service->deleteByCode($code));
+        return response()->json($this->service->deleteByUuid($code));
     }
 
     /**
@@ -119,8 +119,8 @@ class BaseController extends Controller
      *
      * @return JsonResponse
      */
-    public function deleteByCodes(Request $request): JsonResponse
+    public function deleteByUuids(Request $request): JsonResponse
     {
-        return response()->json($this->service->deleteByCodes($request));
+        return response()->json($this->service->deleteByUuids($request));
     }
 }
