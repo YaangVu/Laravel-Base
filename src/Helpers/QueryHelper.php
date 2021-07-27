@@ -5,7 +5,6 @@ namespace YaangVu\LaravelBase\Helpers;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use YaangVu\LaravelBase\Constants\DataCastConstant;
 use YaangVu\LaravelBase\Constants\OperatorConstant;
@@ -275,8 +274,9 @@ class QueryHelper
             if (!$cond)
                 continue;
             // If don't exist table or column
-            if (!Schema::hasTable($tableName))
-                continue;
+            // not work with mongodb
+            // if (!Schema::hasTable($tableName))
+            //    continue;
             $model = $model->where($cond['column'], $cond['operator'], $cond['value']);
         }
 
