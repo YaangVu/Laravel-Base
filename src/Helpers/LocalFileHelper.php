@@ -56,7 +56,7 @@ class LocalFileHelper implements FileHelper
     /**
      * Delete file from public folder
      *
-     * @param string|null $path
+     * @param string $path
      */
     public static function delete(string $path)
     {

@@ -5,75 +5,178 @@ namespace YaangVu\LaravelBase\Helpers;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 use YaangVu\LaravelBase\Constants\DataCastConstant;
+use YaangVu\LaravelBase\Constants\DbDriverConstant;
 use YaangVu\LaravelBase\Constants\OperatorConstant;
+use YaangVu\LaravelBase\Constants\OperatorPatternConstant;
 
 class QueryHelper
 {
-    protected array $operatorPatterns;
+    protected string $separator = '__';
+
+    public string $driver = DbDriverConstant::MYSQL;
+
+    protected array $operatorPatterns = [];
 
     /**
      * Operators to query into DB
      * @var array
      */
-    protected array $operators
-        = [
-            '__gt' => OperatorConstant::GT, // Greater than
-            '__ge' => OperatorConstant::GE, // Greater than or equal
-            '__lt' => OperatorConstant::LT, // Less than
-            '__le' => OperatorConstant::LE, // Less than or equal
-            '__~'  => OperatorConstant::LIKE, // Like
-            '__eq' => OperatorConstant::EQUAL // equal
-        ];
+    protected array $operators = [];
 
     /**
      * Operators were excluded
      * @var array|string[]
      */
-    protected array $excludedOperators
-        = [
-            'limit',
-            'page',
-            'order_by'
-        ];
+    protected array $excludedOperators = [];
 
     /**
      * Params will be cast to data type
      * @var array
      */
-    protected array $castParams
-        = [
-            'date'       => DataCastConstant::DATE,
-            'created_at' => DataCastConstant::DATETIME,
-            'updated_at' => DataCastConstant::DATETIME,
-            'age'        => DataCastConstant::NUMBER
-        ];
+    protected array $castParams = [];
 
+    /**
+     * Parameters for query in database
+     * @var array
+     */
     protected array $params = [];
 
     public array $relations = [];
 
-    public string $driverConnectionName = 'mysql';
-
-    public function __construct($driverConnectionName = 'mysql')
+    public function __construct()
     {
-        if ($driverConnectionName)
-            $this->driverConnectionName = $driverConnectionName;
-        $this->initDataForSpecificDatabase();
-        $this->params           = request()->all();
-        $this->operatorPatterns = array_keys($this->operators);
+        $this->setOperators($this->operators)
+             ->setOperatorPatterns($this->operatorPatterns)
+             ->setParams($this->params)
+             ->setCastParams($this->castParams)
+             ->setExcludedOperators($this->excludedOperators);
     }
 
     /**
-     * Add more conditions
+     * @return string
+     */
+    public function getDriver(): string
+    {
+        return $this->driver;
+    }
+
+    /**
+     * @param string $driver
+     *
+     * @return QueryHelper
+     */
+    public function setDriver(string $driver): static
+    {
+        $this->driver = $driver;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSeparator(): string
+    {
+        return $this->separator;
+    }
+
+    /**
+     * @param string $separator
+     *
+     * @return QueryHelper
+     */
+    public function setSeparator(string $separator): static
+    {
+        $this->separator = $separator;
+
+        return $this;
+    }
+
+    /**
+     * Get list Operators
+     * @Author yaangvu
+     * @Date   Jul 30, 2021
+     *
+     * @return array
+     */
+    public function getOperators(): array
+    {
+        return $this->operators;
+    }
+
+    /**
+     * Set Operators
+     *
+     * @Author yaangvu
+     * @Date   Jul 29, 2021
+     *
+     * @param array $operators
+     *
+     * @return QueryHelper
+     */
+    public function setOperators(array $operators = []): static
+    {
+        $this->operators = $operators ?: OperatorConstant::DEFAULT_OPERATORS;
+
+        return $this;
+    }
+
+    /**
+     * Set Operator patterns
+     *
+     * @Author yaangvu
+     * @Date   Jul 29, 2021
+     *
+     * @param array $operatorPatterns
+     *
+     * @return QueryHelper
+     */
+    public function setOperatorPatterns(array $operatorPatterns = []): static
+    {
+        $this->operatorPatterns = $operatorPatterns ?: array_keys($this->operators);
+
+        return $this;
+    }
+
+    /**
+     * Get Parameters
+     *
+     * @Author yaangvu
+     * @Date   Jul 30, 2021
+     *
+     * @return array
+     */
+    public function getParams(): array
+    {
+        return $this->params;
+    }
+
+    /**
+     * Set params for query
+     *
+     * @Author yaangvu
+     * @Date   Jul 29, 2021
+     *
+     * @param array $params
+     *
+     * @return $this
+     */
+    public function setParams(array $params = []): static
+    {
+        $this->params = $params ?: request()->all();
+
+        return $this;
+    }
+
+    /**
+     * Add one more condition
      *
      * @param array $param
      *
      * @return QueryHelper
      */
-    public function addParams(array $param): static
+    public function addParam(array $param): static
     {
         $this->params = array_merge($this->params, $param);
 
@@ -96,15 +199,50 @@ class QueryHelper
     }
 
     /**
-     * Add more cast params
+     * Get Cast parameters
      *
-     * @param array $castParams
+     * @Author yaangvu
+     * @Date   Jul 30, 2021
+     *
+     * @return array
+     */
+    public function getCastParams(): array
+    {
+        return $this->castParams;
+    }
+
+    /**
+     * Set cast params
+     *
+     * @Author yaangvu
+     * @Date   Jul 29, 2021
+     *
+     * @param array|null $params
+     *
+     * @return $this
+     */
+    public function setCastParams(?array $params = null): static
+    {
+        $this->castParams = $params ?? [
+                'date'       => DataCastConstant::DATE,
+                'created_at' => DataCastConstant::DATETIME,
+                'updated_at' => DataCastConstant::DATETIME,
+                'age'        => DataCastConstant::NUMBER
+            ];
+
+        return $this;
+    }
+
+    /**
+     * Add one more cast param
+     *
+     * @param array $castParam
      *
      * @return QueryHelper
      */
-    public function addCastParams(array $castParams): static
+    public function addCastParam(array $castParam): static
     {
-        $this->params = array_merge($this->castParams, $castParams);
+        $this->params = array_merge($this->castParams, $castParam);
 
         return $this;
     }
@@ -125,99 +263,176 @@ class QueryHelper
     }
 
     /**
-     * Get all conditions from Request
-     * @return array
+     * Get Excluded Operators
+     * @Author yaangvu
+     * @Date   Jul 30, 2021
+     *
+     * @return string[]
      */
-    public function getConditions(): array
+    public function getExcludedOperators(): array
     {
-        // Remove all params of pagination
-        foreach ($this->excludedOperators as $operator) {
-            $this->removeParam($operator);
+        return $this->excludedOperators;
+    }
+
+    /**
+     * Set cast params
+     *
+     * @Author yaangvu
+     * @Date   Jul 29, 2021
+     *
+     * @param array|null $operators
+     *
+     * @return $this
+     */
+    public function setExcludedOperators(?array $operators = null): static
+    {
+        $this->excludedOperators = $operators ?? [
+                'limit',
+                'page',
+                'order_by'
+            ];
+
+        return $this;
+    }
+
+    /**
+     * Add more exclude operators
+     *
+     * @Author yaangvu
+     * @Date   Jul 30, 2021
+     *
+     * @param ...$operator
+     *
+     * @return $this
+     */
+    public function addExcludedOperators(...$operator): static
+    {
+        array_push($this->excludedOperators, ...$operator);
+
+        return $this;
+    }
+
+    /**
+     * Remove exclude operator
+     *
+     * @Author yaangvu
+     * @Date   Jul 30, 2021
+     *
+     * @param string $operator
+     *
+     * @return $this
+     */
+    public function removeExcludedOperators(string $operator): static
+    {
+        if (($key = array_search($operator, $this->excludedOperators)) !== false) {
+            unset($this->excludedOperators[$key]);
         }
 
+        return $this;
+    }
+
+    /**
+     * Get all conditions from Request
+     *
+     * @param array $params
+     *
+     * @return array
+     */
+    public function getConditions(array $params = []): array
+    {
+        // Remove all params were excluded
+        foreach ($this->excludedOperators as $excludedOperator) {
+            $this->removeParam($excludedOperator);
+        }
+
+        $params     = $params ?: $this->params;
         $conditions = [];
-        foreach ($this->params as $paramKey => $paramValue) {
-            if ($paramValue === '' || $paramValue === null) continue;
 
-            // Basic query with equal clause
-            if (!Str::endsWith($paramKey, $this->operatorPatterns)) {
-                $column       = $this->_formatColumn($paramKey);
-                $conditions[] = [
-                    'column'   => $column,
-                    'operator' => OperatorConstant::EQUAL,
-                    'value'    => $this->_castParamValue($paramKey, $paramValue)
-                ];
-                continue;
-            }
-
-            foreach ($this->operators as $keyOperator => $operator) {
-                if (!Str::endsWith($paramKey, $keyOperator))
-                    continue;
-
-                /**
-                 * Get column from $paramKey
-                 * $paramKey will be format with: {table}__{column}{operatorPatent}. Such as: user__age__lt OR age__lt OR age
-                 */
-                $column = Str::replaceLast($keyOperator, '', $paramKey);
-
-                $column = $this->_formatColumn($column);
-
-                // If $paramKey match $keyOperator
-                $value        = $this->_castParamValue($column, $paramValue);
-                $conditions[] = [
-                    'column'   => $column,
-                    'operator' => $operator,
-                    'value'    => $operator === OperatorConstant::I_LIKE || $operator === OperatorConstant::LIKE
-                        ? "%$value%"
-                        : $value
-                ];
-
-            }
+        foreach ($params as $key => $value) {
+            $condition = $this->_getCondition($key, $value);
+            if ($condition)
+                $conditions[] = $condition;
         }
 
         return $conditions;
     }
 
     /**
-     * Format column name to query
-     * Column fre convert will be format with: {table}__{column}. Such as user__age OR age
+     * Get where query condition
      *
-     * @param string $column
+     * @Author yaangvu
+     * @Date   Jul 30, 2021
      *
-     * @return string
+     * @param string $paramKey with format will be: [${table}__]${column}__${operator}
+     * @param mixed  $paramValue
+     *
+     * @return array
      */
-    private function _formatColumn(string $column): string
+    private function _getCondition(string $paramKey, mixed $paramValue): array
     {
-        $tmp = explode('__', $column);
+        // Ignore if $value is empty or null
+        if ($paramValue === '' || $paramValue === null)
+            return [];
 
-        if (count($tmp) == 1)
-            return $tmp[0];
-        else
-            return "$tmp[0].$tmp[1]";
+        // initial $table name
+        $table = null;
+
+        $countSeparator = substr_count($paramKey, $this->separator);
+        switch ($countSeparator) {
+            // If $query has formatted like: ${column}__${operator}
+            case 1:
+                [$column, $operatorPattern] = explode($this->separator, $paramKey);
+                break;
+
+            // If $query has formatted like: ${table}__${column}__${operator}
+            case 2:
+                [$table, $column, $operatorPattern] = explode($this->separator, $paramKey);
+                break;
+
+            // If $query has formatted like: ${column}
+            default:
+                $column          = $paramKey;
+                $operatorPattern = OperatorConstant::EQUAL_PATTERN;
+                break;
+        }
+
+        return [
+            'table'           => $table,
+            'column'          => ($table ? "$table." : '') . $column,
+            'value'           => $this->_castParamValue($column, $paramValue, $operatorPattern),
+            'operatorPattern' => $operatorPattern,
+            'operator'        => $this->operators[$operatorPattern] ?? OperatorConstant::EQUAL,
+        ];
     }
 
     /**
      * Cast data to specific DataType
      *
-     * @param $column
-     * @param $value
+     * @param string $column
+     * @param mixed  $value
+     * @param string $pattern
      *
-     * @return float|int|Carbon|string
+     * @return mixed
      */
-    private function _castParamValue($column, $value): float|int|Carbon|string
+    private function _castParamValue(string $column, mixed $value, string $pattern = ''): mixed
     {
         if (!key_exists($column, $this->castParams))
             return $value;
 
         $dataType = $this->castParams[$column];
 
-        return match ($dataType) {
+        $value = match ($dataType) {
             DataCastConstant::DATE => Carbon::createFromDate($value),
             DataCastConstant::DATETIME => Carbon::parse($value),
             DataCastConstant::NUMBER, DataCastConstant::DOUBLE => (double)$value,
             DataCastConstant::INT => (int)$value,
             default => (string)$value
         };
+
+        if ($pattern === OperatorConstant::LIKE_PATTERN)
+            $value = "%$value%";
+
+        return $value;
     }
 
     /**
@@ -252,13 +467,13 @@ class QueryHelper
     /**
      * Add conditions and order by
      *
-     * @param Model  $model
+     * @param Model|Builder $model
      *
-     * @param String $alias
+     * @param String        $alias
      *
-     * @return Builder
+     * @return Builder|Model
      */
-    public function buildQuery(Model|Builder $model, string $alias = ''): Builder
+    public function buildQuery(Model|Builder $model, string $alias = ''): Builder|Model
     {
         $tableName  = $model->getTable();
         $primaryKey = $model->getKeyName();
@@ -274,16 +489,11 @@ class QueryHelper
             // If condition empty
             if (!$cond)
                 continue;
-            // If don't exist table or column
-            if (!Schema::hasTable($tableName))
-                continue;
             $model = $model->where($cond['column'], $cond['operator'], $cond['value']);
         }
 
         // Sort data
-        $order = $this->getOrderBy();
-
-        if ($order) {
+        if ($order = $this->getOrderBy()) {
             $model = $model->orderBy($order['column'], $order['type']);
         } else {
             $model = $model->orderBy(($alias ? "$alias." : "") . $primaryKey, 'DESC');
@@ -293,37 +503,27 @@ class QueryHelper
     }
 
     /**
-     * Append excluded operators
+     * Add relations for query
      *
-     * @param array $operators
-     *
-     * @return QueryHelper
+     * @param string|array $relations
      */
-    public function addExcludedOperators(array $operators): static
+    public function with(...$relations): static
     {
-        array_push($this->excludedOperators, ...$operators);
+        array_push($this->relations, $relations);
 
         return $this;
     }
 
     /**
-     * Add relations for query
+     * Get relationships
      *
-     * @param string|array $relations
+     * @Author yaangvu
+     * @Date   Jul 30, 2021
+     *
+     * @return array
      */
-    public function with(string|array $relations)
+    public function getRelations(): array
     {
-        $this->relations = (array)$relations;
-    }
-
-    public function initDataForSpecificDatabase()
-    {
-        switch ($this->driverConnectionName) {
-            case 'pgsql':
-                $this->operators['__~'] = OperatorConstant::I_LIKE; // iLike
-                break;
-            default:
-                break;
-        }
+        return $this->relations;
     }
 }

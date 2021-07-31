@@ -6,16 +6,18 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use YaangVu\LaravelBase\Services\impl\BaseService;
+use YaangVu\LaravelBase\Services\BaseService;
 
-class BaseController extends Controller
+abstract class BaseController extends Controller
 {
     public BaseService $service;
 
     function __construct()
     {
-        // Init $service
+        $this->createService();
     }
+
+    abstract protected function createService();
 
     /**
      * Display a listing of the resource.
@@ -65,6 +67,19 @@ class BaseController extends Controller
     }
 
     /**
+     * Put Update the specified resource in storage.
+     *
+     * @param         $id
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function putUpdate($id, Request $request): JsonResponse
+    {
+        return response()->json($this->service->putUpdate($id, $request));
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param $id
@@ -77,31 +92,31 @@ class BaseController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage by code
+     * Remove the specified resource from storage by uuid
      *
-     * @param $id
+     * @param $uuid
      *
      * @return JsonResponse
      */
-    public function deleteByUuid($code): JsonResponse
+    public function deleteByUuid($uuid): JsonResponse
     {
-        return response()->json($this->service->deleteByUuid($code));
+        return response()->json($this->service->deleteByUuid($uuid));
     }
 
     /**
      * Display the specified resource.
      *
-     * @param $code
+     * @param $uuid
      *
      * @return JsonResponse
      */
-    public function showByCode($code): JsonResponse
+    public function showByUuid($uuid): JsonResponse
     {
-        return response()->json($this->service->getByCode($code));
+        return response()->json($this->service->getByUuid($uuid));
     }
 
     /**
-     * Remove multiple the specified resource from storage by ids
+     * Remove the multiple specified resource from storage by ids
      *
      * @param Request $request
      *
@@ -113,7 +128,7 @@ class BaseController extends Controller
     }
 
     /**
-     * Remove multiple the specified resource from storage by codes
+     * Remove the multiple specified resource from storage by uuids
      *
      * @param Request $request
      *

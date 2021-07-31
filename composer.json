@@ -15,7 +15,8 @@
     "illuminate/contracts": "^7|^8|^9",
     "illuminate/pagination": "^7|^8|^9",
     "illuminate/http": "^7|^8|^9",
-    "yaangvu/laravel-exception": "^1.0"
+    "yaangvu/laravel-exception": "^1.0",
+    "fakerphp/faker": "1.16.x-dev"
   },
   "authors": [
     {
@@ -32,8 +33,12 @@
   "extra": {
     "laravel": {
       "providers": [
-        "YaangVu\\LaravelBase\\Services\\ServiceProvider"
-      ]
+        "YaangVu\\LaravelBase\\Providers\\BaseServiceProvider"
+      ],
+      "aliases": {
+        "BaseService": "YaangVu\\LaravelBase\\Services\\BaseService",
+        "Query": "YaangVu\\LaravelBase\\Facades\\Query"
+      }
     }
   }
 }

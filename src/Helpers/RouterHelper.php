@@ -22,13 +22,13 @@ class RouterHelper
         $router->post("$name", "$controller@store");
 
         // Update routes
-        $router->put("$name/{id}", "$controller@update");
         $router->patch("$name/{id}", "$controller@update");
+        $router->put("$name/{id}", "$controller@putUpdate");
 
         // Delete routes
         $router->delete("$name/{id}", "$controller@destroy");
         $router->delete("$name/uuid/{uuid}", "$controller@deleteByUuid");
-        $router->patch("$name/delete/ids", "$controller@deleteByIds");
-        $router->patch("$name/delete/uuids", "$controller@deleteByUuids");
+        $router->delete("$name/delete/ids", "$controller@deleteByIds");
+        $router->delete("$name/delete/uuids", "$controller@deleteByUuids");
     }
 }

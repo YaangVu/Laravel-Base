@@ -1,13 +1,15 @@
 <?php
 
-namespace YaangVu\LaravelBase\Services\impl;
+namespace YaangVu\LaravelBase\Services;
 
 use Exception;
+use Faker\Provider\Uuid;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -15,24 +17,51 @@ use Illuminate\Support\Facades\Validator;
 use YaangVu\Exceptions\BadRequestException;
 use YaangVu\Exceptions\NotFoundException;
 use YaangVu\Exceptions\SystemException;
-use YaangVu\LaravelBase\Helpers\QueryHelper;
-use YaangVu\LaravelBase\Services\BaseServiceInterface;
+use YaangVu\LaravelBase\Facades\Query;
 
-abstract class BaseService implements BaseServiceInterface
+abstract class BaseService
 {
-
-    public static bool $validateThrowAble = true;
-
-    protected QueryHelper $queryHelper;
-
     public Model|Builder $model;
 
-    public static object|null $currentUser = null;
+    protected static object|null $currentUser = null;
+
+    public static Query $query;
+
+    protected array  $fillAbles;
+    protected array  $guarded;
+    protected string $primaryKey;
+    protected string $driver;
+    protected string $table;
 
     public function __construct()
     {
         $this->createModel();
-        $this->queryHelper = new QueryHelper($this->model->getConnection()->getDriverName());
+
+        // Get attributes from model
+        $this->fillAbles  = $this->model->getFillable();
+        $this->guarded    = $this->model->getGuarded();
+        $this->primaryKey = $this->model->getKeyName();
+        $this->table      = $this->model->getTable();
+
+        // Initial Query Facade
+        $this->driver = $this->model->getConnection()->getDriverName();
+        self::$query  = Query::driver($this->driver);
+    }
+
+    /**
+     * Set Database Driver for query
+     * @Author yaangvu
+     * @Date   Jul 30, 2021
+     *
+     * @param string|null $driver
+     *
+     * @return BaseService
+     */
+    public function driver(?string $driver): BaseService
+    {
+        self::$query = Query::driver($driver);
+
+        return $this;
     }
 
     /**
@@ -43,15 +72,17 @@ abstract class BaseService implements BaseServiceInterface
 
     /**
      * Get list of all items
-     * @return LengthAwarePaginator
-     * @throws SystemException
+     *
+     * @param bool $paginated
+     *
+     * @return LengthAwarePaginator|Collection|array
      */
-    public function getAll(): LengthAwarePaginator
+    public function getAll(bool $paginated = true): LengthAwarePaginator|Collection|array
     {
         $this->preGetAll();
-        $data = $this->queryHelper->buildQuery($this->model);
+        $data = self::$query->buildQuery($this->model);
         try {
-            $response = $data->paginate(QueryHelper::limit());
+            $response = $paginated ? $data->paginate(self::$query->limit()) : $data->get();
             $this->postGetAll($response);
 
             return $response;
@@ -61,7 +92,7 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
-     * Get Entity via Id
+     * Get Entity via id
      *
      * @param int|string $id
      *
@@ -71,8 +102,8 @@ abstract class BaseService implements BaseServiceInterface
     {
         $this->preGet($id);
         try {
-            if ($this->queryHelper->relations)
-                $this->model = $this->model->with($this->queryHelper->relations);
+            if (self::$query->getRelations())
+                $this->model = $this->model->with(self::$query->getRelations());
 
             $entity = $this->model->findOrFail($id);
             $this->postGet($id, $entity);
@@ -99,8 +130,8 @@ abstract class BaseService implements BaseServiceInterface
     {
         $this->preGetByUuid($uuid);
         try {
-            if ($this->queryHelper->relations)
-                $this->model = $this->model->with($this->queryHelper->relations);
+            if (self::$query->getRelations())
+                $this->model = $this->model->with(self::$query->getRelations());
 
             $entity = $this->model->where('uuid', $uuid)->firstOrFail();
             $this->postGetByUuid($uuid, $entity);
@@ -134,25 +165,28 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
-     * Delete a Entity via ID
+     * Delete an Entity via ID
      *
      * @param int|string $id
+     * @param bool       $transaction
      *
      * @return bool
      */
-    public function delete(int|string $id): bool
+    public function delete(int|string $id, bool $transaction = false): bool
     {
-        DB::beginTransaction();
+        if ($transaction) DB::beginTransaction();
+
         $this->preDelete($id);
         $data = $this->get($id);
         try {
             $deleted = $data->delete();
             $this->postDelete($id);
-            DB::commit();
+            if ($transaction) DB::commit();
 
             return $deleted;
         } catch (Exception $e) {
-            DB::rollBack();
+            if ($transaction) DB::rollBack();
+
             throw new SystemException(
                 ['message' => __('can-not-del', ['attribute' => __('entity')]) . ": $id"],
                 $e
@@ -164,22 +198,23 @@ abstract class BaseService implements BaseServiceInterface
      * Delete a Entity via uuid
      *
      * @param string $uuid
+     * @param bool   $transaction
      *
      * @return bool
      */
-    public function deleteByUuid(string $uuid): bool
+    public function deleteByUuid(string $uuid, bool $transaction = false): bool
     {
-        DB::beginTransaction();
+        if ($transaction) DB::beginTransaction();
         $this->preDeleteByUuid($uuid);
         $data = $this->getByUuid($uuid);
         try {
             $deleted = $data->delete();
             $this->postDeleteByUuid($uuid);
-            DB::commit();
+            if ($transaction) DB::commit();
 
             return $deleted;
         } catch (Exception $e) {
-            DB::rollBack();
+            if ($transaction) DB::rollBack();
             throw new SystemException(
                 ['message' => __('can-not-del', ['attribute' => __('entity')]) . ": $uuid"],
                 $e
@@ -191,47 +226,45 @@ abstract class BaseService implements BaseServiceInterface
      * Store new Entity
      *
      * @param object $request
+     * @param bool   $transaction
      *
      * @return Model
      */
-    public function add(object $request): Model
+    public function add(object $request, bool $transaction = false): Model
     {
-        DB::beginTransaction();
+        if ($transaction) DB::beginTransaction();
         $request = $this->preAdd($request) ?? $request;
 
-        // Set data to new entity
-        $fillAbles = $this->model->getFillable();
-        $guarded   = $this->model->getGuarded();
-
         // Validate
-        if ($this->storeRequestValidate($request) !== true)
+        if ($this->validateStoreRequest($request) !== true)
             return $this->model;
 
-        if ($fillAbles === ['*']) { // Insert all data to DB
-            if ($request instanceof Request)
-                $requestArr = $request->toArray();
-            else
-                $requestArr = (array)$request;
+        $requestArr = $this->_toArray($request);
 
-            foreach ($requestArr as $column => $value)
-                if (!in_array($column, $guarded))
-                    $this->model->{$column} = $this->_handleRequestData($value);
-        } else // Only insert specific data
-            foreach ($fillAbles as $fillAble)
-                if (isset($request->$fillAble) && !in_array($fillAble, $guarded))
-                    $this->model->$fillAble = $this->_handleRequestData($request->$fillAble);
+        foreach ($requestArr as $column => $value) {
+            if ($this->fillAbles === ['*']
+                || (in_array($column, $this->fillAbles) && !in_array($column, $this->guarded))
+            )
+                $this->model->{$column} = $this->_handleRequestValue($value);
+        }
 
         // Set created_by is current user
-        $this->model->created_by = self::currentUser()?->id ?? null;
+        if (!str_contains('sql', $this->driver) || Schema::hasColumn($this->table, 'created_by'))
+            $this->model->created_by = self::currentUser()?->{$this->primaryKey} ?? null;
+
+        // Set default uuid
+        if (!str_contains('sql', $this->driver) || Schema::hasColumn($this->table, 'uuid'))
+            $this->model->uuid = $request->uuid ?? Uuid::uuid();
 
         try {
             $this->model->save();
             $this->postAdd($request, $this->model);
-            DB::commit();
+            if ($transaction) DB::commit();
 
             return $this->model;
         } catch (Exception $e) {
-            DB::rollBack();
+            if ($transaction) DB::rollBack();
+
             throw new SystemException($e->getMessage() ?? __('system-500'), $e);
         }
     }
@@ -241,45 +274,81 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @param int|string $id
      * @param object     $request
+     * @param bool       $transaction
      *
      * @return Model
      */
-    public function update(int|string $id, object $request): Model
+    public function update(int|string $id, object $request, bool $transaction = false): Model
     {
-        DB::beginTransaction();
+        if ($transaction) DB::beginTransaction();
         $request = $this->preUpdate($id, $request) ?? $request;
 
-        // Set data for updated entity
-        $fillAbles = $this->model->getFillable();
-        $guarded   = $this->model->getGuarded();
-
         // Validate
-        if ($this->updateRequestValidate($id, $request) !== true)
+        if ($this->validateUpdateRequest($id, $request) !== true)
             return $this->model;
 
         $model = $this->get($id);
 
-        if ($fillAbles === ['*']) { // Insert all data to DB
-            if ($request instanceof Request)
-                $requestArr = $request->toArray();
-            else
-                $requestArr = (array)$request;
+        $requestArr = $this->_toArray($request);
 
-            foreach ($requestArr as $column => $value)
-                if (!in_array($column, $guarded))
-                    $model->{$column} = $this->_handleRequestData($value) ?? $model->{$column};
-        } else
-            foreach ($fillAbles as $fillAble)
-                if (isset($request->$fillAble) && !in_array($fillAble, $guarded))
-                    $model->$fillAble = $this->_handleRequestData($request->$fillAble) ?? $model->$fillAble;
+        foreach ($requestArr as $column => $value) {
+            if ($this->fillAbles === ['*']
+                || (in_array($column, $this->fillAbles) && !in_array($column, $this->guarded))
+            )
+                $model->{$column} = $this->_handleRequestValue($value);
+        }
+
         try {
             $model->save();
             $this->postUpdate($id, $request, $model);
-            DB::commit();
+            if ($transaction) DB::commit();
 
             return $model;
         } catch (Exception $e) {
-            DB::rollBack();
+            if ($transaction) DB::rollBack();
+            throw new SystemException($e->getMessage() ?? __('system-500'), $e);
+        }
+    }
+
+    /**
+     * Put Update an Entity via ID
+     *
+     * @param int|string $id
+     * @param object     $request
+     * @param bool       $transaction
+     *
+     * @return Model
+     */
+    public function putUpdate(int|string $id, object $request, bool $transaction = false): Model
+    {
+        if ($transaction) DB::beginTransaction();
+        $request = $this->prePutUpdate($id, $request) ?? $request;
+
+        // Validate
+        if ($this->validateUpdateRequest($id, $request) !== true)
+            return $this->model;
+
+        $model    = $this->get($id);
+        $modelArr = $model->toArray();
+
+        foreach ($modelArr as $column => $value) {
+            if ($column === $this->primaryKey || $column === 'uuid' || $column === 'created_by')
+                continue;
+
+            if ($request->{$column} !== null)
+                $model->{$column} = $this->_handleRequestValue($request->{$column});
+            else
+                $model->{$column} = null;
+        }
+
+        try {
+            $model->save();
+            $this->postPutUpdate($id, $request, $model);
+            if ($transaction) DB::commit();
+
+            return $model;
+        } catch (Exception $e) {
+            if ($transaction) DB::rollBack();
             throw new SystemException($e->getMessage() ?? __('system-500'), $e);
         }
     }
@@ -288,24 +357,27 @@ abstract class BaseService implements BaseServiceInterface
      * Delete multiple Entity via IDs
      *
      * @param object $request
+     * @param bool   $transaction
      *
      * @return bool
      */
-    public function deleteByIds(object $request): bool
+    public function deleteByIds(object $request, bool $transaction = false): bool
     {
+        if ($transaction) DB::beginTransaction();
         $this->preDeleteByIds($request);
-        $this->doValidate($request, ['ids' => 'required|array']);
-        $idField = $this->model->getKey();
-        if (!Schema::hasColumn($this->model->getTable(), $idField))
-            throw new BadRequestException(__("not-exist", ['attribute' => __('entity')]));
+        $this->doValidate($request, ['ids' => 'required']);
+        $ids = explode(',', $request->ids ?? '');
 
-        $data = $this->model->whereIn($idField, $request->ids);
+        $data = $this->model->whereIn($this->primaryKey, $ids);
         try {
             $deleted = $data->delete();
             $this->postDeleteByIds($request);
+            if ($transaction) DB::commit();
 
             return $deleted;
         } catch (Exception $e) {
+            if ($transaction) DB::rollBack();
+
             throw new SystemException($e->getMessage() ?? __('system-500'), $e);
         }
     }
@@ -314,21 +386,26 @@ abstract class BaseService implements BaseServiceInterface
      * Delete multiple Entity via Uuids
      *
      * @param object $request
+     * @param bool   $transaction
      *
      * @return bool
      */
-    public function deleteByUuids(object $request): bool
+    public function deleteByUuids(object $request, bool $transaction = false): bool
     {
+        if ($transaction) DB::beginTransaction();
         $this->preDeleteByUuids($request);
-        $this->doValidate($request, ['uuids' => 'required|array']);
+        $uuids = explode(',', $request->uuids ?? '');
 
-        $data = $this->model->whereIn('uuid', $request->uuids);
+        $data = $this->model->whereIn('uuid', $uuids);
         try {
             $deleted = $data->delete();
             $this->postDeleteByUuids($request);
+            if ($transaction) DB::commit();
 
             return $deleted;
         } catch (Exception $e) {
+            if ($transaction) DB::rollBack();
+
             throw new SystemException($e->getMessage() ?? __('system-500'), $e);
         }
     }
@@ -341,9 +418,9 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @return bool|array
      */
-    public function storeRequestValidate(object $request, array $rules = []): bool|array
+    public function validateStoreRequest(object $request, array $rules = []): bool|array
     {
-        if (!$rules || !$request)
+        if (!$rules)
             return true;
 
         return $this->doValidate($request, $rules);
@@ -358,9 +435,9 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @return bool|array
      */
-    public function updateRequestValidate(int|string $id, object $request, array $rules = []): bool|array
+    public function validateUpdateRequest(int|string $id, object $request, array $rules = []): bool|array
     {
-        if (!$rules || !$id || !$request)
+        if (!$rules || !$id)
             return true;
 
         return $this->doValidate($request, $rules);
@@ -369,28 +446,27 @@ abstract class BaseService implements BaseServiceInterface
     /**
      * @param object $request
      * @param array  $rules
+     * @param bool   $throwable
      *
      * @return bool|array
      */
-    public static function doValidate(object $request, array $rules = []): bool|array
+    public static function doValidate(object $request, array $rules = [], bool $throwable = true): bool|array
     {
-        if ($request instanceof Request)
-            $request = $request->all();
-        elseif ($request instanceof Model)
+        if ($request instanceof Request || $request instanceof Model)
             $request = $request->toArray();
         else
             $request = (array)$request;
 
         $validator = Validator::make($request, $rules);
 
-        if ($validator?->fails()) {
-            if (self::$validateThrowAble)
-                throw new BadRequestException(['messages' => $validator->errors()->toArray()], new Exception());
-            else
-                return $validator->errors()->toArray();
-        }
+        // If you have no rules were violated
+        if (!$validator?->fails())
+            return true;
 
-        return true;
+        if ($throwable)
+            throw new BadRequestException(['messages' => $validator->errors()->toArray()], new Exception());
+        else
+            return $validator->errors()->toArray();
     }
 
     /**
@@ -400,7 +476,7 @@ abstract class BaseService implements BaseServiceInterface
      */
     public function with(array|string $relations)
     {
-        $this->queryHelper->with($relations);
+        self::$query->with($relations);
     }
 
     /**
@@ -463,9 +539,9 @@ abstract class BaseService implements BaseServiceInterface
     }
 
     /**
-     * @param object $model
+     * @param LengthAwarePaginator|Collection|array $model
      */
-    public function postGetAll(object $model)
+    public function postGetAll(LengthAwarePaginator|Collection|array $model)
     {
         // TODO: Implement postGetAll() method.
     }
@@ -485,6 +561,25 @@ abstract class BaseService implements BaseServiceInterface
      * @param Model      $model
      */
     public function postUpdate(int|string $id, object $request, Model $model)
+    {
+        // TODO: Implement postUpdate() method.
+    }
+
+    /**
+     * @param int|string $id
+     * @param object     $request
+     */
+    public function prePutUpdate(int|string $id, object $request)
+    {
+        // TODO: Implement preUpdate() method.
+    }
+
+    /**
+     * @param int|string $id
+     * @param object     $request
+     * @param Model      $model
+     */
+    public function postPutUpdate(int|string $id, object $request, Model $model)
     {
         // TODO: Implement postUpdate() method.
     }
@@ -558,7 +653,7 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @return mixed
      */
-    private function _handleRequestData(mixed $value): mixed
+    private function _handleRequestValue(mixed $value): mixed
     {
         if (gettype($value) === 'string')
             return trim($value);
@@ -566,4 +661,21 @@ abstract class BaseService implements BaseServiceInterface
             return $value;
     }
 
+    /**
+     * Convert $request to array
+     *
+     * @Author yaangvu
+     * @Date   Jul 31, 2021
+     *
+     * @param $request
+     *
+     * @return array
+     */
+    private function _toArray($request): array
+    {
+        if ($request instanceof Request || $request instanceof Model)
+            return $request->toArray();
+        else
+            return (array)$request;
+    }
 }
