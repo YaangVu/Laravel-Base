@@ -6,15 +6,11 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use YaangVu\LaravelBase\Constants\DataCastConstant;
-use YaangVu\LaravelBase\Constants\DbDriverConstant;
 use YaangVu\LaravelBase\Constants\OperatorConstant;
-use YaangVu\LaravelBase\Constants\OperatorPatternConstant;
 
 class QueryHelper
 {
     protected string $separator = '__';
-
-    public string $driver = DbDriverConstant::MYSQL;
 
     protected array $operatorPatterns = [];
 
@@ -51,26 +47,6 @@ class QueryHelper
              ->setParams($this->params)
              ->setCastParams($this->castParams)
              ->setExcludedOperators($this->excludedOperators);
-    }
-
-    /**
-     * @return string
-     */
-    public function getDriver(): string
-    {
-        return $this->driver;
-    }
-
-    /**
-     * @param string $driver
-     *
-     * @return QueryHelper
-     */
-    public function setDriver(string $driver): static
-    {
-        $this->driver = $driver;
-
-        return $this;
     }
 
     /**
@@ -217,18 +193,18 @@ class QueryHelper
      * @Author yaangvu
      * @Date   Jul 29, 2021
      *
-     * @param array|null $params
+     * @param array $params
      *
      * @return $this
      */
-    public function setCastParams(?array $params = null): static
+    public function setCastParams(array $params = []): static
     {
-        $this->castParams = $params ?? [
-                'date'       => DataCastConstant::DATE,
-                'created_at' => DataCastConstant::DATETIME,
-                'updated_at' => DataCastConstant::DATETIME,
-                'age'        => DataCastConstant::NUMBER
-            ];
+        $this->castParams = $params ?: [
+            'date'       => DataCastConstant::DATE,
+            'created_at' => DataCastConstant::DATETIME,
+            'updated_at' => DataCastConstant::DATETIME,
+            'age'        => DataCastConstant::NUMBER
+        ];
 
         return $this;
     }
@@ -280,17 +256,17 @@ class QueryHelper
      * @Author yaangvu
      * @Date   Jul 29, 2021
      *
-     * @param array|null $operators
+     * @param array $operators
      *
      * @return $this
      */
-    public function setExcludedOperators(?array $operators = null): static
+    public function setExcludedOperators(array $operators = []): static
     {
-        $this->excludedOperators = $operators ?? [
-                'limit',
-                'page',
-                'order_by'
-            ];
+        $this->excludedOperators = $operators ?: [
+            'limit',
+            'page',
+            'order_by'
+        ];
 
         return $this;
     }
@@ -416,23 +392,21 @@ class QueryHelper
      */
     private function _castParamValue(string $column, mixed $value, string $pattern = ''): mixed
     {
+        if ($pattern === OperatorConstant::LIKE_PATTERN)
+            $value = "%$value%";
+
         if (!key_exists($column, $this->castParams))
             return $value;
 
         $dataType = $this->castParams[$column];
 
-        $value = match ($dataType) {
+        return match ($dataType) {
             DataCastConstant::DATE => Carbon::createFromDate($value),
             DataCastConstant::DATETIME => Carbon::parse($value),
             DataCastConstant::NUMBER, DataCastConstant::DOUBLE => (double)$value,
             DataCastConstant::INT => (int)$value,
             default => (string)$value
         };
-
-        if ($pattern === OperatorConstant::LIKE_PATTERN)
-            $value = "%$value%";
-
-        return $value;
     }
 
     /**

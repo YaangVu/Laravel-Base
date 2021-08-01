@@ -18,6 +18,7 @@ use YaangVu\Exceptions\BadRequestException;
 use YaangVu\Exceptions\NotFoundException;
 use YaangVu\Exceptions\SystemException;
 use YaangVu\LaravelBase\Facades\Query;
+use YaangVu\LaravelBase\Helpers\QueryHelper;
 
 abstract class BaseService
 {
@@ -25,7 +26,7 @@ abstract class BaseService
 
     protected static object|null $currentUser = null;
 
-    public static Query $query;
+    public static Query|QueryHelper $query;
 
     protected array  $fillAbles;
     protected array  $guarded;
@@ -249,11 +250,11 @@ abstract class BaseService
         }
 
         // Set created_by is current user
-        if (!str_contains('sql', $this->driver) || Schema::hasColumn($this->table, 'created_by'))
+        if (!str_contains($this->driver, 'sql') || Schema::hasColumn($this->table, 'created_by'))
             $this->model->created_by = self::currentUser()?->{$this->primaryKey} ?? null;
 
         // Set default uuid
-        if (!str_contains('sql', $this->driver) || Schema::hasColumn($this->table, 'uuid'))
+        if (!str_contains($this->driver, 'sql') || Schema::hasColumn($this->table, 'uuid'))
             $this->model->uuid = $request->uuid ?? Uuid::uuid();
 
         try {

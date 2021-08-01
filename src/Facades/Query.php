@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Facade;
 use YaangVu\LaravelBase\Constants\DbDriverConstant;
+use YaangVu\LaravelBase\Helpers\MysqlQueryHelper;
 use YaangVu\LaravelBase\Helpers\PgsqlQueryHelper;
 use YaangVu\LaravelBase\Helpers\QueryHelper;
 
@@ -56,15 +57,18 @@ class Query extends Facade
      *
      * @param string $driver
      *
-     * @return static
+     * @return mixed
      */
-    public static function driver(string $driver): static
+    public static function driver(string $driver): mixed
     {
         if (!in_array($driver, DbDriverConstant::ALL))
             throw new \RuntimeException("Database driver was not found or not supported");
 
         $class = '\\YaangVu\\LaravelBase\\Helpers\\' . $driver . 'QueryHelper';
 
-        return new $class();
+        if (class_exists($class))
+            return new $class();
+        else
+            return new MysqlQueryHelper();
     }
 }
