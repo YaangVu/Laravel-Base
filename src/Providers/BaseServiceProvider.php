@@ -10,6 +10,7 @@ use Illuminate\Support\ServiceProvider;
 use YaangVu\LaravelBase\Constants\DbDriverConstant;
 use YaangVu\LaravelBase\Helpers\MysqlQueryHelper;
 use YaangVu\LaravelBase\Helpers\PgsqlQueryHelper;
+use YaangVu\LaravelBase\Helpers\QueryHelper;
 
 class BaseServiceProvider extends ServiceProvider
 {
@@ -35,7 +36,8 @@ class BaseServiceProvider extends ServiceProvider
         $this->app->bind('query', function ($app) {
             return match ($app['db']->connection()->getDriverName()) {
                 DbDriverConstant::POSTGRES => new PgsqlQueryHelper(),
-                default => new MysqlQueryHelper(),
+                DbDriverConstant::MYSQL => new MysqlQueryHelper(),
+                default => new QueryHelper(),
             };
         });
     }

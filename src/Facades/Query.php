@@ -69,6 +69,6 @@ class Query extends Facade
         if (class_exists($class))
             return new $class();
         else
-            return new MysqlQueryHelper();
+            return new QueryHelper();
     }
 }
