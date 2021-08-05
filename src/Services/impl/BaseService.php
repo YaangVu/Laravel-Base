@@ -3,6 +3,7 @@
 namespace YaangVu\LaravelBase\Services\impl;
 
 use Exception;
+use Faker\Provider\Uuid;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -27,12 +28,16 @@ abstract class BaseService implements BaseServiceInterface
 
     public Model|Builder $model;
 
+    protected string $driver;
+
     public static object|null $currentUser = null;
 
     public function __construct()
     {
         $this->createModel();
-        $this->queryHelper = new QueryHelper($this->model->getConnection()->getDriverName());
+        // Initial Query Facade
+        $this->driver      = $this->model->getConnection()->getDriverName();
+        $this->queryHelper = new QueryHelper($this->driver);
     }
 
     /**
@@ -223,6 +228,10 @@ abstract class BaseService implements BaseServiceInterface
 
         // Set created_by is current user
         $this->model->created_by = self::currentUser()?->id ?? null;
+
+        // Set default uuid
+        if (!str_contains($this->driver, 'sql') || Schema::hasColumn($this->model->getTable(), 'uuid'))
+            $this->model->uuid = $request->uuid ?? Uuid::uuid();
 
         try {
             $this->model->save();
