@@ -410,6 +410,8 @@ abstract class BaseService implements BaseServiceInterface
     public function with(array|string $relations)
     {
         $this->queryHelper->with($relations);
+
+        return $this;
     }
 
     /**
