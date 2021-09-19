@@ -579,7 +579,7 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @return mixed
      */
-    private function _handleRequestData(mixed $value): mixed
+    public static function _handleRequestData(mixed $value): mixed
     {
         if (gettype($value) === 'string')
             return trim($value);
@@ -587,4 +587,14 @@ abstract class BaseService implements BaseServiceInterface
             return $value;
     }
 
+    public static function mergeRequest(object $request, array $mergeData): object
+    {
+        if ($request instanceof Request)
+            $request->merge($mergeData);
+        else
+            foreach ($mergeData as $key => $value)
+                $request->{$key} = $value;
+
+        return $request;
+    }
 }
