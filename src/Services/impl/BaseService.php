@@ -281,6 +281,10 @@ abstract class BaseService implements BaseServiceInterface
             foreach ($fillAbles as $fillAble)
                 if (isset($request->$fillAble) && !in_array($fillAble, $guarded))
                     $model->$fillAble = $this->_handleRequestData($request->$fillAble) ?? $model->$fillAble;
+
+        if (isset($model->uuid) && $model->uuid === null)
+            $model->uuid = Uuid::uuid();
+
         try {
             $model->save();
             $this->postUpdate($id, $request, $model);
@@ -347,15 +351,16 @@ abstract class BaseService implements BaseServiceInterface
      *
      * @param object $request
      * @param array  $rules
+     * @param array  $messages
      *
      * @return bool|array
      */
-    public function storeRequestValidate(object $request, array $rules = []): bool|array
+    public function storeRequestValidate(object $request, array $rules = [], array $messages = []): bool|array
     {
-        if (!$rules || !$request)
+        if (!$rules)
             return true;
 
-        return $this->doValidate($request, $rules);
+        return $this->doValidate($request, $rules, $messages);
     }
 
     /**
@@ -364,24 +369,27 @@ abstract class BaseService implements BaseServiceInterface
      * @param int|string $id
      * @param object     $request
      * @param array      $rules
+     * @param array      $messages
      *
      * @return bool|array
      */
-    public function updateRequestValidate(int|string $id, object $request, array $rules = []): bool|array
+    public function updateRequestValidate(int|string $id, object $request, array $rules = [],
+                                          array      $messages = []): bool|array
     {
-        if (!$rules || !$id || !$request)
+        if (!$rules || !$id)
             return true;
 
-        return $this->doValidate($request, $rules);
+        return $this->doValidate($request, $rules, $messages);
     }
 
     /**
      * @param object $request
      * @param array  $rules
+     * @param array  $messages
      *
      * @return bool|array
      */
-    public static function doValidate(object $request, array $rules = []): bool|array
+    public static function doValidate(object $request, array $rules = [], array $messages = []): bool|array
     {
         if ($request instanceof Request)
             $request = $request->all();
@@ -390,7 +398,7 @@ abstract class BaseService implements BaseServiceInterface
         else
             $request = (array)$request;
 
-        $validator = Validator::make($request, $rules);
+        $validator = Validator::make($request, $rules, $messages);
 
         if ($validator?->fails()) {
             if (self::$validateThrowAble)
@@ -406,8 +414,10 @@ abstract class BaseService implements BaseServiceInterface
      * Set relation
      *
      * @param array|string $relations
+     *
+     * @return BaseService
      */
-    public function with(array|string $relations)
+    public function with(array|string $relations): static
     {
         $this->queryHelper->with($relations);
 
