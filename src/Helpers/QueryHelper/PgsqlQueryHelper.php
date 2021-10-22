@@ -4,12 +4,12 @@
  * @Date   Jul 29, 2021
  */
 
-namespace YaangVu\LaravelBase\Helpers;
+namespace YaangVu\LaravelBase\Helpers\QueryHelper;
 
 
 use YaangVu\LaravelBase\Constants\OperatorConstant;
 
-class PgsqlQueryHelper extends QueryHelper
+class PgsqlQueryHelper extends AbstractQueryHelper
 {
     public function setOperators(array $operators = []): static
     {

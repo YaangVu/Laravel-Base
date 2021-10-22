@@ -18,7 +18,7 @@ use YaangVu\Exceptions\BadRequestException;
 use YaangVu\Exceptions\NotFoundException;
 use YaangVu\Exceptions\SystemException;
 use YaangVu\LaravelBase\Facades\Query;
-use YaangVu\LaravelBase\Helpers\QueryHelper;
+use YaangVu\LaravelBase\Helpers\QueryHelper\QueryHelper;
 
 abstract class BaseService
 {
@@ -36,7 +36,7 @@ abstract class BaseService
 
     public function __construct()
     {
-        $this->createModel();
+        $this->initModel();
 
         // Get attributes from model
         $this->fillAbles  = $this->model->getFillable();
@@ -69,7 +69,7 @@ abstract class BaseService
      * Create new Model
      * @return void
      */
-    abstract function createModel(): void;
+    abstract function initModel(): void;
 
     /**
      * Get list of all items
@@ -80,7 +80,6 @@ abstract class BaseService
      */
     public function getAll(bool $paginated = true): LengthAwarePaginator|Collection|array
     {
-        $this->preGetAll();
         $data = self::$query->buildQuery($this->model);
         try {
             $response = $paginated ? $data->paginate(self::$query->limit()) : $data->get();
@@ -101,7 +100,6 @@ abstract class BaseService
      */
     public function get(int|string $id): Model
     {
-        $this->preGet($id);
         try {
             if (self::$query->getRelations())
                 $this->model = $this->model->with(self::$query->getRelations());
@@ -129,7 +127,6 @@ abstract class BaseService
      */
     public function getByUuid(string $uuid): Model
     {
-        $this->preGetByUuid($uuid);
         try {
             if (self::$query->getRelations())
                 $this->model = $this->model->with(self::$query->getRelations());
@@ -146,14 +143,6 @@ abstract class BaseService
         } catch (Exception $e) {
             throw new SystemException($e->getMessage() ?? __('system-500'), $e);
         }
-    }
-
-    /**
-     * @param string $uuid
-     */
-    public function preGetByUuid(string $uuid)
-    {
-        // TODO: Implement preGetByUuid() method.
     }
 
     /**
@@ -177,7 +166,6 @@ abstract class BaseService
     {
         if ($transaction) DB::beginTransaction();
 
-        $this->preDelete($id);
         $data = $this->get($id);
         try {
             $deleted = $data->delete();
@@ -206,7 +194,6 @@ abstract class BaseService
     public function deleteByUuid(string $uuid, bool $transaction = false): bool
     {
         if ($transaction) DB::beginTransaction();
-        $this->preDeleteByUuid($uuid);
         $data = $this->getByUuid($uuid);
         try {
             $deleted = $data->delete();
@@ -234,7 +221,6 @@ abstract class BaseService
     public function add(object $request, bool $transaction = false): Model
     {
         if ($transaction) DB::beginTransaction();
-        $request = $this->preAdd($request) ?? $request;
 
         // Validate
         if ($this->validateStoreRequest($request) !== true)
@@ -282,7 +268,6 @@ abstract class BaseService
     public function update(int|string $id, object $request, bool $transaction = false): Model
     {
         if ($transaction) DB::beginTransaction();
-        $request = $this->preUpdate($id, $request) ?? $request;
 
         // Validate
         if ($this->validateUpdateRequest($id, $request) !== true)
@@ -323,7 +308,6 @@ abstract class BaseService
     public function putUpdate(int|string $id, object $request, bool $transaction = false): Model
     {
         if ($transaction) DB::beginTransaction();
-        $request = $this->prePutUpdate($id, $request) ?? $request;
 
         // Validate
         if ($this->validateUpdateRequest($id, $request) !== true)
@@ -365,7 +349,6 @@ abstract class BaseService
     public function deleteByIds(object $request, bool $transaction = false): bool
     {
         if ($transaction) DB::beginTransaction();
-        $this->preDeleteByIds($request);
         $this->doValidate($request, ['ids' => 'required']);
         $ids = explode(',', $request->ids ?? '');
 
@@ -394,7 +377,6 @@ abstract class BaseService
     public function deleteByUuids(object $request, bool $transaction = false): bool
     {
         if ($transaction) DB::beginTransaction();
-        $this->preDeleteByUuids($request);
         $uuids = explode(',', $request->uuids ?? '');
 
         $data = $this->model->whereIn('uuid', $uuids);
@@ -416,15 +398,18 @@ abstract class BaseService
      *
      * @param object $request
      * @param array  $rules
+     * @param array  $messages
+     * @param array  $customAttributes
      *
      * @return bool|array
      */
-    public function validateStoreRequest(object $request, array $rules = []): bool|array
+    public function validateStoreRequest(object $request, array $rules = [], array $messages = [],
+                                         array  $customAttributes = []): bool|array
     {
         if (!$rules)
             return true;
 
-        return $this->doValidate($request, $rules);
+        return $this->doValidate($request, $rules, $messages, $customAttributes);
     }
 
     /**
@@ -433,32 +418,38 @@ abstract class BaseService
      * @param int|string $id
      * @param object     $request
      * @param array      $rules
+     * @param array      $messages
+     * @param array      $customAttributes
      *
      * @return bool|array
      */
-    public function validateUpdateRequest(int|string $id, object $request, array $rules = []): bool|array
+    public function validateUpdateRequest(int|string $id, object $request, array $rules = [],
+                                          array      $messages = [], array $customAttributes = []): bool|array
     {
         if (!$rules || !$id)
             return true;
 
-        return $this->doValidate($request, $rules);
+        return $this->doValidate($request, $rules, $messages, $customAttributes);
     }
 
     /**
      * @param object $request
      * @param array  $rules
+     * @param array  $messages
+     * @param array  $customAttributes
      * @param bool   $throwable
      *
      * @return bool|array
      */
-    public static function doValidate(object $request, array $rules = [], bool $throwable = true): bool|array
+    public static function doValidate(object $request, array $rules = [], array $messages = [],
+                                      array  $customAttributes = [], bool $throwable = true): bool|array
     {
         if ($request instanceof Request || $request instanceof Model)
             $request = $request->toArray();
         else
             $request = (array)$request;
 
-        $validator = Validator::make($request, $rules);
+        $validator = Validator::make($request, $rules, $messages, $customAttributes);
 
         // If you have no rules were violated
         if (!$validator?->fails())
@@ -500,27 +491,11 @@ abstract class BaseService
 
     /**
      * @param object $request
-     */
-    public function preAdd(object $request)
-    {
-        // TODO: Implement preAdd() method.
-    }
-
-    /**
-     * @param object $request
      * @param Model  $model
      */
     public function postAdd(object $request, Model $model)
     {
         // TODO: Implement postAdd() method.
-    }
-
-    /**
-     * @param int|string $id
-     */
-    public function preGet(int|string $id)
-    {
-        // TODO: Implement preGet() method.
     }
 
     /**
@@ -533,27 +508,11 @@ abstract class BaseService
     }
 
     /**
-     */
-    public function preGetAll()
-    {
-        // TODO: Implement preGetAll() method.
-    }
-
-    /**
      * @param LengthAwarePaginator|Collection|array $model
      */
     public function postGetAll(LengthAwarePaginator|Collection|array $model)
     {
         // TODO: Implement postGetAll() method.
-    }
-
-    /**
-     * @param int|string $id
-     * @param object     $request
-     */
-    public function preUpdate(int|string $id, object $request)
-    {
-        // TODO: Implement preUpdate() method.
     }
 
     /**
@@ -569,28 +528,11 @@ abstract class BaseService
     /**
      * @param int|string $id
      * @param object     $request
-     */
-    public function prePutUpdate(int|string $id, object $request)
-    {
-        // TODO: Implement preUpdate() method.
-    }
-
-    /**
-     * @param int|string $id
-     * @param object     $request
      * @param Model      $model
      */
     public function postPutUpdate(int|string $id, object $request, Model $model)
     {
         // TODO: Implement postUpdate() method.
-    }
-
-    /**
-     * @param int|string $id
-     */
-    public function preDelete(int|string $id)
-    {
-        // TODO: Implement preDelete() method.
     }
 
     /**
@@ -604,14 +546,6 @@ abstract class BaseService
     /**
      * @param string $uuid
      */
-    public function preDeleteByUuid(string $uuid)
-    {
-        // TODO: Implement preDelete() method.
-    }
-
-    /**
-     * @param string $uuid
-     */
     public function postDeleteByUuid(string $uuid)
     {
         // TODO: Implement postDelete() method.
@@ -620,25 +554,9 @@ abstract class BaseService
     /**
      * @param object $request
      */
-    public function preDeleteByIds(object $request)
-    {
-        // TODO: Implement preDelete() method.
-    }
-
-    /**
-     * @param object $request
-     */
     public function postDeleteByIds(object $request)
     {
         // TODO: Implement postDelete() method.
-    }
-
-    /**
-     * @param object $request
-     */
-    public function preDeleteByUuids(object $request)
-    {
-        // TODO: Implement preDelete() method.
     }
 
     /**
@@ -654,7 +572,7 @@ abstract class BaseService
      *
      * @return mixed
      */
-    private function _handleRequestValue(mixed $value): mixed
+    protected function _handleRequestValue(mixed $value): mixed
     {
         if (gettype($value) === 'string')
             return trim($value);
@@ -668,15 +586,38 @@ abstract class BaseService
      * @Author yaangvu
      * @Date   Jul 31, 2021
      *
-     * @param $request
+     * @param object $request
      *
      * @return array
      */
-    private function _toArray($request): array
+    protected function _toArray(object $request): array
     {
         if ($request instanceof Request || $request instanceof Model)
             return $request->toArray();
         else
             return (array)$request;
+    }
+
+    /**
+     * @Description
+     *
+     * @Author yaangvu
+     * @Date   Oct 22, 2021
+     *
+     * @param object $request
+     * @param array  $data
+     *
+     * @return object
+     */
+    public function mergeRequestParams(object $request, array $data = []): object
+    {
+        if ($request instanceof Request || $request instanceof Model)
+            return $request->merge($data);
+        else {
+            foreach ($data as $key => $value)
+                $request->{$key} = $value;
+
+            return $request;
+        }
     }
 }

@@ -11,13 +11,20 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Facade;
 use YaangVu\LaravelBase\Constants\DbDriverConstant;
-use YaangVu\LaravelBase\Helpers\MysqlQueryHelper;
-use YaangVu\LaravelBase\Helpers\PgsqlQueryHelper;
-use YaangVu\LaravelBase\Helpers\QueryHelper;
+use YaangVu\LaravelBase\Helpers\QueryHelper\MysqlQueryHelper;
+use YaangVu\LaravelBase\Helpers\QueryHelper\QueryHelper;
 
 /**
- * @property array  $conditions
- * @property string $name
+ * @see QueryHelper
+ * @see MysqlQueryHelper
+ * @see PgsqlQueryHelper
+ * @property string $separator
+ * @property array $operatorPatterns
+ * @property array $operators
+ * @property array $excludedOperators
+ * @property array $castParams
+ * @property array $params
+ * @property array $relations
  * @method static array getOperators()
  * @method static QueryHelper setOperators(array $operators = [])
  * @method static QueryHelper setOperatorPatterns(array $operatorPatterns = [])
@@ -39,10 +46,6 @@ use YaangVu\LaravelBase\Helpers\QueryHelper;
  * @method static Builder|Model buildQuery(Model|Builder $model, string $alias = '')
  * @method static QueryHelper with(...$relations)
  * @method static array getRelations()
- *
- * @see QueryHelper
- * @see MysqlQueryHelper
- * @see PgsqlQueryHelper
  */
 class Query extends Facade
 {
@@ -55,11 +58,11 @@ class Query extends Facade
      * @Author yaangvu
      * @Date   Jul 31, 2021
      *
-     * @param string $driver
+     * @param string|null $driver
      *
      * @return mixed
      */
-    public static function driver(string $driver): mixed
+    public static function driver(?string $driver): mixed
     {
         if (!in_array($driver, DbDriverConstant::ALL))
             throw new \RuntimeException("Database driver was not found or not supported");
@@ -69,6 +72,6 @@ class Query extends Facade
         if (class_exists($class))
             return new $class();
         else
-            return new QueryHelper();
+            return new MysqlQueryHelper();
     }
 }

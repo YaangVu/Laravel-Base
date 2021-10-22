@@ -1,6 +1,6 @@
 <?php
 
-namespace YaangVu\LaravelBase\Helpers;
+namespace YaangVu\LaravelBase\Helpers\QueryHelper;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use YaangVu\LaravelBase\Constants\DataCastConstant;
 use YaangVu\LaravelBase\Constants\OperatorConstant;
 
-class QueryHelper
+abstract class AbstractQueryHelper implements QueryHelper
 {
     protected string $separator = '__';
 
@@ -38,6 +38,10 @@ class QueryHelper
      */
     protected array $params = [];
 
+    /**
+     * Relationships of model
+     * @var array
+     */
     public array $relations = [];
 
     public function __construct()
@@ -60,7 +64,7 @@ class QueryHelper
     /**
      * @param string $separator
      *
-     * @return QueryHelper
+     * @return AbstractQueryHelper
      */
     public function setSeparator(string $separator): static
     {
@@ -89,7 +93,7 @@ class QueryHelper
      *
      * @param array $operators
      *
-     * @return QueryHelper
+     * @return AbstractQueryHelper
      */
     public function setOperators(array $operators = []): static
     {
@@ -106,7 +110,7 @@ class QueryHelper
      *
      * @param array $operatorPatterns
      *
-     * @return QueryHelper
+     * @return AbstractQueryHelper
      */
     public function setOperatorPatterns(array $operatorPatterns = []): static
     {
@@ -150,7 +154,7 @@ class QueryHelper
      *
      * @param array $param
      *
-     * @return QueryHelper
+     * @return AbstractQueryHelper
      */
     public function addParam(array $param): static
     {
@@ -164,7 +168,7 @@ class QueryHelper
      *
      * @param string $param
      *
-     * @return QueryHelper
+     * @return AbstractQueryHelper
      */
     public function removeParam(string $param): static
     {
@@ -214,7 +218,7 @@ class QueryHelper
      *
      * @param array $castParam
      *
-     * @return QueryHelper
+     * @return AbstractQueryHelper
      */
     public function addCastParam(array $castParam): static
     {
@@ -228,7 +232,7 @@ class QueryHelper
      *
      * @param string $castParam
      *
-     * @return QueryHelper
+     * @return AbstractQueryHelper
      */
     public function removeCastParam(string $castParam): static
     {

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace YaangVu\LaravelBase\Helpers;
+namespace YaangVu\LaravelBase\Helpers\FileHelper;
 
 
 interface FileHelper

@@ -11,7 +11,7 @@ use YaangVu\LaravelBase\Services\ExampleService;
 class ExampleController extends BaseController
 {
 
-    protected function createService()
+    protected function initService()
     {
         $this->service = new ExampleService();
     }

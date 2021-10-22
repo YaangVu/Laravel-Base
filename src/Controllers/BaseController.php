@@ -14,10 +14,10 @@ abstract class BaseController extends Controller
 
     function __construct()
     {
-        $this->createService();
+        $this->initService();
     }
 
-    abstract protected function createService();
+    abstract protected function initService();
 
     /**
      * Display a listing of the resource.
