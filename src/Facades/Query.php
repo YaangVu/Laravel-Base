@@ -19,23 +19,23 @@ use YaangVu\LaravelBase\Helpers\QueryHelper\QueryHelper;
  * @see MysqlQueryHelper
  * @see PgsqlQueryHelper
  * @property string $separator
- * @property array $operatorPatterns
- * @property array $operators
- * @property array $excludedOperators
- * @property array $castParams
- * @property array $params
- * @property array $relations
+ * @property array  $operatorPatterns
+ * @property array  $operators
+ * @property array  $excludedOperators
+ * @property array  $castParams
+ * @property array  $params
+ * @property array  $relations
  * @method static array getOperators()
  * @method static QueryHelper setOperators(array $operators = [])
  * @method static QueryHelper setOperatorPatterns(array $operatorPatterns = [])
  * @method static array getParams()
  * @method static QueryHelper setParams(array $params = [])
- * @method static QueryHelper addParam(array $param)
+ * @method static QueryHelper addParam(string $param, mixed $value)
  * @method static QueryHelper removeParam(string $param)
  * @method static array getCastParams()
  * @method static QueryHelper setCastParams(?array $params = null)
- * @method static QueryHelper addCastParam(array $castParam)
- * @method static QueryHelper removeCastParam(string $castParam)
+ * @method static QueryHelper addCastParam(string $param, mixed $type)
+ * @method static QueryHelper removeCastParam(string $param)
  * @method static array getExcludedOperators()
  * @method static QueryHelper setExcludedOperators(?array $operators = null)
  * @method static QueryHelper addExcludedOperators(...$operator)

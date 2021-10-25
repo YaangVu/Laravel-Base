@@ -82,11 +82,12 @@ interface QueryHelper
     /**
      * Add one more condition
      *
-     * @param array $param
+     * @param string $param
+     * @param mixed  $value
      *
      * @return QueryHelper
      */
-    public function addParam(array $param): static;
+    public function addParam(string $param, mixed $value): static;
 
     /**
      * Remove one condition
@@ -122,21 +123,22 @@ interface QueryHelper
     /**
      * Add one more cast param
      *
-     * @param array $castParam
+     * @param string $param
+     * @param mixed  $type
      *
      * @return QueryHelper
      */
-    public function addCastParam(array $castParam): static;
+    public function addCastParam(string $param, mixed $type): static;
 
 
     /**
      * Remove cast param
      *
-     * @param string $castParam
+     * @param string $param
      *
      * @return QueryHelper
      */
-    public function removeCastParam(string $castParam): static;
+    public function removeCastParam(string $param): static;
 
     /**
      * Get Excluded Operators

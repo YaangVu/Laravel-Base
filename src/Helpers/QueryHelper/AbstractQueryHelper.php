@@ -152,13 +152,14 @@ abstract class AbstractQueryHelper implements QueryHelper
     /**
      * Add one more condition
      *
-     * @param array $param
+     * @param string $param
+     * @param mixed  $value
      *
      * @return AbstractQueryHelper
      */
-    public function addParam(array $param): static
+    public function addParam(string $param, mixed $value): static
     {
-        $this->params = array_merge($this->params, $param);
+        $this->params = array_merge($this->params, [$param => $value]);
 
         return $this;
     }
@@ -216,13 +217,14 @@ abstract class AbstractQueryHelper implements QueryHelper
     /**
      * Add one more cast param
      *
-     * @param array $castParam
+     * @param string $param
+     * @param mixed  $type
      *
      * @return AbstractQueryHelper
      */
-    public function addCastParam(array $castParam): static
+    public function addCastParam(string $param, mixed $type): static
     {
-        $this->params = array_merge($this->castParams, $castParam);
+        $this->params = array_merge($this->castParams, [$param => $type]);
 
         return $this;
     }
@@ -230,14 +232,14 @@ abstract class AbstractQueryHelper implements QueryHelper
     /**
      * Remove cast param
      *
-     * @param string $castParam
+     * @param string $param
      *
      * @return AbstractQueryHelper
      */
-    public function removeCastParam(string $castParam): static
+    public function removeCastParam(string $param): static
     {
-        if (key_exists($castParam, $this->castParams))
-            unset($this->params[$castParam]);
+        if (key_exists($param, $this->castParams))
+            unset($this->params[$param]);
 
         return $this;
     }
