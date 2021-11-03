@@ -489,7 +489,7 @@ abstract class AbstractQueryHelper implements QueryHelper
      */
     public function with(...$relations): static
     {
-        array_push($this->relations, $relations);
+        array_push($this->relations, ...$relations);
 
         return $this;
     }
