@@ -224,7 +224,7 @@ abstract class AbstractQueryHelper implements QueryHelper
      */
     public function addCastParam(string $param, mixed $type): static
     {
-        $this->params = array_merge($this->castParams, [$param => $type]);
+        $this->castParams = array_merge($this->castParams, [$param => $type]);
 
         return $this;
     }
@@ -505,10 +505,5 @@ abstract class AbstractQueryHelper implements QueryHelper
     public function getRelations(): array
     {
         return $this->relations;
-    }
-
-    public function castParams(): mixed
-    {
-        return null;
     }
 }

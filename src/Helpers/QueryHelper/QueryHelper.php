@@ -235,16 +235,4 @@ interface QueryHelper
      * @return array
      */
     public function getRelations(): array;
-
-    /**
-     * Cast data before query
-     *
-     * @Description
-     *
-     * @Author yaangvu
-     * @Date   Nov 27, 2021
-     *
-     * @return mixed
-     */
-    public function castParams(): mixed;
 }
