@@ -506,4 +506,9 @@ abstract class AbstractQueryHelper implements QueryHelper
     {
         return $this->relations;
     }
+
+    public function castParams(): mixed
+    {
+        return null;
+    }
 }
