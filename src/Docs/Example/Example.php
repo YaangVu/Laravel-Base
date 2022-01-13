@@ -4,7 +4,7 @@
  * @Date   Jul 26, 2021
  */
 
-namespace YaangVu\LaravelBase\Models;
+namespace YaangVu\LaravelBase\Docs\Example;
 
 
 use Illuminate\Database\Eloquent\Model;

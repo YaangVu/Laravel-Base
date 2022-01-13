@@ -4,6 +4,8 @@
 namespace YaangVu\LaravelBase\Helpers\RouteHelper;
 
 
+use Illuminate\Routing\Router;
+
 class RouterHelper
 {
     /**
@@ -11,7 +13,7 @@ class RouterHelper
      * @param string $name
      * @param string $controller
      */
-    public static function resource($router, string $name, string $controller): void
+    public static function resource(Router $router, string $name, string $controller): void
     {
         // Get routes
         $router->get("$name", "$controller@index");

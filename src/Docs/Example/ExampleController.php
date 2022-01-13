@@ -4,9 +4,9 @@
  * @Date   Jul 31, 2021
  */
 
-namespace YaangVu\LaravelBase\Controllers;
+namespace YaangVu\LaravelBase\Docs\Example;
 
-use YaangVu\LaravelBase\Services\ExampleService;
+use YaangVu\LaravelBase\Controllers\BaseController;
 
 class ExampleController extends BaseController
 {

@@ -7,7 +7,7 @@
 namespace YaangVu\LaravelBase\Helpers\QueryHelper;
 
 
-class MysqlQueryHelper extends AbstractQueryHelper implements QueryHelper
+class MongoQueryHelper  extends AbstractQueryHelper implements QueryHelper
 {
-    // Do something
+    //
 }

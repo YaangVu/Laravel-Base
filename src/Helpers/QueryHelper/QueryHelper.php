@@ -8,21 +8,11 @@ namespace YaangVu\LaravelBase\Helpers\QueryHelper;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use YaangVu\LaravelBase\Clauses\OrderBy;
+use YaangVu\LaravelBase\Enumerations\DataTypeEnum;
 
 interface QueryHelper
 {
-    /**
-     * @return string
-     */
-    public function getSeparator(): string;
-
-    /**
-     * @param string $separator
-     *
-     * @return QueryHelper
-     */
-    public function setSeparator(string $separator): static;
-
     /**
      * Get list Operators
      * @Author yaangvu
@@ -99,37 +89,14 @@ interface QueryHelper
     public function removeParam(string $param): static;
 
     /**
-     * Get Cast parameters
-     *
-     * @Author yaangvu
-     * @Date   Jul 30, 2021
-     *
-     * @return array
-     */
-    public function getCastParams(): array;
-
-    /**
-     * Set cast params
-     *
-     * @Author yaangvu
-     * @Date   Jul 29, 2021
-     *
-     * @param array $params
-     *
-     * @return $this
-     */
-    public function setCastParams(array $params = []): static;
-
-    /**
      * Add one more cast param
      *
      * @param string $param
-     * @param mixed  $type
+     * @param DataTypeEnum  $type
      *
      * @return QueryHelper
      */
-    public function addCastParam(string $param, mixed $type): static;
-
+    public function addCastParam(string $param, DataTypeEnum $type): static;
 
     /**
      * Remove cast param
@@ -204,9 +171,9 @@ interface QueryHelper
     /**
      * Get Order by column and type
      *
-     * @return array|null
+     * @return OrderBy|null
      */
-    public function getOrderBy(): ?array;
+    public function getOrderBy(): ?OrderBy;
 
     /**
      * Add conditions and order by

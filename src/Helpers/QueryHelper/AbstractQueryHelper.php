@@ -2,15 +2,17 @@
 
 namespace YaangVu\LaravelBase\Helpers\QueryHelper;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use YaangVu\LaravelBase\Constants\DataCastConstant;
+use YaangVu\LaravelBase\Clauses\Condition;
+use YaangVu\LaravelBase\Clauses\OrderBy;
 use YaangVu\LaravelBase\Constants\OperatorConstant;
+use YaangVu\LaravelBase\Enumerations\DataTypeEnum;
+use YaangVu\LaravelBase\Helpers\DataHelper\DataTypeHelper;
 
 abstract class AbstractQueryHelper implements QueryHelper
 {
-    protected string $separator = '__';
+    private string $delimiter;
 
     protected array $operatorPatterns = [];
 
@@ -44,31 +46,55 @@ abstract class AbstractQueryHelper implements QueryHelper
      */
     public array $relations = [];
 
+    /**
+     * @var DataTypeHelper
+     */
+    public DataTypeHelper $dataTypeHelper;
+
     public function __construct()
     {
+        $this->dataTypeHelper = new DataTypeHelper();
         $this->setOperators($this->operators)
              ->setOperatorPatterns($this->operatorPatterns)
              ->setParams($this->params)
-             ->setCastParams($this->castParams)
-             ->setExcludedOperators($this->excludedOperators);
+             ->setExcludedOperators($this->excludedOperators)
+             ->_setCastParams($this->castParams)
+             ->_setDelimiter(env('query.delimiter'));
     }
 
     /**
-     * @return string
-     */
-    public function getSeparator(): string
-    {
-        return $this->separator;
-    }
-
-    /**
-     * @param string $separator
+     * @param string $delimiter
      *
      * @return AbstractQueryHelper
      */
-    public function setSeparator(string $separator): static
+    private function _setDelimiter(string $delimiter): static
     {
-        $this->separator = $separator;
+        $this->delimiter = $delimiter;
+
+        return $this;
+    }
+
+    /**
+     * Set cast params
+     *
+     * @Author yaangvu
+     * @Date   Jul 29, 2021
+     *
+     * @param array $params
+     *
+     * @return $this
+     */
+    private function _setCastParams(array $params = []): static
+    {
+        if (!$params)
+            $params = [
+                'date'       => DataTypeEnum::DATE,
+                'created_at' => DataTypeEnum::DATETIME,
+                'updated_at' => DataTypeEnum::DATETIME,
+                'age'        => DataTypeEnum::INT
+            ];
+        foreach ($params as $param => $type)
+            $this->addCastParam($param, $type);
 
         return $this;
     }
@@ -180,51 +206,16 @@ abstract class AbstractQueryHelper implements QueryHelper
     }
 
     /**
-     * Get Cast parameters
-     *
-     * @Author yaangvu
-     * @Date   Jul 30, 2021
-     *
-     * @return array
-     */
-    public function getCastParams(): array
-    {
-        return $this->castParams;
-    }
-
-    /**
-     * Set cast params
-     *
-     * @Author yaangvu
-     * @Date   Jul 29, 2021
-     *
-     * @param array $params
-     *
-     * @return $this
-     */
-    public function setCastParams(array $params = []): static
-    {
-        $this->castParams = $params ?: [
-            'date'       => DataCastConstant::DATE,
-            'created_at' => DataCastConstant::DATETIME,
-            'updated_at' => DataCastConstant::DATETIME,
-            'age'        => DataCastConstant::NUMBER
-        ];
-
-        return $this;
-    }
-
-    /**
      * Add one more cast param
      *
-     * @param string $param
-     * @param mixed  $type
+     * @param string       $param
+     * @param DataTypeEnum $type
      *
      * @return AbstractQueryHelper
      */
-    public function addCastParam(string $param, mixed $type): static
+    public function addCastParam(string $param, DataTypeEnum $type): static
     {
-        $this->castParams = array_merge($this->castParams, [$param => $type]);
+        $this->dataTypeHelper->addParam($param, $type);
 
         return $this;
     }
@@ -238,8 +229,7 @@ abstract class AbstractQueryHelper implements QueryHelper
      */
     public function removeCastParam(string $param): static
     {
-        if (key_exists($param, $this->castParams))
-            unset($this->params[$param]);
+        $this->dataTypeHelper->removeParam($param);
 
         return $this;
     }
@@ -318,7 +308,7 @@ abstract class AbstractQueryHelper implements QueryHelper
      *
      * @param array $params
      *
-     * @return array
+     * @return Condition[]
      */
     public function getConditions(array $params = []): array
     {
@@ -348,27 +338,27 @@ abstract class AbstractQueryHelper implements QueryHelper
      * @param string $paramKey with format will be: [${table}__]${column}__${operator}
      * @param mixed  $paramValue
      *
-     * @return array
+     * @return Condition|null
      */
-    private function _getCondition(string $paramKey, mixed $paramValue): array
+    private function _getCondition(string $paramKey, mixed $paramValue): ?Condition
     {
         // Ignore if $value is empty or null
         if ($paramValue === '' || $paramValue === null)
-            return [];
+            return null;
 
         // initial $table name
         $table = null;
 
-        $countSeparator = substr_count($paramKey, $this->separator);
-        switch ($countSeparator) {
+        $countDelimiter = substr_count($paramKey, $this->delimiter);
+        switch ($countDelimiter) {
             // If $query has formatted like: ${column}__${operator}
             case 1:
-                [$column, $operatorPattern] = explode($this->separator, $paramKey);
+                [$column, $operatorPattern] = explode($this->delimiter, $paramKey);
                 break;
 
             // If $query has formatted like: ${table}__${column}__${operator}
             case 2:
-                [$table, $column, $operatorPattern] = explode($this->separator, $paramKey);
+                [$table, $column, $operatorPattern] = explode($this->delimiter, $paramKey);
                 break;
 
             // If $query has formatted like: ${column}
@@ -378,41 +368,17 @@ abstract class AbstractQueryHelper implements QueryHelper
                 break;
         }
 
-        return [
-            'table'           => $table,
-            'column'          => ($table ? "$table." : '') . $column,
-            'value'           => $this->_castParamValue($column, $paramValue, $operatorPattern),
-            'operatorPattern' => $operatorPattern,
-            'operator'        => $this->operators[$operatorPattern] ?? OperatorConstant::EQUAL,
-        ];
-    }
+        $condition = new Condition();
+        $condition->setTable($table);
+        $condition->setColumn(($table ? "$table." : '') . $column);
+        $condition->setOperator($this->operators[$operatorPattern] ?? OperatorConstant::EQUAL);
+        if ($operatorPattern === OperatorConstant::LIKE_PATTERN)
+            $value = "%$paramValue%";
+        else
+            $value = $this->dataTypeHelper->cast($paramValue, $this->dataTypeHelper->getType($column));
+        $condition->setValue($value);
 
-    /**
-     * Cast data to specific DataType
-     *
-     * @param string $column
-     * @param mixed  $value
-     * @param string $pattern
-     *
-     * @return mixed
-     */
-    private function _castParamValue(string $column, mixed $value, string $pattern = ''): mixed
-    {
-        if ($pattern === OperatorConstant::LIKE_PATTERN)
-            $value = "%$value%";
-
-        if (!key_exists($column, $this->castParams))
-            return $value;
-
-        $dataType = $this->castParams[$column];
-
-        return match ($dataType) {
-            DataCastConstant::DATE => Carbon::createFromDate($value),
-            DataCastConstant::DATETIME => Carbon::parse($value),
-            DataCastConstant::NUMBER, DataCastConstant::DOUBLE => (double)$value,
-            DataCastConstant::INT => (int)$value,
-            default => (string)$value
-        };
+        return $condition;
     }
 
     /**
@@ -428,9 +394,9 @@ abstract class AbstractQueryHelper implements QueryHelper
     /**
      * Get Order by column and type
      *
-     * @return array|null
+     * @return OrderBy|null
      */
-    public function getOrderBy(): ?array
+    public function getOrderBy(): ?OrderBy
     {
         $query = request()->input('order_by');
         if (!$query)
@@ -438,10 +404,11 @@ abstract class AbstractQueryHelper implements QueryHelper
 
         $sort = preg_split("/[\s]+/", trim($query));
 
-        return [
-            'column' => $sort[0],
-            'type'   => $sort[1] ?? 'ASC'
-        ];
+        $orderBy = new OrderBy();
+        $orderBy->setColumn($sort[0]);
+        $orderBy->setType($sort[1] ?? 'ASC');
+
+        return $orderBy;
     }
 
     /**
@@ -466,15 +433,12 @@ abstract class AbstractQueryHelper implements QueryHelper
 
         // Add where condition
         foreach ($this->getConditions() as $cond) {
-            // If condition empty
-            if (!$cond)
-                continue;
-            $model = $model->where($cond['column'], $cond['operator'], $cond['value']);
+            $model = $model->where($cond->getColumn(), $cond->getOperator(), $cond->getValue());
         }
 
         // Sort data
         if ($order = $this->getOrderBy()) {
-            $model = $model->orderBy($order['column'], $order['type']);
+            $model = $model->orderBy($order->getColumn(), $order->getType());
         } else {
             $model = $model->orderBy(($alias ? "$alias." : "") . $primaryKey, 'DESC');
         }

@@ -9,7 +9,7 @@ namespace YaangVu\LaravelBase\Helpers\QueryHelper;
 
 use YaangVu\LaravelBase\Constants\OperatorConstant;
 
-class PgsqlQueryHelper extends AbstractQueryHelper
+class PgsqlQueryHelper extends AbstractQueryHelper implements QueryHelper
 {
     public function setOperators(array $operators = []): static
     {

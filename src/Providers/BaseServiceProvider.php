@@ -8,6 +8,7 @@ namespace YaangVu\LaravelBase\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use YaangVu\LaravelBase\Constants\DbDriverConstant;
+use YaangVu\LaravelBase\Helpers\QueryHelper\MongoQueryHelper;
 use YaangVu\LaravelBase\Helpers\QueryHelper\MysqlQueryHelper;
 use YaangVu\LaravelBase\Helpers\QueryHelper\PgsqlQueryHelper;
 
@@ -35,6 +36,7 @@ class BaseServiceProvider extends ServiceProvider
         $this->app->bind('query', function ($app) {
             return match ($app['db']->connection()->getDriverName()) {
                 DbDriverConstant::POSTGRES => new PgsqlQueryHelper(),
+                DbDriverConstant::MONGODB => new MongoQueryHelper(),
                 default => new MysqlQueryHelper(),
             };
         });
