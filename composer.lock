@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b64aeb18d50c321fc3bb5e5cae5bfa8d",
+    "content-hash": "f1fe32d14a9486c7226e2a801a9d7f1f",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -709,16 +709,16 @@
         },
         {
             "name": "illuminate/session",
-            "version": "dev-master",
+            "version": "9.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/session.git",
-                "reference": "91c15efe72d4798a65b7956eba4f8c8255229e28"
+                "reference": "56a9ab09bca82622a9e19476d77fd6d4525164f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/session/zipball/91c15efe72d4798a65b7956eba4f8c8255229e28",
-                "reference": "91c15efe72d4798a65b7956eba4f8c8255229e28",
+                "url": "https://api.github.com/repos/illuminate/session/zipball/56a9ab09bca82622a9e19476d77fd6d4525164f3",
+                "reference": "56a9ab09bca82622a9e19476d77fd6d4525164f3",
                 "shasum": ""
             },
             "require": {
@@ -734,7 +734,6 @@
             "suggest": {
                 "illuminate/console": "Required to use the session:table command (^9.0)."
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -762,7 +761,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2022-01-12T14:41:57+00:00"
+            "time": "2022-01-13T14:48:22+00:00"
         },
         {
             "name": "illuminate/support",
@@ -3053,9 +3052,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "fakerphp/faker": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
