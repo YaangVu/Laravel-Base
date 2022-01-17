@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use YaangVu\LaravelBase\Clauses\Condition;
 use YaangVu\LaravelBase\Clauses\OrderBy;
+use YaangVu\LaravelBase\Constants\DataTypeConstant;
 use YaangVu\LaravelBase\Constants\OperatorConstant;
-use YaangVu\LaravelBase\Enumerations\DataTypeEnum;
 use YaangVu\LaravelBase\Helpers\DataHelper\DataTypeHelper;
 
 abstract class AbstractQueryHelper implements QueryHelper
@@ -88,10 +88,10 @@ abstract class AbstractQueryHelper implements QueryHelper
     {
         if (!$params)
             $params = [
-                'date'       => DataTypeEnum::DATE,
-                'created_at' => DataTypeEnum::DATETIME,
-                'updated_at' => DataTypeEnum::DATETIME,
-                'age'        => DataTypeEnum::INT
+                'date'       => DataTypeConstant::DATE,
+                'created_at' => DataTypeConstant::DATETIME,
+                'updated_at' => DataTypeConstant::DATETIME,
+                'age'        => DataTypeConstant::INT
             ];
         foreach ($params as $param => $type)
             $this->addCastParam($param, $type);
@@ -208,12 +208,12 @@ abstract class AbstractQueryHelper implements QueryHelper
     /**
      * Add one more cast param
      *
-     * @param string       $param
-     * @param DataTypeEnum $type
+     * @param string           $param
+     * @param DataTypeConstant $type
      *
      * @return AbstractQueryHelper
      */
-    public function addCastParam(string $param, DataTypeEnum $type): static
+    public function addCastParam(string $param, DataTypeConstant $type): static
     {
         $this->dataTypeHelper->addParam($param, $type);
 

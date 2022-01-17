@@ -9,7 +9,7 @@ namespace YaangVu\LaravelBase\Helpers\QueryHelper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use YaangVu\LaravelBase\Clauses\OrderBy;
-use YaangVu\LaravelBase\Enumerations\DataTypeEnum;
+use YaangVu\LaravelBase\Constants\DataTypeConstant;
 
 interface QueryHelper
 {
@@ -91,12 +91,12 @@ interface QueryHelper
     /**
      * Add one more cast param
      *
-     * @param string $param
-     * @param DataTypeEnum  $type
+     * @param string           $param
+     * @param DataTypeConstant $type
      *
      * @return QueryHelper
      */
-    public function addCastParam(string $param, DataTypeEnum $type): static;
+    public function addCastParam(string $param, DataTypeConstant $type): static;
 
     /**
      * Remove cast param

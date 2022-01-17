@@ -8,11 +8,11 @@ namespace YaangVu\LaravelBase\Helpers\DataHelper;
 
 use Carbon\Carbon;
 use JetBrains\PhpStorm\Pure;
-use YaangVu\LaravelBase\Enumerations\DataTypeEnum;
+use YaangVu\LaravelBase\Constants\DataTypeConstant;
 
 class DataTypeHelper
 {
-    private array $params;
+    private array $params = [];
 
     /**
      * @Description Get all params will be cast
@@ -33,12 +33,12 @@ class DataTypeHelper
      * @Author      yaangvu
      * @Date        Jan 12, 2022
      *
-     * @param string       $param
-     * @param DataTypeEnum $type
+     * @param string $param
+     * @param string $type
      *
      * @return $this
      */
-    public function addParam(string $param, DataTypeEnum $type): static
+    public function addParam(string $param, string $type): static
     {
         $dataType = new DataType();
         $dataType->setParam($param);
@@ -70,19 +70,21 @@ class DataTypeHelper
      * @Author      yaangvu
      * @Date        Jan 12, 2022
      *
-     * @param mixed        $value
-     * @param DataTypeEnum $type
+     * @param mixed  $value
+     * @param string $type
      *
      * @return float|int|Carbon|string
      */
-    public function cast(mixed $value, DataTypeEnum $type): float|int|Carbon|string
+    public function cast(mixed $value, string $type): float|int|Carbon|string
     {
         return match ($type) {
-            DataTypeEnum::DATE => Carbon::createFromDate($value),
-            DataTypeEnum::DATETIME => Carbon::parse($value),
-            DataTypeEnum::FLOAT => (float)$value,
-            DataTypeEnum::LONG, DataTypeEnum::DOUBLE => (double)$value,
-            DataTypeEnum::INT => (int)$value,
+            DataTypeConstant::DATE => Carbon::createFromDate($value),
+            DataTypeConstant::DATETIME => Carbon::parse($value),
+            DataTypeConstant::FLOAT => (float)$value,
+            DataTypeConstant::NUMBER,
+            DataTypeConstant::LONG,
+            DataTypeConstant::DOUBLE => (double)$value,
+            DataTypeConstant::INT => (int)$value,
             default => trim((string)$value)
         };
     }
@@ -95,12 +97,12 @@ class DataTypeHelper
      *
      * @param string $param
      *
-     * @return DataTypeEnum
+     * @return string
      */
     #[Pure]
-    public function getType(string $param): DataTypeEnum
+    public function getType(string $param): string
     {
-        $type = DataTypeEnum::STRING;
+        $type = DataTypeConstant::STRING;
         foreach ($this->getParams() as $dataType) {
             if ($param == $dataType->getParam())
                 $type = $dataType->getType();
@@ -112,8 +114,8 @@ class DataTypeHelper
 
 class DataType
 {
-    private string       $param;
-    private DataTypeEnum $type;
+    private string $param;
+    private string $type;
 
     /**
      * @return string
@@ -132,17 +134,17 @@ class DataType
     }
 
     /**
-     * @return DataTypeEnum
+     * @return string
      */
-    public function getType(): DataTypeEnum
+    public function getType(): string
     {
         return $this->type;
     }
 
     /**
-     * @param DataTypeEnum $type
+     * @param string $type
      */
-    public function setType(DataTypeEnum $type): void
+    public function setType(string $type): void
     {
         $this->type = $type;
     }
