@@ -18,9 +18,6 @@
     "yaangvu/laravel-exception": "^1.0",
     "fakerphp/faker": "1.17.x-dev"
   },
-  "require-dev": {
-    "flipbox/lumen-generator": "^8.2"
-  },
   "authors": [
     {
       "name": "Yaang Vu",
