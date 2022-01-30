@@ -13,7 +13,8 @@ class LocaleServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $locale = \request()->header('locale') ?? env('APP_LOCALE', 'en');
+        $this->app->setLocale($locale);
     }
 
     /**
@@ -23,7 +24,6 @@ class LocaleServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $locale = request()->header('locale') ?? env('APP_LOCALE', 'en');
-        $this->app->setLocale($locale);
+        //
     }
 }
