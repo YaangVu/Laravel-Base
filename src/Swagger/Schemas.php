@@ -4,8 +4,6 @@
  * @Date   Feb 09, 2022
  */
 
-namespace YaangVu\LaravelBase\Swagger;
-
 /**
  * @package App\Exceptions
  * @OA\Schema(
