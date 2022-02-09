@@ -29,6 +29,38 @@ namespace YaangVu\LaravelBase\Swagger;
  *      @OA\Property(property="trace", type="string"),
  * )
  */
+
+/**
+ *
+ * @Author         YaangVu
+ * @Date           Jan 19, 2022
+ * @Description    Component Pagination.
+ *
+ * @OA\Schema(
+ *      schema="Pagination",
+ *      title="Pagination Result",
+ *      type="object",
+ *      description="",
+ *      @OA\Property(property="total", type="number", format="int64", default=1),
+ *      @OA\Property(property="page", type="number", format="int64", default=1),
+ *      @OA\Property(property="per_page", type="number", format="int64", default=10),
+ *      @OA\Property(property="current_page", type="number", format="int64", default=1),
+ *      @OA\Property(property="last_page", type="number", format="int64"),
+ *      @OA\Property(property="from", type="number", format="int64", default=1),
+ *      @OA\Property(property="to", type="number", format="int64", default=1),
+ *      @OA\Property(property="first_page_url", type="string"),
+ *      @OA\Property(property="last_page_url", type="string"),
+ *      @OA\Property(property="next_page_url", type="string", nullable=true),
+ *      @OA\Property(property="prev_page_url", type="string", nullable=true),
+ *      @OA\Property(property="path", type="string"),
+ *      @OA\Property(
+ *          property="data",
+ *          type="array",
+ *          @OA\Items()
+ *      )
+ * )
+ *
+ */
 class Schemas
 {
 
