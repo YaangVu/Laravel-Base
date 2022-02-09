@@ -11,12 +11,7 @@
  *     type="object",
  *     description="",
  *     @OA\Property(property="messages", type="object"),
- *     @OA\Property(property="message", type="string"),
- *     @OA\Property(property="error", type="string"),
- *     @OA\Property(property="code", type="number", format="int64"),
- *     @OA\Property(property="file", type="string"),
- *     @OA\Property(property="line", type="number", format="int64"),
- *     @OA\Property(property="trace", type="string"),
+ *     @OA\Property(property="message", type="string")
  * )
  */
 
