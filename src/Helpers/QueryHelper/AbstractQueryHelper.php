@@ -59,7 +59,7 @@ abstract class AbstractQueryHelper implements QueryHelper
              ->setParams($this->params)
              ->setExcludedOperators($this->excludedOperators)
              ->_setCastParams($this->castParams)
-             ->_setDelimiter(env('query.delimiter'));
+             ->_setDelimiter(env('laravel-base.query.delimiter'));
     }
 
     /**
@@ -208,12 +208,12 @@ abstract class AbstractQueryHelper implements QueryHelper
     /**
      * Add one more cast param
      *
-     * @param string           $param
-     * @param DataTypeConstant $type
+     * @param string $param
+     * @param string $type
      *
      * @return AbstractQueryHelper
      */
-    public function addCastParam(string $param, DataTypeConstant $type): static
+    public function addCastParam(string $param, string $type): static
     {
         $this->dataTypeHelper->addParam($param, $type);
 
