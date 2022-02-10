@@ -91,12 +91,12 @@ interface QueryHelper
     /**
      * Add one more cast param
      *
-     * @param string           $param
-     * @param DataTypeConstant $type
+     * @param string $param
+     * @param string $type
      *
      * @return QueryHelper
      */
-    public function addCastParam(string $param, DataTypeConstant $type): static;
+    public function addCastParam(string $param, string $type): static;
 
     /**
      * Remove cast param
