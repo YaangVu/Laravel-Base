@@ -11,7 +11,7 @@ namespace YaangVu\LaravelBase\Clauses;
  */
 class Condition
 {
-    private string $table;
+    private ?string $table;
     private string $column;
     private mixed  $value;
     private string $operator;
