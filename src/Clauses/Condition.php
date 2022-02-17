@@ -17,17 +17,17 @@ class Condition
     private string $operator;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getTable(): string
+    public function getTable(): ?string
     {
         return $this->table;
     }
 
     /**
-     * @param string $table
+     * @param string|null $table
      */
-    public function setTable(string $table): void
+    public function setTable(?string $table): void
     {
         $this->table = $table;
     }
