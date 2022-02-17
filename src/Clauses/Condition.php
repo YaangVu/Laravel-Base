@@ -12,9 +12,9 @@ namespace YaangVu\LaravelBase\Clauses;
 class Condition
 {
     private ?string $table;
-    private string $column;
-    private mixed  $value;
-    private string $operator;
+    private string  $column;
+    private mixed   $value;
+    private string  $operator;
 
     /**
      * @return string|null
