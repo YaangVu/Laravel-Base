@@ -88,7 +88,7 @@
  * @OA\Parameter(
  *     parameter="asset--sid",
  *     name="id",
- *     description="Applications id",
+ *     description="Id",
  *     required=true,
  *     in="path",
  *      @OA\Schema(
@@ -98,7 +98,7 @@
  * @OA\Parameter(
  *     parameter="asset--iid",
  *     name="id",
- *     description="Applications id",
+ *     description="Id",
  *     required=true,
  *     in="path",
  *     @OA\Schema(
@@ -108,7 +108,7 @@
  * @OA\Parameter(
  *     parameter="asset--uuid",
  *     name="uuid",
- *     description="Applications uuid",
+ *     description="Uuid",
  *     required=true,
  *     in="path",
  *     @OA\Schema(
