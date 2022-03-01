@@ -92,7 +92,7 @@
  *     required=true,
  *     in="path",
  *      @OA\Schema(
- *        type="string"
+ *        type="integer"
  *      ),
  * ),
  * @OA\Parameter(
