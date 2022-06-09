@@ -215,7 +215,7 @@ class QueryHelper
             DataCastConstant::DATETIME => Carbon::parse($value),
             DataCastConstant::NUMBER, DataCastConstant::DOUBLE => (double)$value,
             DataCastConstant::INT => (int)$value,
-            default => (string)$value
+            default => trim((string)$value)
         };
     }
 

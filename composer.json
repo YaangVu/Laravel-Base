@@ -10,7 +10,7 @@
   ],
   "license": "MIT",
   "require": {
-    "php": "^8.0",
+    "php": "^8.0,^8.1",
     "illuminate/database": "^7|^8|^9",
     "illuminate/support": "^7|^8|^9",
     "illuminate/contracts": "^7|^8|^9",
