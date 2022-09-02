@@ -13,12 +13,12 @@ trait HasCondition
     /**
      * @var Condition[]
      */
-    private array $conditions;
+    private array $conditions = [];
 
     /**
      * @var Condition[]
      */
-    private array $excludedConditions;
+    private array $excludedConditions = [];
 
     /**
      * @return Condition[]

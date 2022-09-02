@@ -12,38 +12,33 @@ use Illuminate\Database\Eloquent\Model;
 trait Configurable
 {
     /**
+     * The model will be use for all functions
+     *
+     * @var Model
+     */
+    public Model $model;
+    /**
      * Limitation of pagination
      *
      * @var int
      */
     private int $limit;
-
     /**
      * The parameters were excluded
      *
      * @var array
      */
     private array $excludedParams;
-
     /**
      * @var string Separator
      */
     private string $separator;
-
     /**
      * The value of parameter can be null or not
      *
      * @var bool $nullableValue
      */
     private bool $nullableValue;
-
-    /**
-     * The model will be use for all functions
-     *
-     * @var Model
-     */
-    public Model $model;
-
     /**
      * Query builder
      *
@@ -127,6 +122,46 @@ trait Configurable
              ->setBuilder($this->model->query())
              ->setTtl(86400) // 1 day
         ;
+    }
+
+    /**
+     * @return array
+     */
+    public function getGuarded(): array
+    {
+        return $this->guarded;
+    }
+
+    /**
+     * @param array $guarded
+     *
+     * @return static
+     */
+    public function setGuarded(array $guarded): static
+    {
+        $this->guarded = $guarded;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTable(): string
+    {
+        return $this->table;
+    }
+
+    /**
+     * @param string $table
+     *
+     * @return static
+     */
+    public function setTable(string $table): static
+    {
+        $this->table = $table;
+
+        return $this;
     }
 
     /**
@@ -270,26 +305,6 @@ trait Configurable
     }
 
     /**
-     * @return array
-     */
-    public function getGuarded(): array
-    {
-        return $this->guarded;
-    }
-
-    /**
-     * @param array $guarded
-     *
-     * @return static
-     */
-    public function setGuarded(array $guarded): static
-    {
-        $this->guarded = $guarded;
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getPrimaryKey(): string
@@ -305,26 +320,6 @@ trait Configurable
     public function setPrimaryKey(string $primaryKey): static
     {
         $this->primaryKey = $primaryKey;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTable(): string
-    {
-        return $this->table;
-    }
-
-    /**
-     * @param string $table
-     *
-     * @return static
-     */
-    public function setTable(string $table): static
-    {
-        $this->table = $table;
 
         return $this;
     }

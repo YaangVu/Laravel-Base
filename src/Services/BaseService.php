@@ -50,7 +50,7 @@ abstract class BaseService implements Repository
      */
     public function getAll(bool $paginated = true): LengthAwarePaginator|Collection|array
     {
-        if ($this instanceof ShouldCache && Cache::has($cachedKey = Request::serialize()))
+        if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->model . '-' . Request::serialize()))
             return Cache::get($cachedKey);
 
         $builder = $this->buildQuery($this->builder);

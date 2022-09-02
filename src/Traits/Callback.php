@@ -36,7 +36,7 @@ trait Callback
             event(new $event($response));
 
         // Cache data
-        if ($this instanceof ShouldCache && Cache::has($cachedKey = Request::serialize()))
+        if ($this instanceof ShouldCache && !Cache::has($cachedKey = $this->model . '-' . Request::serialize()))
             Cache::put($cachedKey, $response, 3600);
     }
 
