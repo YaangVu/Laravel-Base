@@ -34,13 +34,9 @@
   },
   "extra": {
     "laravel": {
-      "providers": [
-        "GeneratorProvider"
-      ],
+      "providers": [],
       "aliases": {
-        "BaseService": "YaangVu\\LaravelBase\\Services\\BaseService",
-        "ConditionMaker": "YaangVu\\LaravelBase\\Facades\\ConditionMaker",
-        "Generator": "ConditionMaker"
+        "BaseService": "YaangVu\\LaravelBase\\Services\\BaseService"
       }
     }
   }
