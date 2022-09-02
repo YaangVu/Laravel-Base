@@ -1,15 +1,39 @@
 <?php
 /**
  * @Author yaangvu
- * @Date   Jan 12, 2022
+ * @Date   Jul 26, 2022
  */
 
 namespace YaangVu\LaravelBase\Clauses;
 
 class OrderBy
 {
+    private string $table;
     private string $column;
+    /**
+     * @var string $type accept 2 values: ASC, DESC
+     */
     private string $type;
+
+    /**
+     * @return string
+     */
+    public function getTable(): string
+    {
+        return $this->table;
+    }
+
+    /**
+     * @param string $table
+     *
+     * @return OrderBy
+     */
+    public function setTable(string $table): OrderBy
+    {
+        $this->table = $table;
+
+        return $this;
+    }
 
     /**
      * @return string
@@ -21,10 +45,14 @@ class OrderBy
 
     /**
      * @param string $column
+     *
+     * @return OrderBy
      */
-    public function setColumn(string $column): void
+    public function setColumn(string $column): OrderBy
     {
         $this->column = $column;
+
+        return $this;
     }
 
     /**
@@ -37,10 +65,13 @@ class OrderBy
 
     /**
      * @param string $type
+     *
+     * @return OrderBy
      */
-    public function setType(string $type): void
+    public function setType(string $type): OrderBy
     {
         $this->type = $type;
-    }
 
+        return $this;
+    }
 }

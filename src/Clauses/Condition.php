@@ -1,36 +1,20 @@
 <?php
 /**
  * @Author yaangvu
- * @Date   Jan 12, 2022
+ * @Date   Jul 26, 2022
  */
 
 namespace YaangVu\LaravelBase\Clauses;
 
-/**
- * Where condition
- */
+use YaangVu\LaravelBase\Enums\OperatorPatternEnum;
+
 class Condition
 {
-    private ?string $table;
-    private string  $column;
-    private mixed   $value;
-    private string  $operator;
-
-    /**
-     * @return string|null
-     */
-    public function getTable(): ?string
-    {
-        return $this->table;
-    }
-
-    /**
-     * @param string|null $table
-     */
-    public function setTable(?string $table): void
-    {
-        $this->table = $table;
-    }
+    private ?string             $table    = null;
+    private string              $column;
+    private string              $operator = '=';
+    private OperatorPatternEnum $operatorPattern;
+    private mixed               $value;
 
     /**
      * @return string
@@ -42,26 +26,14 @@ class Condition
 
     /**
      * @param string $column
+     *
+     * @return Condition
      */
-    public function setColumn(string $column): void
+    public function setColumn(string $column): Condition
     {
         $this->column = $column;
-    }
 
-    /**
-     * @return mixed
-     */
-    public function getValue(): mixed
-    {
-        return $this->value;
-    }
-
-    /**
-     * @param mixed $value
-     */
-    public function setValue(mixed $value): void
-    {
-        $this->value = $value;
+        return $this;
     }
 
     /**
@@ -74,10 +46,73 @@ class Condition
 
     /**
      * @param string $operator
+     *
+     * @return Condition
      */
-    public function setOperator(string $operator): void
+    public function setOperator(string $operator): Condition
     {
         $this->operator = $operator;
+
+        return $this;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getValue(): mixed
+    {
+        return $this->value;
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return Condition
+     */
+    public function setValue(mixed $value): Condition
+    {
+        $this->value = $value;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getTable(): ?string
+    {
+        return $this->table;
+    }
+
+    /**
+     * @param string|null $table
+     *
+     * @return Condition
+     */
+    public function setTable(?string $table): Condition
+    {
+        $this->table = $table;
+
+        return $this;
+    }
+
+    /**
+     * @return OperatorPatternEnum
+     */
+    public function getOperatorPattern(): OperatorPatternEnum
+    {
+        return $this->operatorPattern;
+    }
+
+    /**
+     * @param OperatorPatternEnum $operatorPattern
+     *
+     * @return Condition
+     */
+    public function setOperatorPattern(OperatorPatternEnum $operatorPattern): Condition
+    {
+        $this->operatorPattern = $operatorPattern;
+
+        return $this;
+    }
 }

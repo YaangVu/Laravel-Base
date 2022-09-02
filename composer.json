@@ -6,17 +6,19 @@
     "lumen",
     "base",
     "yaangvu",
-    "api"
+    "api",
+    "generator",
+    "swagger"
   ],
   "license": "MIT",
   "require": {
-    "php": "^8.0|^8.1",
-    "illuminate/database": "^7|^8|^9",
-    "illuminate/pagination": "^7|^8|^9",
-    "illuminate/http": "^7|^8|^9",
-    "illuminate/console": "^7|^8|^9",
-    "yaangvu/laravel-exception": "^1",
-    "fakerphp/faker": "*"
+    "php": "^8.1|^8.2",
+    "illuminate/database": "^7|^8|^9|^10",
+    "illuminate/pagination": "^7|^8|^9|^10",
+    "illuminate/http": "^7|^8|^9|^10",
+    "illuminate/console": "^7|^8|^9|^10",
+    "yaangvu/laravel-exception": "^1.0.8",
+    "fakerphp/faker": "^1.9.1"
   },
   "authors": [
     {
@@ -33,11 +35,12 @@
   "extra": {
     "laravel": {
       "providers": [
-        "YaangVu\\LaravelBase\\Providers\\BaseServiceProvider"
+        "GeneratorProvider"
       ],
       "aliases": {
         "BaseService": "YaangVu\\LaravelBase\\Services\\BaseService",
-        "Query": "YaangVu\\LaravelBase\\Facades\\Query"
+        "ConditionMaker": "YaangVu\\LaravelBase\\Facades\\ConditionMaker",
+        "Generator": "ConditionMaker"
       }
     }
   }

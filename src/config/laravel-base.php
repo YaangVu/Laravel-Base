@@ -1,10 +1,14 @@
 <?php
+/**
+ * @Author yaangvu
+ * @Date   Aug 07, 2022
+ */
 
 return [
-    'limit'      => 10,
-    'page'       => 1,
     'connection' => env('DB_CONNECTION', 'mysql'),
     'query'      => [
-        'delimiter' => env('BASE_QUERY_DELIMITER', '__')
+        'separator'      => '__',
+        'limit'          => 10,
+        'nullable_value' => false
     ]
 ];
