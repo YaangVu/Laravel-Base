@@ -120,7 +120,7 @@ trait Configurable
              ->setTable($this->model->getTable())
              ->setDriver($this->model->getConnection()->getDriverName())
              ->setBuilder($this->model->query())
-             ->setTtl(86400) // 1 day
+             ->setTtl(config('laravel-base.cache.ttl')) // 1 day
         ;
     }
 

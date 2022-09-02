@@ -36,7 +36,8 @@
     "laravel": {
       "providers": [],
       "aliases": {
-        "BaseService": "YaangVu\\LaravelBase\\Services\\BaseService"
+        "BaseService": "YaangVu\\LaravelBase\\Services\\BaseService",
+        "BaseController": "YaangVu\\LaravelBase\\Controllers\\BaseController"
       }
     }
   }

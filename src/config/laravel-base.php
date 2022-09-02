@@ -10,5 +10,8 @@ return [
         'separator'      => '__',
         'limit'          => 10,
         'nullable_value' => false
+    ],
+    'cache'      => [
+        'ttl' => 86400 // 1 day
     ]
 ];

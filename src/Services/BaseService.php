@@ -50,7 +50,7 @@ abstract class BaseService implements Repository
      */
     public function getAll(bool $paginated = true): LengthAwarePaginator|Collection|array
     {
-        if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->model . '-' . Request::serialize()))
+        if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->getTable() . '-' . Request::serialize()))
             return Cache::get($cachedKey);
 
         $builder = $this->buildQuery($this->builder);
@@ -72,8 +72,8 @@ abstract class BaseService implements Repository
      */
     public function get(int|string $id): Model
     {
-        if ($this instanceof ShouldCache && Cache::has($this->model . "-$id"))
-            return Cache::get($this->model . "-$id");
+        if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->getTable() . "-$id"))
+            return Cache::get($cachedKey);
 
         $entity = $this->relate($this->model->query())->findOrFail($id);
 
@@ -237,8 +237,8 @@ abstract class BaseService implements Repository
      */
     public function getByUuid(string $uuid): Model
     {
-        if ($this instanceof ShouldCache && Cache::has($this->model . "-$uuid"))
-            return Cache::get($this->model . "-$uuid");
+        if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->getTable() . "-uuid-$uuid"))
+            return Cache::get($cachedKey);
 
         $entity = $this->relate($this->model->query())->where('uuid', '=', $uuid)->firstOrFail();
 

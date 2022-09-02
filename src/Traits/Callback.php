@@ -36,8 +36,8 @@ trait Callback
             event(new $event($response));
 
         // Cache data
-        if ($this instanceof ShouldCache && !Cache::has($cachedKey = $this->model . '-' . Request::serialize()))
-            Cache::put($cachedKey, $response, 3600);
+        if ($this instanceof ShouldCache && !Cache::has($cachedKey = $this->getTable() . '-' . Request::serialize()))
+            Cache::put($cachedKey, $response, min($this->getTtl(), 3600));
     }
 
     /**
@@ -57,6 +57,9 @@ trait Callback
             $events = [$events];
         foreach ($events as $event)
             event(new $event($id, $model));
+
+        if ($this instanceof ShouldCache && !Cache::has($cachedKey = $this->getTable() . "-$id"))
+            Cache::put($cachedKey, $model, $this->getTtl());
     }
 
     /**
@@ -76,6 +79,9 @@ trait Callback
             $events = [$events];
         foreach ($events as $event)
             event(new $event($uuid, $model));
+
+        if ($this instanceof ShouldCache && !Cache::has($cachedKey = $this->getTable() . "-uuid-$uuid"))
+            Cache::put($cachedKey, $model, $this->getTtl());
     }
 
     /**
@@ -190,7 +196,7 @@ trait Callback
 
         // Remove Cached data
         if ($this instanceof ShouldCache)
-            Cache::forget($this->getTable() . "-$uuid");
+            Cache::forget($this->getTable() . "-uuid-$uuid");
     }
 
     /**
@@ -240,7 +246,7 @@ trait Callback
         if ($this instanceof ShouldCache) {
             $uuids = explode(',', $request->uuids ?? '');
             foreach ($uuids as $uuid)
-                Cache::forget($this->getTable() . "-$uuid");
+                Cache::forget($this->getTable() . "-uuid-$uuid");
         }
     }
 }

@@ -8,7 +8,7 @@ namespace YaangVu\LaravelBase\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
-class LaravelBaseServiceProvider extends ServiceProvider
+class BaseServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
@@ -33,6 +33,7 @@ class LaravelBaseServiceProvider extends ServiceProvider
     {
         $configPath = __DIR__ . '/../config/laravel-base.php';
         $this->publishes([$configPath => $this->getConfigPath()], 'config');
+        $this->mergeConfigFrom($configPath, 'laravel-base');
     }
 
     /**
