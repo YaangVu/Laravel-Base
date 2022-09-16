@@ -67,7 +67,7 @@ class Query extends Facade
         if (!in_array($driver, DbDriverConstant::ALL))
             throw new \RuntimeException("Database driver was not found or not supported");
 
-        $class = '\\YaangVu\\LaravelBase\\Helpers\\' . $driver . 'QueryHelper';
+        $class = '\\YaangVu\\LaravelBase\\Helpers\\QueryHelper\\' . Str::studly($driver) . 'QueryHelper';
 
         if (class_exists($class))
             return new $class();
