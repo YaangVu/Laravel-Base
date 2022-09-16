@@ -10,6 +10,7 @@ namespace YaangVu\LaravelBase\Facades;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Str;
 use YaangVu\LaravelBase\Constants\DbDriverConstant;
 use YaangVu\LaravelBase\Helpers\QueryHelper\MysqlQueryHelper;
 use YaangVu\LaravelBase\Helpers\QueryHelper\QueryHelper;
