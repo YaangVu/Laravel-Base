@@ -7,8 +7,8 @@
 namespace YaangVu\LaravelBase\Helpers;
 
 use Carbon\Carbon;
-use YaangVu\LaravelBase\DataObject\Cast;
-use YaangVu\LaravelBase\Enums\CastEnum;
+use YaangVu\LaravelBase\Base\DataObject\Cast;
+use YaangVu\LaravelBase\Base\Enums\CastEnum;
 
 trait CanCast
 {

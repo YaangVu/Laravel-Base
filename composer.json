@@ -13,12 +13,14 @@
   "license": "MIT",
   "require": {
     "php": "^8.1|^8.2",
+    "yaangvu/laravel-exception": "^1.0.8",
+    "fakerphp/faker": "^1.9.1"
+  },
+  "require-dev": {
     "illuminate/database": "^7|^8|^9|^10",
     "illuminate/pagination": "^7|^8|^9|^10",
     "illuminate/http": "^7|^8|^9|^10",
-    "illuminate/console": "^7|^8|^9|^10",
-    "yaangvu/laravel-exception": "^1.0.8",
-    "fakerphp/faker": "^1.9.1"
+    "illuminate/console": "^7|^8|^9|^10"
   },
   "authors": [
     {
@@ -34,11 +36,11 @@
   },
   "extra": {
     "laravel": {
-      "providers": [],
-      "aliases": {
-        "BaseService": "YaangVu\\LaravelBase\\Services\\BaseService",
-        "BaseController": "YaangVu\\LaravelBase\\Controllers\\BaseController"
-      }
+      "providers": [
+        "YaangVu\\LaravelBase\\Providers\\BaseServiceProvider",
+        "YaangVu\\LaravelBase\\Providers\\GeneratorServiceProvider"
+      ],
+      "aliases": {}
     }
   }
 }

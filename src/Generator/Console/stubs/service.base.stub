@@ -1,0 +1,25 @@
+<?php
+
+namespace DummyNamespace;
+
+use DummyFullModelClass;
+use Illuminate\Database\Eloquent\Model;
+use YaangVu\LaravelBase\Base\Services\BaseService;
+
+/**
+ * @Author      yaangvu
+ * @Date        DummyDate
+ */
+class DummyClass extends BaseService
+{
+
+    /**
+     * @var DummyModelClass
+     */
+    public Model $model;
+
+    function initModel(): void
+    {
+        $this->model = new DummyModelClass();
+    }
+}

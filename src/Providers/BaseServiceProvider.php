@@ -7,6 +7,9 @@
 namespace YaangVu\LaravelBase\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use YaangVu\LaravelBase\Base\Providers\ConditionMakerServiceProvider;
+use YaangVu\LaravelBase\Base\Providers\RequestServiceProvider;
+use YaangVu\LaravelBase\Base\Providers\RouterServiceProvider;
 
 class BaseServiceProvider extends ServiceProvider
 {
