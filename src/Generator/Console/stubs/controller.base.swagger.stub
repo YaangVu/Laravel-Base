@@ -19,6 +19,7 @@ class DummyClass extends BaseController
      */
     public function __construct(private ServiceClass $service)
     {
+        parent::__construct($this->service);
     }
 
     /**
