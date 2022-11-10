@@ -21,14 +21,13 @@ use YaangVu\Exceptions\QueryException;
 use YaangVu\Exceptions\SystemException;
 use YaangVu\LaravelBase\Base\Query\Query;
 use YaangVu\LaravelBase\Base\Traits\Callback;
-use YaangVu\LaravelBase\Base\Traits\HasParameter;
 use YaangVu\LaravelBase\Base\Traits\Validatable;
 use YaangVu\LaravelBase\Interfaces\Service;
 use YaangVu\LaravelBase\Interfaces\ShouldCache;
 
 abstract class BaseService implements Service
 {
-    use Callback, Validatable, HasParameter, Macroable;
+    use Callback, Validatable, Macroable, Query;
 
     public function __construct()
     {
@@ -53,7 +52,7 @@ abstract class BaseService implements Service
         if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->getTable() . '-' . Request::serialize()))
             return Cache::get($cachedKey);
 
-        $builder = Query::buildGetAllQuery($this->builder);
+        $builder = $this->buildGetAllQuery($this->builder);
         try {
             $response = $paginated
                 ? $builder->paginate($this->getLimit())
@@ -75,7 +74,9 @@ abstract class BaseService implements Service
         if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->getTable() . "-$id"))
             return Cache::get($cachedKey);
 
-        $entity = $this->relate($this->model->query())->findOrFail($id);
+        $entity = $this->parseSelections()
+                       ->relate($this->model->query())
+                       ->findOrFail($id, $this->getSelections());
 
         $this->postGet($id, $entity);
 
@@ -240,7 +241,10 @@ abstract class BaseService implements Service
         if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->getTable() . "-uuid-$uuid"))
             return Cache::get($cachedKey);
 
-        $entity = $this->relate($this->model->query())->where('uuid', '=', $uuid)->firstOrFail();
+        $entity = $this->parseSelections()
+                       ->relate($this->model->query())
+                       ->where('uuid', '=', $uuid)
+                       ->firstOrFail($this->getSelections());
 
         $this->postGetByUuid($uuid, $entity);
 

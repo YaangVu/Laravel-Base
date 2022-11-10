@@ -16,29 +16,34 @@ trait Configurable
      *
      * @var Model
      */
-    public Model $model;
+    public $model;
+
     /**
      * Limitation of pagination
      *
      * @var int
      */
     private int $limit;
+
     /**
      * The parameters were excluded
      *
      * @var array
      */
     private array $excludedParams;
+
     /**
      * @var string Separator
      */
     private string $separator;
+
     /**
      * The value of parameter can be null or not
      *
      * @var bool $nullableValue
      */
     private bool $nullableValue;
+
     /**
      * Query builder
      *
@@ -96,12 +101,12 @@ trait Configurable
      *
      * @return $this
      */
-    public function configure(): static
+    public function configureForGetAllQuery(): static
     {
         return $this->setLimit(config('laravel-base.query.limit'))
                     ->setSeparator(config('laravel-base.query.separator'))
                     ->setNullableValue(config('laravel-base.query.nullable_value'))
-                    ->setExcludedParams(['limit', 'order_by', 'page']);
+                    ->setExcludedParams(['limit', 'order_by', 'page', 'select', 'order_by']);
     }
 
     /**
@@ -111,17 +116,17 @@ trait Configurable
      * @Date   Sep 02, 2022
      *
      */
-    public function initAttrs(): void
+    public function initAttrs(): static
     {
         // Get attributes from model
-        $this->setFillAbles($this->model->getFillable())
-             ->setGuarded($this->model->getGuarded())
-             ->setPrimaryKey($this->model->getKeyName())
-             ->setTable($this->model->getTable())
-             ->setDriver($this->model->getConnection()->getDriverName())
-             ->setBuilder($this->model->query())
-             ->setTtl(config('laravel-base.cache.ttl')) // 1 day
-        ;
+        return $this->setFillAbles($this->model->getFillable())
+                    ->setGuarded($this->model->getGuarded())
+                    ->setPrimaryKey($this->model->getKeyName())
+                    ->setTable($this->model->getTable())
+                    ->setDriver($this->model->getConnection()->getDriverName())
+                    ->setBuilder($this->model->query())
+                    ->setTtl(config('laravel-base.cache.ttl')) // 1 day
+            ;
     }
 
     /**
