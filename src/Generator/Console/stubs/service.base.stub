@@ -16,7 +16,7 @@ class DummyClass extends BaseService
     /**
      * @var DummyModelClass
      */
-    public Model $model;
+    public $model;
 
     function initModel(): void
     {

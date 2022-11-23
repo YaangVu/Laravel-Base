@@ -8,11 +8,10 @@ namespace YaangVu\LaravelBase\Base\Query;
 
 use Illuminate\Database\Eloquent\Builder;
 use YaangVu\LaravelBase\Base\Traits\HasParameter;
-use YaangVu\LaravelBase\Helpers\Singleton;
 
-class Query
+trait Query
 {
-    use HasRelationship, HasParameter, Configurable, Singleton;
+    use HasRelationship, HasParameter, Configurable, HasSelection;
 
     /**
      *  Build query from parameters
@@ -26,25 +25,28 @@ class Query
      *
      * @return Builder
      */
-    public static function buildGetAllQuery(Builder $builder, ?string $alias = null, array $params = []): Builder
+    public function buildGetAllQuery(Builder $builder, ?string $alias = null, array $params = []): Builder
     {
-        self::getInstance()->configure()->parseParams($params);
+        $this->configureForGetAllQuery()
+             ->parseSelections($params)
+             ->parseParams($params);
 
-        $builder = self::getInstance()->relate($builder);
+        $builder = $this->relate($builder)->select();
 
         if ($alias)
-            $builder = $builder->from(self::getInstance()->getTable(), $alias);
+            $builder = $builder->from($this->getTable(), $alias);
 
         // Add where condition
-        foreach (self::getInstance()->getConditions() as $cond) {
+        foreach ($this->getConditions() as $cond) {
             $builder = $builder->where($cond->getColumn(), $cond->getOperator(), $cond->getValue());
         }
 
         // Sort data
-        if ($orderBy = self::getInstance()->getOrderBy()) {
-            $builder = $builder->orderBy($orderBy->getColumn(), $orderBy->getType());
+        if ($orderBy = count($this->getOrders())) {
+            foreach ($this->getOrders() as $orderBy)
+                $builder = $builder->orderBy($orderBy->getColumn(), $orderBy->getType());
         } else {
-            $builder = $builder->orderBy(($alias ? "$alias." : "") . self::getInstance()->getPrimaryKey(), 'DESC');
+            $builder = $builder->orderBy(($alias ? "$alias." : "") . $this->getPrimaryKey(), 'DESC');
         }
 
         return $builder;

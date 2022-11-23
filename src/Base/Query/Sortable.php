@@ -11,42 +11,67 @@ use YaangVu\LaravelBase\Base\Clauses\OrderBy;
 
 trait Sortable
 {
-    private ?OrderBy $orderBy = null;
+
+    /**
+     * @var OrderBy[]
+     */
+    private array $orders = [];
 
     public function parseOrderBy(?string $orderBy = null): static
     {
-        $clause = $orderBy ?: request()->input('order_by');
-        if (!$clause)
+        $param = $orderBy ?: request()->input('order_by');
+        if (!$param)
             return $this;
 
-        $orderArr = preg_split("/\s+/", trim($clause));
-        if (count($orderArr) > 2)
-            throw new BadRequestException("Order by clause is invalid");
+        $orderClauses = preg_split("/,+/", trim($param));
 
-        $order = new OrderBy();
-        $order->setColumn($orderArr[0]);
-        $order->setType($orderArr[1] ?? 'ASC');
+        foreach ($orderClauses as $orderClause) {
+            $orderArr = preg_split("/\s+/", trim($orderClause));
+            if (count($orderArr) > 2)
+                throw new BadRequestException("Order by clause is invalid");
 
-        return $this->setOrderBy($order);
+            $order = new OrderBy();
+            $order->setColumn($orderArr[0]);
+            $order->setType($orderArr[1] ?? 'ASC');
+
+            $this->addOrderBy($order);
+        }
+
+        return $this;
     }
 
     /**
-     * @return OrderBy|null
+     * @return OrderBy[]
      */
-    public function getOrderBy(): ?OrderBy
+    public function getOrders(): array
     {
-        return $this->orderBy;
+        return $this->orders;
     }
 
     /**
-     * @param OrderBy|null $orderBy
+     * @param array $orders
      *
      * @return Sortable
      */
-    public function setOrderBy(?OrderBy $orderBy): static
+    public function setOrders(array $orders): static
     {
-        $this->orderBy = $orderBy;
+        $this->orders = $orders;
 
         return $this;
+    }
+
+    /**
+     * Add more OrderBy Clause
+     *
+     * @Author yaangvu
+     * @Date   Nov 10, 2022
+     *
+     * @param OrderBy $orderBy
+     *
+     * @return $this
+     */
+    public function addOrderBy(OrderBy $orderBy): static
+    {
+        return $this->setOrders([...$this->getOrders(), $orderBy]);
     }
 }

@@ -49,9 +49,16 @@ class ControllerMakeCommand extends GeneratorCommand
      */
     protected function getStub(): string
     {
-        if ($type = $this->option('swagger')) {
+        $hasSwagger   = $this->option('swagger');
+        $hasInjection = $this->option('injection');
+
+        if ($hasSwagger && $hasInjection)
+            $stub = '/stubs/injection.swagger.controller.base.stub';
+        else if ($hasSwagger && !$hasInjection)
             $stub = '/stubs/controller.base.swagger.stub';
-        } else
+        else if (!$hasSwagger && $hasInjection)
+            $stub = '/stubs/injection.controller.base.stub';
+        else
             $stub = '/stubs/controller.base.stub';
 
         return $this->resolveStubPath($stub);
@@ -121,6 +128,7 @@ class ControllerMakeCommand extends GeneratorCommand
     {
         return [
             ['swagger', 'S', InputOption::VALUE_NONE, 'Create Controller with Swagger comment doc'],
+            ['injection', 'i', InputOption::VALUE_NONE, 'Create Controller with Method Invocation & Injection'],
             ['service', 's', InputOption::VALUE_NONE, 'Generate a resource controller for the given service.'],
             ['model', 'm', InputOption::VALUE_NONE, 'Generate a resource controller for the given model.'],
         ];

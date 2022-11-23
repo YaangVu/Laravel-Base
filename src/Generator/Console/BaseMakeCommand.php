@@ -53,19 +53,14 @@ class BaseMakeCommand extends GeneratorCommand
                         '--model' => true
                     ]);
 
-        if ($type = $this->option('swagger'))
-            $this->call('yaangvu:controller',
-                        [
-                            'name'      => $this->arrName['first'] . '/' . $this->arrName['last'],
-                            '--service' => true,
-                            '--swagger' => true,
-                        ]);
-        else
-            $this->call('yaangvu:controller',
-                        [
-                            'name'      => $this->arrName['first'] . '/' . $this->arrName['last'],
-                            '--service' => true
-                        ]);
+        $this->call('yaangvu:controller',
+                    [
+                        'name'        => $this->arrName['first'] . '/' . $this->arrName['last'],
+                        '--service'   => true,
+                        '--swagger'   => $this->option('swagger'),
+                        '--injection' => $this->option('injection'),
+                    ]);
+
     }
 
     /**
@@ -77,6 +72,7 @@ class BaseMakeCommand extends GeneratorCommand
     {
         return [
             ['swagger', 'S', InputOption::VALUE_NONE, 'Create Controller with Swagger comment doc'],
+            ['injection', 'i', InputOption::VALUE_NONE, 'Create Controller with Method Invocation & Injection'],
         ];
     }
 
