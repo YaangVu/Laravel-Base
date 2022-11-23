@@ -53,11 +53,11 @@ class ControllerMakeCommand extends GeneratorCommand
         $hasInjection = $this->option('injection');
 
         if ($hasSwagger && $hasInjection)
-            $stub = '/stubs/tenant.swagger.controller.base.stub';
+            $stub = '/stubs/injection.swagger.controller.base.stub';
         else if ($hasSwagger && !$hasInjection)
             $stub = '/stubs/controller.base.swagger.stub';
         else if (!$hasSwagger && $hasInjection)
-            $stub = '/stubs/tenant.controller.base.stub';
+            $stub = '/stubs/injection.controller.base.stub';
         else
             $stub = '/stubs/controller.base.stub';
 

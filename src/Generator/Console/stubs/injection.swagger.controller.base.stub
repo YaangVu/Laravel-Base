@@ -20,6 +20,8 @@ class DummyClass extends Controller
      * @Author      yaangvu
      * @Date        DummyDate
      *
+     * @param ServiceClass $service
+     *
      * @return JsonResponse
      *
      *
@@ -85,6 +87,7 @@ class DummyClass extends Controller
      * @Date        DummyDate
      *
      * @param $id
+     * @param ServiceClass $service
      *
      * @return JsonResponse
      *
@@ -140,6 +143,7 @@ class DummyClass extends Controller
      * @Date        DummyDate
      *
      * @param Request $request
+     * @param ServiceClass $service
      *
      * @return JsonResponse
      *
@@ -201,6 +205,7 @@ class DummyClass extends Controller
      *
      * @param         $id
      * @param Request $request
+     * @param ServiceClass $service
      *
      * @return JsonResponse
      *
@@ -262,6 +267,7 @@ class DummyClass extends Controller
      *
      * @param         $id
      * @param Request $request
+     * @param ServiceClass $service
      *
      * @return JsonResponse
      *
@@ -322,6 +328,7 @@ class DummyClass extends Controller
      * @Date        DummyDate
      *
      * @param $id
+     * @param ServiceClass $service
      *
      * @return JsonResponse
      * @OA\Delete(
@@ -376,6 +383,7 @@ class DummyClass extends Controller
      * @Date        DummyDate
      *
      * @param $uuid
+     * @param ServiceClass $service
      *
      * @return JsonResponse
      *
@@ -431,6 +439,7 @@ class DummyClass extends Controller
      * @Date        DummyDate
      *
      * @param Request $request
+     * @param ServiceClass $service
      *
      * @return JsonResponse
      *
@@ -489,6 +498,7 @@ class DummyClass extends Controller
      * @Date        DummyDate
      *
      * @param Request $request
+     * @param ServiceClass $service
      *
      * @return JsonResponse
      * @OA\Delete(
