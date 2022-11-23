@@ -52,7 +52,7 @@ abstract class BaseService implements Service
         if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->getTable() . '-' . Request::serialize()))
             return Cache::get($cachedKey);
 
-        $builder = $this->buildGetAllQuery($this->builder);
+        $builder = $this->buildGetAllQuery($this->getBuilder());
         try {
             $response = $paginated
                 ? $builder->paginate($this->getLimit())

@@ -8,90 +8,34 @@ This base will help to create simple API (CRUD) for 1 specific entity, such as U
 
 ## Initial
 
-### Directory structure
+### Generate code
+```shell
+php artisan yaangvu:base Post <option>
+```
+Option:
+- -S: generate code with default Swagger annotation
+- -i: Auto inject Service in Controller methods
+
+### Directory structure of generated code
 
 ```
-.
-├── src
-│   ├── Constants
-│   │   ├── DataCastConstant.php
-│   │   └── OperatorConstant.php
-│   ├── Controllers
-│   │   └── BaseController.php
-│   ├── Exceptions
-│   │   ├── BadRequestException.php
-│   │   ├── BaseException.php
-│   │   ├── ForbiddenException.php
-│   │   ├── GatewayTimeOutException.php
-│   │   ├── Handler.php
-│   │   ├── NotFoundException.php
-│   │   ├── SystemException.php
-│   │   └── UnauthorizedException.php
-│   ├── Helpers
-│   │   ├── FileHelper.php
-│   │   ├── LocalFileHelper.php
-│   │   ├── QueryHelper.php
-│   │   └── RouterHelper.php
-│   ├── LaravelBaseServiceProvider.php
-│   ├── Services
-│   │   ├── BaseServiceInterface.php
-│   │   └── impl
-│   └── config
-│       └── laravel-base.php
+├── app
+│   ├── Domains
+│   │   └── Post
+│   │       ├── Controllers
+│   │       │   └── PostController.php
+│   │       ├── Models
+│   │       │   └── Post.php
+│   │       └── Services
+│   │           └── PostService.php
 ```
 
 ### Route
 
-```
-use YaangVu\LaravelBase\Helpers\RouterHelper;
-RouterHelper::resource($router, '/users', 'UserController');
-```
-
-### Service
-
-```
-use App\Models\User;
-use YaangVu\LaravelBase\Services\impl\BaseService;
-
-class UserService extends BaseService
-{
-
-    function createModel(): void
-    {
-        $this->model = new User();
-    }
-}
+```php
+Route::base('/posts', \App\Domains\Post\Controllers\PostController::class);
 ```
 
-### Controller
-
-```
-use App\Services\UserService;
-use YaangVu\LaravelBase\Controllers\BaseController;
-
-class UserController extends BaseController
-{
-    public function __construct()
-    {
-        $this->service = new UserService();
-        parent::__construct();
-    }
-}
-```
-
-### Model
-
-To insert or update an entity, you must define columns can give data
-
-```
-class User extends Model
-{
-    protected $fillable
-        = [
-            'username', 'email', 'password', 'first_name', 'last_name'
-        ];
-}
-```
 
 ## Usage
 
@@ -167,17 +111,36 @@ class UserService extends BaseService
 ### Service Observe
 
 It supports these observe function:
+1. `function postAdd()`
+2. `function postUpdate()`
+3. `function postDelete()`
+4. `function postGet()`
+5. `function postGetAll()`
 
-1. `preAdd`
-2. `postAdd`
-3. `preUpdate`
-4. `postUpdate`
-5. `preDelete`
-6. `postDelete`
-7. `preGet`
-8. `postGet`
-9. `preGetAll`
-10. `postGetAll`
+### Cache data
+If you want to cache data when `create` `update` `select`, implement `ShouldCache` interface
+```php
+class UserService extends BaseService implements \YaangVu\LaravelBase\Interfaces\ShouldCache
+{}
+```
+
+### Event driven
+If you apply Event driven, please consider use these:
+```php
+trait HasEvent
+{
+    private string|array $allSelectionEvents  = [];
+    private string|array $selectionEvents     = [];
+    private string|array $uuidSelectionEvents = [];
+    private string|array $additionEvents      = [];
+    private string|array $patchEvents         = [];
+    private string|array $putEvents           = [];
+    private string|array $idDeletionEvents    = [];
+    private string|array $idsDeletionEvents   = [];
+    private string|array $uuidDeletionEvents  = [];
+    private string|array $uuidsDeletionEvents = [];
+}
+```
 
 ### Upload file
 
