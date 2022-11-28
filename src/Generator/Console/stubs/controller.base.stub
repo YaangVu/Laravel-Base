@@ -3,7 +3,7 @@
 namespace DummyNamespace;
 
 use Illuminate\Http\Request;
-use YaangVu\LaravelBase\Base\Controllers\BaseController;
+use App\Base\Controller;
 use ServiceNamespace;
 use Illuminate\Http\JsonResponse;
 
@@ -11,7 +11,7 @@ use Illuminate\Http\JsonResponse;
  * @Author      yaangvu
  * @Date        DummyDate
  */
-class DummyClass extends BaseController
+class DummyClass extends Controller
 {
 
     /**

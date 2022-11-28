@@ -35,18 +35,9 @@ class BaseServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $configPath = __DIR__ . '/../config/laravel-base.php';
-        $this->publishes([$configPath => $this->getConfigPath()], 'config');
+        $this->publishConfig();
+        $this->publishBaseClasses();
         $this->mergeConfigFrom($configPath, 'laravel-base');
-    }
-
-    /**
-     * Get the config path
-     *
-     * @return string
-     */
-    protected function getConfigPath(): string
-    {
-        return config_path('laravel-base.php');
     }
 
     /**
@@ -54,8 +45,20 @@ class BaseServiceProvider extends ServiceProvider
      *
      * @param string $configPath
      */
-    protected function publishConfig(string $configPath)
+    protected function publishConfig()
     {
+        $configPath = __DIR__ . '/../config/laravel-base.php';
         $this->publishes([$configPath => config_path('laravel-base.php')], 'config');
+    }
+
+    public function publishBaseClasses()
+    {
+        // Publish BaseController
+        $controllerPath = __DIR__ . '/../Base/Publishes/Controller.php';
+        $this->publishes([$controllerPath => app_path('Base/Controller.php')], 'base');
+
+        // Publish BaseService
+        $servicePath = __DIR__ . '/../Base/Publishes/Service.php';
+        $this->publishes([$servicePath => app_path('Base/Service.php')], 'base');
     }
 }

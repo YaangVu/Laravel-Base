@@ -57,6 +57,7 @@ class BaseMakeCommand extends GeneratorCommand
                     [
                         'name'        => $this->arrName['first'] . '/' . $this->arrName['last'],
                         '--service'   => true,
+                        '--model'     => true,
                         '--swagger'   => $this->option('swagger'),
                         '--injection' => $this->option('injection'),
                     ]);

@@ -1,10 +1,24 @@
 # Laravel Base Package
 
-This base will help to create simple API (CRUD) for 1 specific entity, such as User
+This base will help to create simple API (CRUD) for 1 specific entity, such as Post
 
 ## Install
 
-`composer require yaangvu/laravel-base`
+```shell
+composer require yaangvu/laravel-base
+```
+### For Laravel
+Publish configuration file and Base Classes
+```shell
+php artisan vendor:publish --provider="YaangVu\LaravelBase\Providers\BaseServiceProvider"
+```
+### For lumen
+```shell
+cp vendor/yaangvu/laravel-base/src/config/laravel-base.php config/laravel-base.php
+mkdir -p app/Base
+cp vendor/yaangvu/laravel-base/src/Base/Publishes/Controller.php app/Base/Controller.php
+cp vendor/yaangvu/laravel-base/src/Base/Publishes/Service.php app/Base/Service.php
+```
 
 ## Initial
 

@@ -4,13 +4,13 @@ namespace DummyNamespace;
 
 use DummyFullModelClass;
 use Illuminate\Database\Eloquent\Model;
-use YaangVu\LaravelBase\Base\Services\BaseService;
+use App\Base\Service;
 
 /**
  * @Author      yaangvu
  * @Date        DummyDate
  */
-class DummyClass extends BaseService
+class DummyClass extends Service
 {
 
     /**

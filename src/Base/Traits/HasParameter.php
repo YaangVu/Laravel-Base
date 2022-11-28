@@ -179,7 +179,7 @@ trait HasParameter
         } else
             $operator = OperatorEnum::toArray()[$operatorName];
 
-        return [$table, $column, $operator, $value];
+        return [$table, $column, $operator, $operatorPattern, $value];
     }
 
     /**
