@@ -59,7 +59,6 @@ class BaseMakeCommand extends GeneratorCommand
                         '--service'   => true,
                         '--model'     => true,
                         '--swagger'   => $this->option('swagger'),
-                        '--injection' => $this->option('injection'),
                     ]);
 
     }
@@ -73,7 +72,6 @@ class BaseMakeCommand extends GeneratorCommand
     {
         return [
             ['swagger', 'S', InputOption::VALUE_NONE, 'Create Controller with Swagger comment doc'],
-            ['injection', 'i', InputOption::VALUE_NONE, 'Create Controller with Method Invocation & Injection'],
         ];
     }
 

@@ -24,6 +24,34 @@ class ParamHandler
      */
     private array $excludedKeys;
 
+    public function __construct()
+    {
+        $this->setSeparator(config('laravel-base.query.separator'))
+             ->setNullableValue(config('laravel-base.query.nullable_value'))
+             ->setLimit(config('laravel-base.query.limit'))
+             ->setExcludedKeys(['limit', 'sort', 'page', 'select'])
+             ->setDefaultSort();
+    }
+
+    /**
+     * Set default Sort before parse query from parameters
+     *
+     * @Author yaangvu
+     * @Date   Feb 16, 2023
+     *
+     * @param string $column
+     *
+     * @return $this
+     */
+    public function setDefaultSort(string $column = 'id'): static
+    {
+        $sort = new Sort();
+        $sort->setColumn($column);
+        $sort->setType('DESC');
+        $this->setSorts([$sort]);
+
+        return $this;
+    }
 
     /**
      * @return string[]
@@ -58,34 +86,6 @@ class ParamHandler
     public function exclude(string $key): static
     {
         $this->excludedKeys[] = $key;
-
-        return $this;
-    }
-
-    public function __construct()
-    {
-        $this->setSeparator(config('laravel-base.query.separator'))
-             ->setNullableValue(config('laravel-base.query.nullable_value'))
-             ->setExcludedKeys(['limit', 'sort', 'page', 'select'])
-             ->setDefaultSort();
-    }
-
-    /**
-     * Set default Sort before parse query from parameters
-     *
-     * @Author yaangvu
-     * @Date   Feb 16, 2023
-     *
-     * @param string $column
-     *
-     * @return $this
-     */
-    public function setDefaultSort(string $column = 'id'): static
-    {
-        $sort = new Sort();
-        $sort->setColumn($column);
-        $sort->setType('DESC');
-        $this->setSorts([$sort]);
 
         return $this;
     }
@@ -127,8 +127,8 @@ class ParamHandler
         return match (Str::lower($key)) {
             ClauseEnum::LIMIT->value => $this->setLimit($value),
             ClauseEnum::PAGE->value => $this->setPage($value),
-            ClauseEnum::SELECT->value => $this->setSelections($value),
-            ClauseEnum::SORT->value => $this->parseSort($value),
+            ClauseEnum::SELECT->value => $this->parseSelections($value),
+            ClauseEnum::SORT->value => $this->parseSorts($value),
             default => $this->parseCondition($key, $value)
         };
     }

@@ -42,30 +42,48 @@ trait Sortable
      * @Author yaangvu
      * @Date   Feb 05, 2023
      *
-     * @param string $sortString
+     * @param string|string[] $sorts
      *
      * @return static
      */
-    public function parseSort(string $sortString): static
+    public function parseSorts(string|array $sorts): static
     {
         // reset sort
         $this->setSorts([]);
 
-        $sortClauses = preg_split("/,+/", $sortString);
+        if (is_array($sorts))
+            $sortClauses = $sorts;
+        else
+            $sortClauses = preg_split("/,+/", $sorts);
 
         foreach ($sortClauses as $sortClause) {
-            $sortArr = preg_split("/\s+/", trim($sortClause));
-            if (count($sortArr) > 2)
-                throw new BadRequestException("Order by clause is invalid");
-
-            $sort = new Sort();
-            $sort->setColumn($sortArr[0]);
-            $sort->setType($sortArr[1] ?? 'ASC');
-
-            $this->addSort($sort);
+            $this->parseSort($sortClause);
         }
 
         return $this;
+    }
+
+    /**
+     * @Description Parse sort string to Sort Object
+     *
+     * @Author      yaangvu
+     * @Date        Feb 28, 2023
+     *
+     * @param string $sortString
+     *
+     * @return $this
+     */
+    public function parseSort(string $sortString): static
+    {
+        $sortArr = preg_split("/\s+/", trim($sortString));
+        if (count($sortArr) > 2)
+            throw new BadRequestException("Order by clause is invalid");
+
+        $sort = new Sort();
+        $sort->setColumn($sortArr[0]);
+        $sort->setType($sortArr[1] ?? 'ASC');
+
+        return $this->addSort($sort);
     }
 
     /**

@@ -50,59 +50,6 @@ trait HasCondition
     }
 
     /**
-     * @return string
-     */
-    public function getSeparator(): string
-    {
-        return $this->separator;
-    }
-
-    /**
-     * @param string $separator
-     *
-     * @return static
-     */
-    public function setSeparator(string $separator): static
-    {
-        $this->separator = $separator;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isNullableValue(): bool
-    {
-        return $this->nullableValue;
-    }
-
-    /**
-     * @param bool $nullableValue
-     *
-     * @return static
-     */
-    public function setNullableValue(bool $nullableValue): static
-    {
-        $this->nullableValue = $nullableValue;
-
-        return $this;
-    }
-
-    /**
-     * @Description Nullable parameter value
-     *
-     * @Author      yaangvu
-     * @Date        Feb 28, 2023
-     *
-     * @return bool
-     */
-    private function nullable(): bool
-    {
-        return $this->isNullableValue();
-    }
-
-    /**
      * @Description Parse request param to condition, used to query into database
      *
      * @Author      yaangvu
@@ -152,6 +99,59 @@ trait HasCondition
                   ->setOperatorPattern($operatorPattern);
 
         return $this->addCondition($condition);
+    }
+
+    /**
+     * @Description Nullable parameter value
+     *
+     * @Author      yaangvu
+     * @Date        Feb 28, 2023
+     *
+     * @return bool
+     */
+    private function nullable(): bool
+    {
+        return $this->isNullableValue();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNullableValue(): bool
+    {
+        return $this->nullableValue;
+    }
+
+    /**
+     * @param bool $nullableValue
+     *
+     * @return static
+     */
+    public function setNullableValue(bool $nullableValue): static
+    {
+        $this->nullableValue = $nullableValue;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSeparator(): string
+    {
+        return $this->separator;
+    }
+
+    /**
+     * @param string $separator
+     *
+     * @return static
+     */
+    public function setSeparator(string $separator): static
+    {
+        $this->separator = $separator;
+
+        return $this;
     }
 
     /**

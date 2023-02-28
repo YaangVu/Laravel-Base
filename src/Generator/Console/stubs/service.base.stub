@@ -12,14 +12,5 @@ use App\Base\Service;
  */
 class DummyClass extends Service
 {
-
-    /**
-     * @var DummyModelClass
-     */
-    public $model;
-
-    function initModel(): void
-    {
-        $this->model = new DummyModelClass();
-    }
+    // TODO
 }

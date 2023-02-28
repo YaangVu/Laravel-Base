@@ -4,7 +4,7 @@
  * @Date   Aug 07, 2022
  */
 
-namespace YaangVu\LaravelBase\Providers;
+namespace YaangVu\LaravelBase\Provider;
 
 use Illuminate\Support\ServiceProvider;
 use YaangVu\LaravelBase\Base\Provider\RequestServiceProvider;
