@@ -45,15 +45,15 @@ class BaseMakeCommand extends GeneratorCommand
     {
         $this->arrName = $this->parseNameInput($this->getNameInput());
 
-        $this->call('yaangvu:model', ['name' => $this->arrName['first'] . '/' . $this->arrName['last'],]);
+        $this->call('yaangvu:base:model', ['name' => $this->arrName['first'] . '/' . $this->arrName['last'],]);
 
-        $this->call('yaangvu:service',
+        $this->call('yaangvu:base:service',
                     [
                         'name'    => $this->arrName['first'] . '/' . $this->arrName['last'],
                         '--model' => true
                     ]);
 
-        $this->call('yaangvu:controller',
+        $this->call('yaangvu:base:controller',
                     [
                         'name'        => $this->arrName['first'] . '/' . $this->arrName['last'],
                         '--service'   => true,

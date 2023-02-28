@@ -162,7 +162,7 @@ abstract class GeneratorCommand extends BaseGeneratorCommand
 
         if ($this->option('service') && !class_exists($serviceClass) &&
             $this->components->confirm("A $serviceClass service does not exist. Do you want to generate it?", true)) {
-            $this->call('yaangvu:service',
+            $this->call('yaangvu:base:service',
                         [
                             'name'    => $this->arrName['first'] . '/' . $this->arrName['last'],
                             '--model' => true
@@ -230,7 +230,7 @@ abstract class GeneratorCommand extends BaseGeneratorCommand
 
         if ($this->option('model') && !class_exists($modelClass) &&
             $this->components->confirm("A $modelClass model does not exist. Do you want to generate it?", true)) {
-            $this->call('yaangvu:model', ['name' => $this->arrName['first'] . '/' . $this->arrName['last']]);
+            $this->call('yaangvu:base:model', ['name' => $this->arrName['first'] . '/' . $this->arrName['last']]);
         }
 
         return array_merge($replace, [

@@ -11,27 +11,17 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
 
-#[AsCommand(name: 'yaangvu:service')]
+#[AsCommand(name: 'yaangvu:base:service')]
 class ServiceMakeCommand extends GeneratorCommand
 {
     use CreatesMatchingTest;
 
     /**
-     * The name of the console command.
-     *
-     * This name is used to identify the command during lazy loading.
-     *
-     * @var string|null
-     *
-     * @deprecated
-     */
-    protected static $defaultName = 'yaangvu:service';
-    /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'yaangvu:service';
+    protected $name = 'yaangvu:base:service';
     /**
      * The console command description.
      *

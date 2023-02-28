@@ -1,32 +1,59 @@
 # Laravel Base Package
 
-This base will help to create simple API (CRUD) for 1 specific entity, such as Post
+This base will help to create simple API (CRUD) for 1 specific entity
 
 ## Install
 
 ```shell
 composer require yaangvu/laravel-base
 ```
+
+If you want to use Generator Command, Add the following class to the `providers` array in `config/app.php`:
+
+```php
+  YaangVu\LaravelBase\Providers\GeneratorServiceProvider::class,
+```
+
+If you want to manually load it only in non-production environments, instead you can add this to
+your `AppServiceProvider` with the `register()` method:
+
+```php
+  public function register()
+  {
+      if ($this->app->isLocal()) {
+          $this->app->register(YaangVu\LaravelBase\Providers\GeneratorServiceProvider::class);
+      }
+      // ...
+  }
+```
+
 ### For Laravel
+
 Publish configuration file and Base Classes
+
 ```shell
 php artisan vendor:publish --provider="YaangVu\LaravelBase\Providers\BaseServiceProvider"
 ```
+
 ### For lumen
+
 ```shell
 cp vendor/yaangvu/laravel-base/src/config/laravel-base.php config/laravel-base.php
 mkdir -p app/Base
-cp vendor/yaangvu/laravel-base/src/Base/Publishes/Controller.php app/Base/Controller.php
-cp vendor/yaangvu/laravel-base/src/Base/Publishes/Service.php app/Base/Service.php
+cp vendor/yaangvu/laravel-base/src/Base/Publish/Controller.php app/Base/Controller.php
+cp vendor/yaangvu/laravel-base/src/Base/Publish/Service.php app/Base/Service.php
 ```
 
 ## Initial
 
 ### Generate code
+
 ```shell
 php artisan yaangvu:base Post <option>
 ```
+
 Option:
+
 - -S: generate code with default Swagger annotation
 - -i: Auto inject Service in Controller methods
 
@@ -49,7 +76,6 @@ Option:
 ```php
 Route::base('/posts', \App\Domains\Post\Controllers\PostController::class);
 ```
-
 
 ## Usage
 
@@ -125,6 +151,7 @@ class UserService extends BaseService
 ### Service Observe
 
 It supports these observe function:
+
 1. `function postAdd()`
 2. `function postUpdate()`
 3. `function postDelete()`
@@ -132,36 +159,11 @@ It supports these observe function:
 5. `function postGetAll()`
 
 ### Cache data
+
 If you want to cache data when `create` `update` `select`, implement `ShouldCache` interface
+
 ```php
-class UserService extends BaseService implements \YaangVu\LaravelBase\Interfaces\ShouldCache
+class UserService extends BaseService implements \YaangVu\LaravelBase\Base\Contract\ShouldCache
 {}
 ```
 
-### Event driven
-If you apply Event driven, please consider use these:
-```php
-trait HasEvent
-{
-    private string|array $allSelectionEvents  = [];
-    private string|array $selectionEvents     = [];
-    private string|array $uuidSelectionEvents = [];
-    private string|array $additionEvents      = [];
-    private string|array $patchEvents         = [];
-    private string|array $putEvents           = [];
-    private string|array $idDeletionEvents    = [];
-    private string|array $idsDeletionEvents   = [];
-    private string|array $uuidDeletionEvents  = [];
-    private string|array $uuidsDeletionEvents = [];
-}
-```
-
-### Upload file
-
-```
-use YaangVu\LaravelBase\Helpers\LocalFileHelper;
-
-$fileHelper = new LocalFileHelper();
-    if ($request->video)
-            $videoPath = $fileHelper->upload($request, 'video', 'university/video');
-```

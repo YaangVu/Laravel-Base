@@ -6,29 +6,29 @@
 
 namespace YaangVu\LaravelBase\Base\DataObject;
 
-use YaangVu\LaravelBase\Base\Enums\CastEnum;
+use YaangVu\LaravelBase\Base\Enum\CastEnum;
 
 class Cast
 {
-    private string   $column;
+    private string   $key;
     private CastEnum $type;
 
     /**
      * @return string
      */
-    public function getColumn(): string
+    public function getKey(): string
     {
-        return $this->column;
+        return $this->key;
     }
 
     /**
-     * @param string $column
+     * @param string $key
      *
      * @return Cast
      */
-    public function setColumn(string $column): Cast
+    public function setKey(string $key): Cast
     {
-        $this->column = $column;
+        $this->key = $key;
 
         return $this;
     }

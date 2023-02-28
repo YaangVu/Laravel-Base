@@ -12,27 +12,17 @@ use Illuminate\Support\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
 
-#[AsCommand(name: 'yaangvu:model')]
+#[AsCommand(name: 'yaangvu:base:model')]
 class ModelMakeCommand extends GeneratorCommand
 {
     use CreatesMatchingTest;
 
     /**
-     * The name of the console command.
-     *
-     * This name is used to identify the command during lazy loading.
-     *
-     * @var string|null
-     *
-     * @deprecated
-     */
-    protected static $defaultName = 'yaangvu:model';
-    /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'yaangvu:model';
+    protected $name = 'yaangvu:base:model';
     /**
      * The console command description.
      *
@@ -100,7 +90,7 @@ class ModelMakeCommand extends GeneratorCommand
     {
         $factory = Str::studly($this->argument('name'));
 
-        $this->call('yaangvu:factory', [
+        $this->call('yaangvu:base:factory', [
             'name'    => "{$factory}Factory",
             '--model' => $this->qualifyClass($this->getNameInput()),
         ]);
@@ -144,7 +134,7 @@ class ModelMakeCommand extends GeneratorCommand
     {
         $seeder = Str::studly(class_basename($this->argument('name')));
 
-        $this->call('yaangvu:seeder', [
+        $this->call('yaangvu:base:seeder', [
             'name' => "{$seeder}Seeder",
         ]);
     }
@@ -160,7 +150,7 @@ class ModelMakeCommand extends GeneratorCommand
 
         $modelName = $this->qualifyClass($this->getNameInput());
 
-        $this->call('yaangvu:controller', array_filter([
+        $this->call('yaangvu:base:controller', array_filter([
                                                            'name'       => "{$controller}Controller",
                                                            '--model'    => $this->option('resource') ||
                                                                            $this->option('api') ? $modelName : null,
@@ -179,7 +169,7 @@ class ModelMakeCommand extends GeneratorCommand
     {
         $policy = Str::studly(class_basename($this->argument('name')));
 
-        $this->call('yaangvu:policy', [
+        $this->call('yaangvu:base:policy', [
             'name'    => "{$policy}Policy",
             '--model' => $this->qualifyClass($this->getNameInput()),
         ]);

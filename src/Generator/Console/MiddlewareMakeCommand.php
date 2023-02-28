@@ -5,27 +5,17 @@ namespace YaangVu\LaravelBase\Generator\Console;
 use Illuminate\Console\Concerns\CreatesMatchingTest;
 use Symfony\Component\Console\Attribute\AsCommand;
 
-#[AsCommand(name: 'yaangvu:middleware')]
+#[AsCommand(name: 'yaangvu:base:middleware')]
 class MiddlewareMakeCommand extends GeneratorCommand
 {
     use CreatesMatchingTest;
 
     /**
-     * The name of the console command.
-     *
-     * This name is used to identify the command during lazy loading.
-     *
-     * @var string|null
-     *
-     * @deprecated
-     */
-    protected static $defaultName = 'yaangvu:middleware';
-    /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'yaangvu:middleware';
+    protected $name = 'yaangvu:base:middleware';
     /**
      * The console command description.
      *

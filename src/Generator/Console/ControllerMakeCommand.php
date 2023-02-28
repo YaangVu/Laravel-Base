@@ -7,27 +7,17 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
 
-#[AsCommand(name: 'yaangvu:controller')]
+#[AsCommand(name: 'yaangvu:base:controller')]
 class ControllerMakeCommand extends GeneratorCommand
 {
     use CreatesMatchingTest;
 
     /**
-     * The name of the console command.
-     *
-     * This name is used to identify the command during lazy loading.
-     *
-     * @var string|null
-     *
-     * @deprecated
-     */
-    protected static $defaultName = 'yaangvu:controller';
-    /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'yaangvu:controller';
+    protected $name = 'yaangvu:base:controller';
     /**
      * The console command description.
      *

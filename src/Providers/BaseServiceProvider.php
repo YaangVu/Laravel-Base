@@ -7,9 +7,8 @@
 namespace YaangVu\LaravelBase\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use YaangVu\LaravelBase\Base\Providers\ConditionMakerServiceProvider;
-use YaangVu\LaravelBase\Base\Providers\RequestServiceProvider;
-use YaangVu\LaravelBase\Base\Providers\RouterServiceProvider;
+use YaangVu\LaravelBase\Base\Provider\RequestServiceProvider;
+use YaangVu\LaravelBase\Base\Provider\RouterServiceProvider;
 
 class BaseServiceProvider extends ServiceProvider
 {
@@ -21,8 +20,6 @@ class BaseServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->register(RequestServiceProvider::class);
-
-        $this->app->register(ConditionMakerServiceProvider::class);
 
         $this->app->register(RouterServiceProvider::class);
     }
@@ -42,8 +39,6 @@ class BaseServiceProvider extends ServiceProvider
 
     /**
      * Publish the config file
-     *
-     * @param string $configPath
      */
     protected function publishConfig()
     {
@@ -54,11 +49,11 @@ class BaseServiceProvider extends ServiceProvider
     public function publishBaseClasses()
     {
         // Publish BaseController
-        $controllerPath = __DIR__ . '/../Base/Publishes/Controller.php';
+        $controllerPath = __DIR__ . '/../Base/Publish/Controller.php';
         $this->publishes([$controllerPath => app_path('Base/Controller.php')], 'base');
 
         // Publish BaseService
-        $servicePath = __DIR__ . '/../Base/Publishes/Service.php';
+        $servicePath = __DIR__ . '/../Base/Publish/Service.php';
         $this->publishes([$servicePath => app_path('Base/Service.php')], 'base');
     }
 }

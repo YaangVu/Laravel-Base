@@ -5,7 +5,8 @@
  */
 
 return [
-    'entity'      => "Entity",
-    'system-500'  => 'Internal Server Error',
-    'can-not-del' => ':attribute can not be deleted'
+    'entity'       => "Entity",
+    'server-error' => 'Internal Server Error',
+    'query-error'  => '',
+    'can-not-del'  => ':attribute can not be deleted',
 ];
