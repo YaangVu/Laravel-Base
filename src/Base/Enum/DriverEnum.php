@@ -11,6 +11,7 @@ use YaangVu\LaravelBase\Base\Utility\EnumToArray;
 enum DriverEnum: string
 {
     use EnumToArray;
+
     case MYSQL = 'mysql';
     case POSTGRES = 'pgsql';
     case MONGODB = 'mongodb';

@@ -1,6 +1,6 @@
 <?php
 
-namespace YaangVu\LaravelBase\Providers;
+namespace YaangVu\LaravelBase\Provider;
 
 use Illuminate\Support\ServiceProvider;
 use YaangVu\LaravelBase\Generator\Console\BaseMakeCommand;

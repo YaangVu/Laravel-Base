@@ -10,7 +10,7 @@ use YaangVu\LaravelBase\Base\Enum\OperatorPatternEnum;
 
 class Condition
 {
-    private ?string             $table    = null;
+    private ?string             $table = null;
     private string              $column;
     private OperatorPatternEnum $operatorPattern;
     private mixed               $value;

@@ -8,25 +8,6 @@ This base will help to create simple API (CRUD) for 1 specific entity
 composer require yaangvu/laravel-base
 ```
 
-If you want to use Generator Command, Add the following class to the `providers` array in `config/app.php`:
-
-```php
-  YaangVu\LaravelBase\Providers\GeneratorServiceProvider::class,
-```
-
-If you want to manually load it only in non-production environments, instead you can add this to
-your `AppServiceProvider` with the `register()` method:
-
-```php
-  public function register()
-  {
-      if ($this->app->isLocal()) {
-          $this->app->register(YaangVu\LaravelBase\Providers\GeneratorServiceProvider::class);
-      }
-      // ...
-  }
-```
-
 ### For Laravel
 
 Publish configuration file and Base Classes
@@ -43,8 +24,27 @@ mkdir -p app/Base
 cp vendor/yaangvu/laravel-base/src/Base/Publish/Controller.php app/Base/Controller.php
 cp vendor/yaangvu/laravel-base/src/Base/Publish/Service.php app/Base/Service.php
 ```
+## Generator Command
+If you want to use Generator Command, Add the following class to the `providers` array in `config/app.php`:
 
-## Initial
+```php
+  YaangVu\LaravelBase\Provider\GeneratorServiceProvider::class,
+```
+
+If you want to manually load it only in non-production environments, instead you can add this to
+your `AppServiceProvider` with the `register()` method:
+
+```php
+  public function register()
+  {
+      if ($this->app->isLocal()) {
+          $this->app->register(YaangVu\LaravelBase\Provider\GeneratorServiceProvider::class);
+      }
+      // ...
+  }
+```
+
+## Initial API resource
 
 ### Generate code
 

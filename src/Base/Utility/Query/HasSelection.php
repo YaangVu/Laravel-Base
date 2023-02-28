@@ -8,7 +8,7 @@ namespace YaangVu\LaravelBase\Base\Utility\Query;
 
 trait HasSelection
 {
-    private string|array $selections;
+    private string|array $selections = '*';
 
     /**
      * @return array|string

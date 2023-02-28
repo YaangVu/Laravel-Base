@@ -39,15 +39,10 @@ class ControllerMakeCommand extends GeneratorCommand
      */
     protected function getStub(): string
     {
-        $hasSwagger   = $this->option('swagger');
-        $hasInjection = $this->option('injection');
+        $hasSwagger = $this->option('swagger');
 
-        if ($hasSwagger && $hasInjection)
-            $stub = '/stubs/injection.swagger.controller.base.stub';
-        else if ($hasSwagger && !$hasInjection)
+        if ($hasSwagger)
             $stub = '/stubs/controller.base.swagger.stub';
-        else if (!$hasSwagger && $hasInjection)
-            $stub = '/stubs/injection.controller.base.stub';
         else
             $stub = '/stubs/controller.base.stub';
 

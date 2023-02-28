@@ -34,7 +34,10 @@ use YaangVu\LaravelBase\Base\Utility\Query\Sortable;
  *
  * |---------------------------------------------------------------------------------------------------------
  *
- * @method static ParamHandler parseSort(string $sortString)
+ * @method static ParamHandler parseSorts(string|string[] $sorts)
+ * @link Sortable::parseSorts()
+ *
+ * @method static ParamHandler parseSort(string $sort)
  * @link Sortable::parseSort()
  *
  * @method static ParamHandler addSort(Sort $sort)
@@ -78,7 +81,7 @@ use YaangVu\LaravelBase\Base\Utility\Query\Sortable;
  * @link HasSelection::getSelections()
  *
  * @method static ParamHandler setSelections(array|string $selections)
- * @link HasSelection::parseSelections()
+ * @link HasSelection::setSelections()
  *
  * |---------------------------------------------------------------------------------------------------------
  *
