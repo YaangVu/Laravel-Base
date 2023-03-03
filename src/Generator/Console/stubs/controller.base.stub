@@ -9,7 +9,6 @@ use DummyFullModelClass;
 use ServiceNamespace;
 
 /**
- * @Author      yaangvu
  * @Date        DummyDate
  */
 class DummyClass extends Controller
@@ -32,7 +31,6 @@ class DummyClass extends Controller
     /**
      * @Description Display a listing of the DummyModelClass.
      *
-     * @Author      yaangvu
      * @Date        DummyDate
      *
      * @return JsonResponse
@@ -45,7 +43,6 @@ class DummyClass extends Controller
     /**
      * @Description Display the specified DummyModelClass.
      *
-     * @Author      yaangvu
      * @Date        DummyDate
      *
      * @param $id
@@ -60,7 +57,6 @@ class DummyClass extends Controller
     /**
      * @Description Store a newly created DummyModelClass in storage.
      *
-     * @Author      yaangvu
      * @Date        DummyDate
      *
      * @param Request $request
@@ -75,7 +71,6 @@ class DummyClass extends Controller
     /**
      * @Description Update the specified DummyModelClass in storage.
      *
-     * @Author      yaangvu
      * @Date        DummyDate
      *
      * @param         $id
@@ -91,7 +86,6 @@ class DummyClass extends Controller
     /**
      * @Description Put Update the specified DummyModelClass in storage.
      *
-     * @Author      yaangvu
      * @Date        DummyDate
      *
      * @param         $id
@@ -107,7 +101,6 @@ class DummyClass extends Controller
     /**
      * @Description Remove the specified DummyModelClass from storage.
      *
-     * @Author      yaangvu
      * @Date        DummyDate
      *
      * @param $id
@@ -122,7 +115,6 @@ class DummyClass extends Controller
     /**
      * @Description Remove the specified DummyModelClass from storage by uuid
      *
-     * @Author      yaangvu
      * @Date        DummyDate
      *
      * @param $uuid
@@ -137,7 +129,6 @@ class DummyClass extends Controller
     /**
      * @Description Remove the multiple specified DummyModelClass from storage by ids
      *
-     * @Author      yaangvu
      * @Date        DummyDate
      *
      * @param Request $request

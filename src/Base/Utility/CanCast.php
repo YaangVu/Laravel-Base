@@ -18,6 +18,26 @@ trait CanCast
     private array $casts;
 
     /**
+     * @return Cast[]
+     */
+    public function getCasts(): array
+    {
+        return $this->casts;
+    }
+
+    /**
+     * @param Cast[] $casts
+     *
+     * @return CanCast
+     */
+    public function setCasts(array $casts): static
+    {
+        $this->casts = $casts;
+
+        return $this;
+    }
+
+    /**
      * Cast data beyond type
      *
      * @Author yaangvu
@@ -63,21 +83,18 @@ trait CanCast
     }
 
     /**
-     * @return Cast[]
-     */
-    public function getCasts(): array
-    {
-        return $this->casts;
-    }
-
-    /**
-     * @param Cast[] $casts
+     * @Description Add more cast
      *
-     * @return CanCast
+     * @Author      yaangvu
+     * @Date        Mar 03, 2023
+     *
+     * @param Cast $cast
+     *
+     * @return $this
      */
-    public function setCasts(array $casts): static
+    public function addCast(Cast $cast): static
     {
-        $this->casts = $casts;
+        $this->casts[] = $cast;
 
         return $this;
     }
