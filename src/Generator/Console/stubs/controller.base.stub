@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Base\Controller;
 use Illuminate\Http\JsonResponse;
 use DummyFullModelClass;
+use ServiceNamespace;
 
 /**
  * @Author      yaangvu
@@ -15,11 +16,17 @@ class DummyClass extends Controller
 {
 
     /**
+     * @var ServiceClass $service
+     */
+    public ServiceClass $service;
+
+    /**
      * @param DummyModelClass $model
      */
     public function __construct(private readonly DummyModelClass $model)
     {
         parent::__construct($this->model);
+        $this->service = new ServiceClass($this->model);
     }
 
     /**

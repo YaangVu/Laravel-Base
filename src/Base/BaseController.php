@@ -6,23 +6,25 @@
 
 namespace YaangVu\LaravelBase\Base;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use YaangVu\LaravelBase\Base\Contract\Service;
 
 class BaseController extends Controller
 {
     /**
-     * @param Service $service
+     * @var Service $service
      */
     private Service $service;
 
     public function __construct(private readonly Model $model)
     {
-        $this->service = new \App\Base\Service($this->model);
+        $this->service = new BaseService($this->model);
     }
 
     /**
