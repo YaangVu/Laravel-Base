@@ -17,15 +17,15 @@ class DummyClass extends Controller
     /**
      * @var ServiceClass $service
      */
-    public ServiceClass $service;
+    public $service;
 
     /**
      * @param DummyModelClass $model
+     * @param string $serviceName
      */
-    public function __construct(private readonly DummyModelClass $model)
+    public function __construct(private readonly DummyModelClass $model, string $serviceName = ServiceClass::class)
     {
-        parent::__construct($this->model);
-        $this->service = new ServiceClass($this->model);
+        parent::__construct($this->model, $serviceName);
     }
 
     /**

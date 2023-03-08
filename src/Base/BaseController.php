@@ -20,11 +20,15 @@ class BaseController extends Controller
     /**
      * @var Service $service
      */
-    private Service $service;
+    protected $service;
 
-    public function __construct(private readonly Model $model)
+    /**
+     * @param Model  $model
+     * @param string $serviceName
+     */
+    public function __construct(private readonly Model $model, string $serviceName)
     {
-        $this->service = new BaseService($this->model);
+        $this->service = new $serviceName($this->model);
     }
 
     /**
