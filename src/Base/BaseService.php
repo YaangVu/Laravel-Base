@@ -32,7 +32,7 @@ class BaseService implements Service
 {
     use Macroable, Validatable, CanCast;
 
-    private Builder $builder;
+    protected Builder $builder;
 
     /**
      * The fill able attributes
