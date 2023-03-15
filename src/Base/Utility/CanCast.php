@@ -15,7 +15,7 @@ trait CanCast
     /**
      * @var Cast[]
      */
-    private array $casts;
+    private array $casts = [];
 
     /**
      * @return Cast[]
