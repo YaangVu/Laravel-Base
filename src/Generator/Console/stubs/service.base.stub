@@ -12,7 +12,7 @@ use App\Base\Service;
  */
 class DummyClass extends Service
 {
-    public function __construct(private readonly Model $model, private readonly ?string $alias = null)
+    public function __construct(private readonly Model $model = new DummyModelClass(), private readonly ?string $alias = null)
     {
         parent::__construct($this->model, $this->alias);
     }
