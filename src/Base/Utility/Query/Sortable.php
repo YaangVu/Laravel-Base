@@ -64,7 +64,7 @@ trait Sortable
     }
 
     /**
-     * @Description Parse sort string to Sort Object
+     * Parse sort string to Sort Object
      *
      * @Author      yaangvu
      * @Date        Feb 28, 2023
@@ -87,7 +87,7 @@ trait Sortable
     }
 
     /**
-     * @Description Add 1 more Sort clause
+     * Add 1 more Sort clause
      *
      * @Author      yaangvu
      * @Date        Feb 28, 2023

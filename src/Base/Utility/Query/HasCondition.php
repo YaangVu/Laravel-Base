@@ -50,7 +50,7 @@ trait HasCondition
     }
 
     /**
-     * @Description Nullable parameter value
+     * Nullable parameter value
      *
      * @Author      yaangvu
      * @Date        Feb 28, 2023
@@ -103,7 +103,7 @@ trait HasCondition
     }
 
     /**
-     * @Description Add more condition
+     * Add more condition
      *
      * @Author      yaangvu
      * @Date        Feb 28, 2023
@@ -120,7 +120,7 @@ trait HasCondition
     }
 
     /**
-     * @Description Parse request param to condition, used to query into database
+     * Parse request param to condition, used to query into database
      *
      * @Author      yaangvu
      * @Date        Feb 21, 2023

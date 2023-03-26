@@ -29,7 +29,7 @@ class DummyClass extends Controller
     }
 
     /**
-     * @Description Display a listing of the DummyModelClass.
+     * Display a listing of the DummyModelClass.
      *
      * @Date        DummyDate
      *
@@ -92,7 +92,7 @@ class DummyClass extends Controller
     }
 
     /**
-     * @Description Display the specified DummyModelClass.
+     * Display the specified DummyModelClass.
      *
      * @Date        DummyDate
      *
@@ -146,7 +146,7 @@ class DummyClass extends Controller
     }
 
     /**
-     * @Description Store a newly created DummyModelClass in storage.
+     * Store a newly created DummyModelClass in storage.
      *
      * @Date        DummyDate
      *
@@ -205,7 +205,7 @@ class DummyClass extends Controller
     }
 
     /**
-     * @Description Update the specified DummyModelClass in storage.
+     * Update the specified DummyModelClass in storage.
      *
      * @Date        DummyDate
      *
@@ -265,7 +265,7 @@ class DummyClass extends Controller
     }
 
     /**
-     * @Description Put Update the specified DummyModelClass in storage.
+     * Put Update the specified DummyModelClass in storage.
      *
      * @Date        DummyDate
      *
@@ -325,7 +325,7 @@ class DummyClass extends Controller
     }
 
     /**
-     * @Description Remove the specified DummyModelClass from storage.
+     * Remove the specified DummyModelClass from storage.
      *
      * @Date        DummyDate
      *
@@ -378,7 +378,7 @@ class DummyClass extends Controller
     }
 
     /**
-     * @Description Remove the specified DummyModelClass from storage by uuid
+     * Remove the specified DummyModelClass from storage by uuid
      *
      * @Date        DummyDate
      *
@@ -432,7 +432,7 @@ class DummyClass extends Controller
     }
 
     /**
-     * @Description Remove the multiple specified DummyModelClass from storage by ids
+     * Remove the multiple specified DummyModelClass from storage by ids
      *
      * @Author      yaangvu
      * @Date        DummyDate
@@ -490,7 +490,7 @@ class DummyClass extends Controller
     }
 
     /**
-     * @Description Remove the multiple specified DummyModelClass from storage by uuids
+     * Remove the multiple specified DummyModelClass from storage by uuids
      *
      * @Author      yaangvu
      * @Date        DummyDate

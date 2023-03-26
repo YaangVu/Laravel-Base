@@ -31,7 +31,7 @@ trait HasSelection
     }
 
     /**
-     * @Description  Parse request param to selections
+     *  Parse request param to selections
      *
      * @Author       yaangvu
      * @Date         Feb 21, 2023

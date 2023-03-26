@@ -83,7 +83,7 @@ trait CanCast
     }
 
     /**
-     * @Description Add more cast
+     * Add more cast
      *
      * @Author      yaangvu
      * @Date        Mar 03, 2023

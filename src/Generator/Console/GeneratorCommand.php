@@ -34,7 +34,7 @@ abstract class GeneratorCommand extends BaseGeneratorCommand
     }
 
     /**
-     * @Description Parse Name input to array
+     * Parse Name input to array
      *
      * @Author      yaangvu
      * @Date        Jan 17, 2022

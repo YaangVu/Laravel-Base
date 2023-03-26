@@ -108,7 +108,7 @@ class BaseService implements Service
     }
 
     /**
-     * @Description Check column can add or change
+     * Check column can add or change
      *
      * @Author      yaangvu
      * @Date        Feb 28, 2023
