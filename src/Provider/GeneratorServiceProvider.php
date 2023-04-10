@@ -17,6 +17,7 @@ use YaangVu\LaravelBase\Generator\Console\KeyGenerateCommand;
 use YaangVu\LaravelBase\Generator\Console\ListenerMakeCommand;
 use YaangVu\LaravelBase\Generator\Console\MailMakeCommand;
 use YaangVu\LaravelBase\Generator\Console\MiddlewareMakeCommand;
+use YaangVu\LaravelBase\Generator\Console\MigrationMakeCommand;
 use YaangVu\LaravelBase\Generator\Console\ModelMakeCommand;
 use YaangVu\LaravelBase\Generator\Console\NotificationMakeCommand;
 use YaangVu\LaravelBase\Generator\Console\NotificationTableCommand;
@@ -40,7 +41,7 @@ class GeneratorServiceProvider extends ServiceProvider
      */
     protected array $commands
         = [
-            // 'FactoryMake' => 'command.factory.yaangvu',
+//             'FactoryMake' => 'command.factory.yaangvu',
         ];
 
     /**
@@ -50,18 +51,18 @@ class GeneratorServiceProvider extends ServiceProvider
      */
     protected array $devCommands
         = [
-            // 'ConsoleMake'       => 'command.console.yaangvu',
+            'ConsoleMake' => 'command.console.yaangvu',
             'ControllerMake' => 'command.controller.yaangvu',
             // 'ServiceMake'       => 'command.service.yaangvu',
-            // 'EventMake'         => 'command.event.yaangvu',
+            'EventMake' => 'command.event.yaangvu',
             // 'ExceptionMake'     => 'command.exception.yaangvu',
             // 'RequestMake'       => 'command.request.yaangvu',
             // 'JobMake'           => 'command.job.yaangvu',
-            // 'ListenerMake'      => 'command.listener.yaangvu',
+            'ListenerMake' => 'command.listener.yaangvu',
             // 'MailMake'          => 'command.mail.yaangvu',
             'MiddlewareMake' => 'command.middleware.yaangvu',
             // 'PipeMake'          => 'command.pipe.yaangvu',
-            'ModelMake'      => 'command.model.yaangvu',
+            'ModelMake' => 'command.model.yaangvu',
             // 'PolicyMake'        => 'command.policy.yaangvu',
             // 'ProviderMake'      => 'command.provider.yaangvu',
             // 'ResourceMake'      => 'command.resource.yaangvu',
@@ -71,8 +72,8 @@ class GeneratorServiceProvider extends ServiceProvider
             // 'SchemaDump'        => 'command.schema.dump',
             // 'CastMake'          => 'command.cast.yaangvu',
             // 'RuleMake'          => 'command.rule.yaangvu',
-            'ServiceMake'    => 'command.service.yaangvu',
-            'BaseMake'       => 'command.base.yaangvu',
+            'ServiceMake' => 'command.service.yaangvu',
+            'BaseMake' => 'command.base.yaangvu',
         ];
 
     /**
