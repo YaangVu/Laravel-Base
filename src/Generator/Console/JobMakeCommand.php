@@ -5,8 +5,8 @@ namespace YaangVu\LaravelBase\Generator\Console;
 use Illuminate\Console\Concerns\CreatesMatchingTest;
 use Symfony\Component\Console\Attribute\AsCommand;
 
-#[AsCommand(name: 'yaangvu:base:middleware')]
-class MiddlewareMakeCommand extends GeneratorCommand
+#[AsCommand(name: 'yaangvu:base:job')]
+class JobMakeCommand extends GeneratorCommand
 {
     use CreatesMatchingTest;
 
@@ -15,20 +15,20 @@ class MiddlewareMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $name = 'yaangvu:base:middleware';
+    protected $name = 'yaangvu:base:job';
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new middleware class';
+    protected $description = 'Create a job class';
 
     /**
      * The type of class being generated.
      *
      * @var string
      */
-    protected $type = 'Middleware';
+    protected $type = 'Job';
 
     /**
      * Get the stub file for the generator.
@@ -37,7 +37,7 @@ class MiddlewareMakeCommand extends GeneratorCommand
      */
     protected function getStub(): string
     {
-        return $this->resolveStubPath('/stubs/middleware.stub');
+        return $this->resolveStubPath('/stubs/job.stub');
     }
 
     /**
@@ -63,6 +63,6 @@ class MiddlewareMakeCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace): string
     {
-        return $rootNamespace . '\Middlewares';
+        return $rootNamespace . '\Jobs';
     }
 }

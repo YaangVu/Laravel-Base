@@ -56,7 +56,7 @@ class GeneratorServiceProvider extends ServiceProvider
             // 'EventMake'         => 'command.event.yaangvu',
             // 'ExceptionMake'     => 'command.exception.yaangvu',
             // 'RequestMake'       => 'command.request.yaangvu',
-            // 'JobMake'           => 'command.job.yaangvu',
+            'JobMake'           => 'command.job.yaangvu',
             // 'ListenerMake'      => 'command.listener.yaangvu',
             // 'MailMake'          => 'command.mail.yaangvu',
             'MiddlewareMake' => 'command.middleware.yaangvu',
