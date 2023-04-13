@@ -50,7 +50,7 @@ class GeneratorServiceProvider extends ServiceProvider
      */
     protected array $devCommands
         = [
-            // 'ConsoleMake'       => 'command.console.yaangvu',
+            'ConsoleMake'       => 'command.console.yaangvu',
             'ControllerMake' => 'command.controller.yaangvu',
             // 'ServiceMake'       => 'command.service.yaangvu',
             // 'EventMake'         => 'command.event.yaangvu',
