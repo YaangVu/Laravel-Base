@@ -64,9 +64,9 @@ class ControllerMakeCommand extends GeneratorCommand
     }
 
     /**
-     * Get the default namespace for the class.
+     * Resolve the fully-qualified path to the stub.
      *
-     * @param string $rootNamespace
+     * @param string $stub
      *
      * @return string
      */
