@@ -41,6 +41,7 @@ class BaseMakeCommand extends GeneratorCommand
      */
     protected $type = 'Base';
 
+
     public function handle()
     {
         $this->arrName = $this->parseNameInput($this->getNameInput());
@@ -48,19 +49,18 @@ class BaseMakeCommand extends GeneratorCommand
         $this->call('yaangvu:base:model', ['name' => $this->arrName['first'] . '/' . $this->arrName['last'],]);
 
         $this->call('yaangvu:base:service',
-                    [
-                        'name'    => $this->arrName['first'] . '/' . $this->arrName['last'],
-                        '--model' => true
-                    ]);
+            [
+                'name' => $this->arrName['first'] . '/' . $this->arrName['last'],
+                '--model' => true
+            ]);
 
         $this->call('yaangvu:base:controller',
-                    [
-                        'name'        => $this->arrName['first'] . '/' . $this->arrName['last'],
-                        '--service'   => true,
-                        '--model'     => true,
-                        '--swagger'   => $this->option('swagger'),
-                    ]);
-
+            [
+                'name' => $this->arrName['first'] . '/' . $this->arrName['last'],
+                '--service' => true,
+                '--model' => true,
+                '--swagger' => $this->option('swagger'),
+            ]);
     }
 
     /**
@@ -82,4 +82,5 @@ class BaseMakeCommand extends GeneratorCommand
     {
         // TODO: Implement getStub() method.
     }
+
 }

@@ -43,7 +43,7 @@ interface Service
      * Store new Entity
      *
      * @param object $request
-     * @param bool   $transaction
+     * @param bool $transaction
      *
      * @return Model
      */
@@ -53,8 +53,8 @@ interface Service
      * Update an Entity via ID
      *
      * @param int|string $id
-     * @param object     $request
-     * @param bool       $transaction
+     * @param object $request
+     * @param bool $transaction
      *
      * @return Model
      */
@@ -64,8 +64,8 @@ interface Service
      * Put Update an Entity via ID
      *
      * @param int|string $id
-     * @param object     $request
-     * @param bool       $transaction
+     * @param object $request
+     * @param bool $transaction
      *
      * @return Model
      */
@@ -75,7 +75,7 @@ interface Service
      * Delete an Entity via ID
      *
      * @param int|string $id
-     * @param bool       $transaction
+     * @param bool $transaction
      *
      * @return bool
      */
@@ -85,7 +85,7 @@ interface Service
      * Delete a Entity via uuid
      *
      * @param string $uuid
-     * @param bool   $transaction
+     * @param bool $transaction
      *
      * @return bool
      */
@@ -95,7 +95,7 @@ interface Service
      * Delete multiple Entity via IDs
      *
      * @param object $request
-     * @param bool   $transaction
+     * @param bool $transaction
      *
      * @return bool
      */
@@ -105,9 +105,10 @@ interface Service
      * Delete multiple Entity via Uuids
      *
      * @param object $request
-     * @param bool   $transaction
+     * @param bool $transaction
      *
      * @return bool
      */
     public function deleteByUuids(object $request, bool $transaction = false): bool;
+
 }

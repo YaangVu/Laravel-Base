@@ -10,7 +10,7 @@ use YaangVu\LaravelBase\Generator\GeneratorHelper;
 //use Illuminate\Console\GeneratorCommand;
 
 #[AsCommand(name: 'yaangvu:base:event')]
-class  EventMakeCommand extends \Illuminate\Foundation\Console\EventMakeCommand
+class  RuleMakeCommand extends \Illuminate\Foundation\Console\RuleMakeCommand
 {
     use CreatesMatchingTest, GeneratorHelper;
 
@@ -19,19 +19,19 @@ class  EventMakeCommand extends \Illuminate\Foundation\Console\EventMakeCommand
      *
      * @var string
      */
-    protected $name = 'yaangvu:base:event';
+    protected $name = 'yaangvu:base:rule';
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new events class';
+    protected $description = 'Create a new rules class';
     /**
      * The type of class being generated.
      *
      * @var string
      */
-    protected $type = 'Event';
+    protected $type = 'Rule';
 
 
     public function handle()

@@ -40,7 +40,7 @@ class GeneratorServiceProvider extends ServiceProvider
      */
     protected array $commands
         = [
-            // 'FactoryMake' => 'command.factory.yaangvu',
+//            'FactoryMake' => 'command.factory.yaangvu',
         ];
 
     /**
@@ -50,29 +50,26 @@ class GeneratorServiceProvider extends ServiceProvider
      */
     protected array $devCommands
         = [
-            // 'ConsoleMake'       => 'command.console.yaangvu',
+            'ConsoleMake' => 'command.console.yaangvu',
             'ControllerMake' => 'command.controller.yaangvu',
-            // 'ServiceMake'       => 'command.service.yaangvu',
-            // 'EventMake'         => 'command.event.yaangvu',
-            // 'ExceptionMake'     => 'command.exception.yaangvu',
-            // 'RequestMake'       => 'command.request.yaangvu',
-            // 'JobMake'           => 'command.job.yaangvu',
-            // 'ListenerMake'      => 'command.listener.yaangvu',
-            // 'MailMake'          => 'command.mail.yaangvu',
+            'EventMake' => 'command.event.yaangvu',
+            'ExceptionMake' => 'command.exception.yaangvu',
+            'RequestMake' => 'command.request.yaangvu',
+            'JobMake' => 'command.job.yaangvu',
+            'ListenerMake' => 'command.listener.yaangvu',
+            'MailMake' => 'command.mail.yaangvu',
             'MiddlewareMake' => 'command.middleware.yaangvu',
-            // 'PipeMake'          => 'command.pipe.yaangvu',
-            'ModelMake'      => 'command.model.yaangvu',
-            // 'PolicyMake'        => 'command.policy.yaangvu',
-            // 'ProviderMake'      => 'command.provider.yaangvu',
-            // 'ResourceMake'      => 'command.resource.yaangvu',
-            // 'NotificationMake'  => 'command.notification.yaangvu',
-            // 'NotificationTable' => 'command.notification.table',
-            // 'ChannelMake'       => 'command.channel.yaangvu',
-            // 'SchemaDump'        => 'command.schema.dump',
-            // 'CastMake'          => 'command.cast.yaangvu',
-            // 'RuleMake'          => 'command.rule.yaangvu',
-            'ServiceMake'    => 'command.service.yaangvu',
-            'BaseMake'       => 'command.base.yaangvu',
+            'ModelMake' => 'command.model.yaangvu',
+            'PolicyMake' => 'command.policy.yaangvu',
+            'ProviderMake' => 'command.provider.yaangvu',
+            'ResourceMake' => 'command.resource.yaangvu',
+            'NotificationMake' => 'command.notification.yaangvu',
+            'ChannelMake' => 'command.channel.yaangvu',
+            'CastMake' => 'command.cast.yaangvu',
+            'RuleMake' => 'command.rule.yaangvu',
+            'ServiceMake' => 'command.service.yaangvu',
+            'BaseMake' => 'command.base.yaangvu',
+            'TestMake' => 'command.test.yaangvu'
         ];
 
     /**
@@ -227,16 +224,6 @@ class GeneratorServiceProvider extends ServiceProvider
     /**
      * Register the command.
      */
-    protected function registerPipeMakeCommand()
-    {
-        $this->app->singleton('command.pipe.yaangvu', function ($app) {
-            return new PipeMakeCommand($app['files']);
-        });
-    }
-
-    /**
-     * Register the command.
-     */
     protected function registerModelMakeCommand()
     {
         $this->app->singleton('command.model.yaangvu', function ($app) {
@@ -304,15 +291,6 @@ class GeneratorServiceProvider extends ServiceProvider
         });
     }
 
-    /**
-     * Register the command.
-     */
-    protected function registerNotificationTableCommand()
-    {
-        $this->app->singleton('command.notification.table', function ($app) {
-            return new NotificationTableCommand($app['files'], $app['composer']);
-        });
-    }
 
     /**
      * Register the command.

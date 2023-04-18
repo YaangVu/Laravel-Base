@@ -78,16 +78,57 @@ class BaseService implements Service
 
     public function __construct(private readonly Model $model, private readonly ?string $alias = null)
     {
-        $this->builder   = $model->newQuery();
+        $this->builder = $model->newQuery();
         $this->fillAbles = $model->getFillable();
-        $this->guarded   = $model->getGuarded();
-        $this->key       = $model->getKeyName();
-        $this->table     = $model->getTable();
-        $this->driver    = $model->getConnection()->getDriverName();
-        $this->ttl       = config('laravel-base.cache.ttl');
+        $this->guarded = $model->getGuarded();
+        $this->key = $model->getKeyName();
+        $this->table = $model->getTable();
+        $this->driver = $model->getConnection()->getDriverName();
+        $this->ttl = config('laravel-base.cache.ttl');
         Pdo::driver($this->driver);
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function add(object $request, bool $transaction = false): Model
+    {
+        if ($transaction)
+            DB::beginTransaction();
+        // Validate request before process
+              if ($this->validateStoreRequest($request) !== true)
+            return $this->model;
+
+        $requestArr = $this->toArray($request);
+
+        foreach ($requestArr as $column => $value) {
+            if ($this->changeableColumn($column))
+                $this->model->{$column} = $this->cast($value, $this->getCastType($column));
+        }
+
+        // If using NoSQL or SQL with table has created_by column then Set created_by is current user
+        if (!str_contains($this->driver, 'sql') || Schema::hasColumn($this->table, 'created_by'))
+            $this->model->setAttribute('created_by', Auth::id());
+
+        // Set default uuid
+        if (!str_contains($this->driver, 'sql') || Schema::hasColumn($this->table, 'uuid'))
+            $this->model->setAttribute('uuid', $request->uuid ?? Uuid::uuid4());
+
+        try {
+            $this->model->save();
+
+            $this->postAdd($request, $this->model);
+            if ($transaction)
+                DB::commit();
+
+            return $this->model;
+        } catch (Exception $e) {
+            if ($transaction)
+                DB::rollBack();
+
+            throw new QueryException($e->getMessage() ?? __('laravel-base.server-error'), $e);
+        }
+    }
 
     /**
      * Convert request to array
@@ -124,56 +165,13 @@ class BaseService implements Service
     }
 
     /**
-     * @inheritDoc
-     */
-    public function add(object $request, bool $transaction = false): Model
-    {
-        if ($transaction)
-            DB::beginTransaction();
-
-        // Validate request before process
-        if ($this->validateStoreRequest($request) !== true)
-            return $this->model;
-
-        $requestArr = $this->toArray($request);
-
-        foreach ($requestArr as $column => $value) {
-            if ($this->changeableColumn($column))
-                $this->model->{$column} = $this->cast($value, $this->getCastType($column));
-        }
-
-        // If using NoSQL or SQL with table has created_by column then Set created_by is current user
-        if (!str_contains($this->driver, 'sql') || Schema::hasColumn($this->table, 'created_by'))
-            $this->model->setAttribute('created_by', Auth::id());
-
-        // Set default uuid
-        if (!str_contains($this->driver, 'sql') || Schema::hasColumn($this->table, 'uuid'))
-            $this->model->setAttribute('uuid', $request->uuid ?? Uuid::uuid4());
-
-        try {
-            $this->model->save();
-
-            $this->postAdd($request, $this->model);
-            if ($transaction)
-                DB::commit();
-
-            return $this->model;
-        } catch (Exception $e) {
-            if ($transaction)
-                DB::rollBack();
-
-            throw new QueryException($e->getMessage() ?? __('laravel-base.server-error'), $e);
-        }
-    }
-
-    /**
      *  Do something after add the record
      *
      * @Author      yaangvu
      * @Date        Aug 07, 2022
      *
      * @param object $request
-     * @param Model  $model
+     * @param Model $model
      */
     public function postAdd(object $request, Model $model): void
     {
@@ -220,24 +218,6 @@ class BaseService implements Service
     }
 
     /**
-     *  Do something after patch update the record
-     *
-     * @Author      yaangvu
-     * @Date        Aug 07, 2022
-     *
-     * @param int|string $id
-     * @param object     $request
-     * @param Model      $model
-     */
-    public function postUpdate(int|string $id, object $request, Model $model): void
-    {
-        // Cache data
-        if ($this instanceof ShouldCache)
-            Cache::put($this->table . "-$model->$this->key", $model, $this->ttl);
-        // TODO
-    }
-
-    /**
      * @inheritDoc
      */
     public function find(int|string $id): Model
@@ -251,22 +231,6 @@ class BaseService implements Service
         $this->postFind($id, $entity);
 
         return $entity;
-    }
-
-    /**
-     *  Do something after get the record
-     *
-     * @Author      yaangvu
-     * @Date        Aug 07, 2022
-     *
-     * @param int|string $id
-     * @param Model      $model
-     */
-    public function postFind(int|string $id, Model $model): void
-    {
-        if ($this instanceof ShouldCache && !Cache::has($cachedKey = $this->table . "-$id"))
-            Cache::put($cachedKey, $model, $this->ttl);
-        // TODO
     }
 
     /**
@@ -334,6 +298,40 @@ class BaseService implements Service
     }
 
     /**
+     *  Do something after get the record
+     *
+     * @Author      yaangvu
+     * @Date        Aug 07, 2022
+     *
+     * @param int|string $id
+     * @param Model $model
+     */
+    public function postFind(int|string $id, Model $model): void
+    {
+        if ($this instanceof ShouldCache && !Cache::has($cachedKey = $this->table . "-$id"))
+            Cache::put($cachedKey, $model, $this->ttl);
+        // TODO
+    }
+
+    /**
+     *  Do something after patch update the record
+     *
+     * @Author      yaangvu
+     * @Date        Aug 07, 2022
+     *
+     * @param int|string $id
+     * @param object $request
+     * @param Model $model
+     */
+    public function postUpdate(int|string $id, object $request, Model $model): void
+    {
+        // Cache data
+        if ($this instanceof ShouldCache)
+            Cache::put($this->table . "-$model->$this->key", $model, $this->ttl);
+        // TODO
+    }
+
+    /**
      * @inheritDoc
      */
     public function putUpdate(int|string $id, object $request, bool $transaction = false): Model
@@ -384,8 +382,8 @@ class BaseService implements Service
      * @Date        Aug 07, 2022
      *
      * @param int|string $id
-     * @param object     $request
-     * @param Model      $model
+     * @param object $request
+     * @param Model $model
      */
     public function postPutUpdate(int|string $id, object $request, Model $model): void
     {
@@ -393,6 +391,31 @@ class BaseService implements Service
         if ($this instanceof ShouldCache)
             Cache::put($this->table . "-$model->$this->key", $model, $this->ttl);
         // TODO
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function deleteByUuid(string $uuid, bool $transaction = false): bool
+    {
+        if ($transaction)
+            DB::beginTransaction();
+        $data = $this->findByUuid($uuid);
+        try {
+            $deleted = $data->delete();
+            $this->postDeleteByUuid($uuid);
+            if ($transaction)
+                DB::commit();
+
+            return $deleted;
+        } catch (Exception $e) {
+            if ($transaction)
+                DB::rollBack();
+            throw new SystemException(
+                ['message' => __('laravel-base.can-not-del', ['attribute' => __('laravel-base.entity')]) . ": $uuid"],
+                $e
+            );
+        }
     }
 
     /**
@@ -419,7 +442,7 @@ class BaseService implements Service
      * @Date        Aug 07, 2022
      *
      * @param string $uuid
-     * @param Model  $model
+     * @param Model $model
      */
     public function postFindByUuid(string $uuid, Model $model): void
     {
@@ -472,31 +495,6 @@ class BaseService implements Service
     }
 
     /**
-     * @inheritDoc
-     */
-    public function deleteByUuid(string $uuid, bool $transaction = false): bool
-    {
-        if ($transaction)
-            DB::beginTransaction();
-        $data = $this->findByUuid($uuid);
-        try {
-            $deleted = $data->delete();
-            $this->postDeleteByUuid($uuid);
-            if ($transaction)
-                DB::commit();
-
-            return $deleted;
-        } catch (Exception $e) {
-            if ($transaction)
-                DB::rollBack();
-            throw new SystemException(
-                ['message' => __('laravel-base.can-not-del', ['attribute' => __('laravel-base.entity')]) . ": $uuid"],
-                $e
-            );
-        }
-    }
-
-    /**
      *  Do something after delete the record by Uuid
      *
      * @Author      yaangvu
@@ -536,7 +534,7 @@ class BaseService implements Service
 
             throw new QueryException(
                 ['message' => __('laravel-base.can-not-del',
-                                 ['attribute' => __('laravel-base.entity')]) . ": $request->ids"],
+                        ['attribute' => __('laravel-base.entity')]) . ": $request->ids"],
                 $e
             );
         }
@@ -584,7 +582,7 @@ class BaseService implements Service
 
             throw new QueryException(
                 ['message' => __('laravel-base.can-not-del',
-                                 ['attribute' => __('laravel-base.entity')]) . ": $request->uuids"],
+                        ['attribute' => __('laravel-base.entity')]) . ": $request->uuids"],
                 $e
             );
         }
@@ -608,4 +606,6 @@ class BaseService implements Service
         }
         // TODO
     }
+
+
 }
