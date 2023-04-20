@@ -18,14 +18,14 @@ abstract class GeneratorCommand extends BaseGeneratorCommand
 {
     #[ArrayShape(['first' => "mixed", 'last' => "mixed", 'hasSub' => "bool", 'subLevel' => "int"])]
     protected array $arrName = [];
-    private string $rootNamespace;
+    private string  $rootNamespace;
 
     public function handle()
     {
-        $rootNamespaceConf = config('laravel-base.generator.rootNamespace');
-        $rootNamespaceConf = str_replace('/', '\\', $rootNamespaceConf);
-        $rootNamespaceConf = trim($rootNamespaceConf, '\\');
-        $rootNamespaceConf = $rootNamespaceConf . '\\';
+        $rootNamespaceConf   = config('laravel-base.generator.rootNamespace');
+        $rootNamespaceConf   = str_replace('/', '\\', $rootNamespaceConf);
+        $rootNamespaceConf   = trim($rootNamespaceConf, '\\');
+        $rootNamespaceConf   = $rootNamespaceConf . '\\';
         $this->rootNamespace = $rootNamespaceConf;
 
         $this->arrName = $this->parseNameInput($this->getNameInput());
@@ -49,15 +49,15 @@ abstract class GeneratorCommand extends BaseGeneratorCommand
         if (count($this->arrName))
             return $this->arrName;
 
-        $name = str_replace('/', '\\', $name);
-        $name = str_replace(Str::studly($this->type), '', $name);
-        $name = trim($name, '\\/');
+        $name    = str_replace('/', '\\', $name);
+        $name    = str_replace(Str::studly($this->type), '', $name);
+        $name    = trim($name, '\\/');
         $arrName = explode('\\', $name);
 
-        return [
-            'first' => Str::studly(Arr::first($arrName)),
-            'last' => Str::studly(Arr::last($arrName)),
-            'hasSub' => count($arrName) > 1,
+        return $this->arrName = [
+            'first'    => Str::studly(Arr::first($arrName)),
+            'last'     => Str::studly(Arr::last($arrName)),
+            'hasSub'   => count($arrName) > 1,
             'subLevel' => count($arrName)
         ];
     }
@@ -76,12 +76,11 @@ abstract class GeneratorCommand extends BaseGeneratorCommand
      */
     protected function getPath($name)
     {
-        $arrName = $this->arrName;
-
         $path = $this->rootNamespace() . '\\'
             . Str::pluralStudly($this->type) . '\\'
             . $this->arrName['last'];
         $path = str_replace('\\', '/', $path);
+
         return $this->laravel->basePath($path)
             . ($this->type === 'Model' ? '' : $this->type)
             . '.php';
@@ -92,7 +91,7 @@ abstract class GeneratorCommand extends BaseGeneratorCommand
      */
     final function rootNamespace(): string
     {
-        return parent::rootNamespace() . $this->rootNamespace . $this->arrName['first'];
+        return $this->rootNamespace . $this->arrName['first'];
     }
 
     /**
@@ -118,8 +117,8 @@ abstract class GeneratorCommand extends BaseGeneratorCommand
      *
      * @param $name
      *
-     * @return stringFileNotFoundException
-     * @throws
+     * @return string
+     * @throws FileNotFoundException
      */
     protected function buildClass($name)
     {
@@ -162,22 +161,22 @@ abstract class GeneratorCommand extends BaseGeneratorCommand
         if ($this->option('service') && !class_exists($serviceClass) &&
             $this->components->confirm("A $serviceClass service does not exist. Do you want to generate it?", true)) {
             $this->call('yaangvu:base:service',
-                [
-                    'name' => $this->arrName['first'] . '/' . $this->arrName['last'],
-                    '--model' => true
-                ]);
+                        [
+                            'name'    => $this->arrName['first'] . '/' . $this->arrName['last'],
+                            '--model' => true
+                        ]);
         }
 
-        $serviceClass = $this->arrName['last'] . 'Service';
+        $serviceClass     = $this->arrName['last'] . 'Service';
         $serviceNamespace = $this->rootNamespace() . '\\'
             . 'Services' . '\\'
             . $serviceClass;
 
         return array_merge($replace,
-            [
-                'ServiceNamespace' => $serviceNamespace,
-                'ServiceClass' => $serviceClass
-            ]);
+                           [
+                               'ServiceNamespace' => $serviceNamespace,
+                               'ServiceClass'     => $serviceClass
+                           ]);
     }
 
     /**
@@ -233,17 +232,17 @@ abstract class GeneratorCommand extends BaseGeneratorCommand
         }
 
         return array_merge($replace, [
-            'DummyFullModelClass' => $modelClass,
+            'DummyFullModelClass'   => $modelClass,
             '{{ namespacedModel }}' => $modelClass,
-            '{{namespacedModel}}' => $modelClass,
-            'DummyModelClass' => class_basename($modelClass),
-            '{{ model }}' => class_basename($modelClass),
-            '{{model}}' => class_basename($modelClass),
-            'DummyModelVariable' => lcfirst(class_basename($modelClass)),
-            '{{ modelVariable }}' => lcfirst(class_basename($modelClass)),
-            '{{modelVariable}}' => lcfirst(class_basename($modelClass)),
-            'DummyPath' => Str::of(lcfirst(class_basename($modelClass)))->plural(),
-            'DummyTag' => Str::studly(class_basename($modelClass)),
+            '{{namespacedModel}}'   => $modelClass,
+            'DummyModelClass'       => class_basename($modelClass),
+            '{{ model }}'           => class_basename($modelClass),
+            '{{model}}'             => class_basename($modelClass),
+            'DummyModelVariable'    => lcfirst(class_basename($modelClass)),
+            '{{ modelVariable }}'   => lcfirst(class_basename($modelClass)),
+            '{{modelVariable}}'     => lcfirst(class_basename($modelClass)),
+            'DummyPath'             => Str::of(lcfirst(class_basename($modelClass)))->plural(),
+            'DummyTag'              => Str::studly(class_basename($modelClass)),
         ]);
     }
 

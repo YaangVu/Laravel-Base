@@ -9,8 +9,8 @@ use YaangVu\LaravelBase\Generator\GeneratorHelper;
 
 //use Illuminate\Console\GeneratorCommand;
 
-#[AsCommand(name: 'yaangvu:base:event')]
-class  ChannelMakeCommand extends \Illuminate\Foundation\Console\ChannelMakeCommand
+#[AsCommand(name: 'yaangvu:base:channel')]
+class ChannelMakeCommand extends \Illuminate\Foundation\Console\ChannelMakeCommand
 {
     use CreatesMatchingTest, GeneratorHelper;
 

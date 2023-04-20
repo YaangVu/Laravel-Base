@@ -9,8 +9,8 @@ use YaangVu\LaravelBase\Generator\GeneratorHelper;
 
 //use Illuminate\Console\GeneratorCommand;
 
-#[AsCommand(name: 'yaangvu:base:event')]
-class  NotificationMakeCommand extends \Illuminate\Foundation\Console\NotificationMakeCommand
+#[AsCommand(name: 'yaangvu:base:notification')]
+class NotificationMakeCommand extends \Illuminate\Foundation\Console\NotificationMakeCommand
 {
     use CreatesMatchingTest, GeneratorHelper;
 

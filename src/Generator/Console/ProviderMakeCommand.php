@@ -10,7 +10,7 @@ use YaangVu\LaravelBase\Generator\GeneratorHelper;
 //use Illuminate\Console\GeneratorCommand;
 
 #[AsCommand(name: 'yaangvu:base:provider')]
-class  ProviderMakeCommand extends \Illuminate\Foundation\Console\ProviderMakeCommand
+class ProviderMakeCommand extends \Illuminate\Foundation\Console\ProviderMakeCommand
 {
     use CreatesMatchingTest, GeneratorHelper;
 

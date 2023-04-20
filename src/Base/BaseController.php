@@ -7,6 +7,8 @@
 namespace YaangVu\LaravelBase\Base;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -21,7 +23,7 @@ class BaseController extends Controller
     protected $service;
 
     /**
-     * @param Model $model
+     * @param Model  $model
      * @param string $serviceName
      */
     public function __construct(private readonly Model $model, string $serviceName)
@@ -89,7 +91,6 @@ class BaseController extends Controller
         return \response()->json($this->service->putUpdate($id, $request));
     }
 
-
     /**
      * Remove the specified resource from storage.
      *
@@ -149,5 +150,4 @@ class BaseController extends Controller
     {
         return \response()->json($this->service->deleteByUuids($request));
     }
-
 }

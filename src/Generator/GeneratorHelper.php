@@ -24,6 +24,7 @@ trait GeneratorHelper
         $rootNamespaceConf   = trim($rootNamespaceConf, '\\');
         $rootNamespaceConf   = $rootNamespaceConf . '\\';
         $this->rootNamespace = $rootNamespaceConf;
+
         $this->arrName = $this->parseNameInput($this->getNameInput());
     }
 

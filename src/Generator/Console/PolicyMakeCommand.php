@@ -10,7 +10,7 @@ use YaangVu\LaravelBase\Generator\GeneratorHelper;
 //use Illuminate\Console\GeneratorCommand;
 
 #[AsCommand(name: 'yaangvu:base:policy')]
-class  PolicyMakeCommand extends \Illuminate\Foundation\Console\PolicyMakeCommand
+class PolicyMakeCommand extends \Illuminate\Foundation\Console\PolicyMakeCommand
 {
     use CreatesMatchingTest, GeneratorHelper;
 
