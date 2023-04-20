@@ -64,7 +64,7 @@ class GeneratorServiceProvider extends ServiceProvider
             'ModelMake'      => 'command.model.yaangvu',
             'PolicyMake'        => 'command.policy.yaangvu',
             'ProviderMake'      => 'command.provider.yaangvu',
-            'ResourceMake'      => 'command.resource.yaangvu',
+            // 'ResourceMake'      => 'command.resource.yaangvu',
             'NotificationMake'  => 'command.notification.yaangvu',
             // 'NotificationTable' => 'command.notification.table',
             'ChannelMake'       => 'command.channel.yaangvu',
