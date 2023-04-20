@@ -54,7 +54,7 @@ abstract class GeneratorCommand extends BaseGeneratorCommand
         $name    = trim($name, '\\/');
         $arrName = explode('\\', $name);
 
-        return [
+        return $this->arrName = [
             'first'    => Str::studly(Arr::first($arrName)),
             'last'     => Str::studly(Arr::last($arrName)),
             'hasSub'   => count($arrName) > 1,
@@ -76,16 +76,14 @@ abstract class GeneratorCommand extends BaseGeneratorCommand
      */
     protected function getPath($name)
     {
-        $arrName = $this->arrName;
-
         $path = $this->rootNamespace() . '\\'
-                . Str::pluralStudly($this->type) . '\\'
-                . $this->arrName['last'];
+            . Str::pluralStudly($this->type) . '\\'
+            . $this->arrName['last'];
         $path = str_replace('\\', '/', $path);
 
         return $this->laravel->basePath($path)
-               . ($this->type === 'Model' ? '' : $this->type)
-               . '.php';
+            . ($this->type === 'Model' ? '' : $this->type)
+            . '.php';
     }
 
     /**
@@ -93,7 +91,7 @@ abstract class GeneratorCommand extends BaseGeneratorCommand
      */
     final function rootNamespace(): string
     {
-        return parent::rootNamespace() . $this->rootNamespace . $this->arrName['first'];
+        return $this->rootNamespace . $this->arrName['first'];
     }
 
     /**
@@ -171,8 +169,8 @@ abstract class GeneratorCommand extends BaseGeneratorCommand
 
         $serviceClass     = $this->arrName['last'] . 'Service';
         $serviceNamespace = $this->rootNamespace() . '\\'
-                            . 'Services' . '\\'
-                            . $serviceClass;
+            . 'Services' . '\\'
+            . $serviceClass;
 
         return array_merge($replace,
                            [
