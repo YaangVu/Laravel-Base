@@ -26,6 +26,7 @@ trait GeneratorHelper
         $this->rootNamespace = $rootNamespaceConf;
 
         $this->arrName = $this->parseNameInput($this->getNameInput());
+    
     }
 
     /**
@@ -60,7 +61,6 @@ trait GeneratorHelper
     {
         return $this->rootNamespace . $this->arrName['first'];
     }
-
     /**
      * @inheritDoc
      * @Example /Type/Controllers/Type. You have to add extension to /Type/Controllers/TypeController.php

@@ -6,7 +6,7 @@ use Illuminate\Console\Concerns\CreatesMatchingTest;
 use Illuminate\Routing\Console\MiddlewareMakeCommand as ConsoleMiddlewareMakeCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
 use YaangVu\LaravelBase\Generator\GeneratorHelper;
-
+use Illuminate\Support\Str;
 #[AsCommand(name: 'yaangvu:base:middleware')]
 class MiddlewareMakeCommand extends  ConsoleMiddlewareMakeCommand
 {
@@ -71,10 +71,17 @@ class MiddlewareMakeCommand extends  ConsoleMiddlewareMakeCommand
         return $rootNamespace . "\Middleware";
     }
     
-    // protected function getPath($name): string
-    // {
-    //     return parent::getPath($name);
-    // }
+    protected function getPath($name): string
+    {
+        $path = $this->rootNamespace() . '\\'
+            . Str::pluralStudly($this->type) . '\\'
+            . $this->arrName['last'];
+        $path = str_replace('\\', '/', $path);
+
+        return $this->laravel->basePath($path)
+            . ($this->type === 'Model' ? '' : $this->type)
+            . '.php';
+    }
     
     public function handle()
     {

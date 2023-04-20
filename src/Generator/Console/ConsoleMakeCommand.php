@@ -3,7 +3,6 @@
 namespace YaangVu\LaravelBase\Generator\Console;
 
 use Illuminate\Console\Concerns\CreatesMatchingTest;
-use Illuminate\Console\GeneratorCommand;
 use Illuminate\Foundation\Console\ConsoleMakeCommand as ConsoleConsoleMakeCommand;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -105,10 +104,17 @@ class ConsoleMakeCommand extends ConsoleConsoleMakeCommand
         ];
     }
 
-    // protected function getPath($name): string
-    // {
-    //     return parent::getPath($name);
-    // }
+    protected function getPath($name): string
+    {
+        $path = $this->rootNamespace() . '\\'
+            . Str::pluralStudly($this->type) . '\\'
+            . $this->arrName['last'];
+        $path = str_replace('\\', '/', $path);
+
+        return $this->laravel->basePath($path)
+            . ($this->type === 'Model' ? '' : $this->type)
+            . '.php';
+    }
     
     public function handle()
     {

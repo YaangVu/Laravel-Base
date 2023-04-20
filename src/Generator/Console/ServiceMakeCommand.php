@@ -10,6 +10,7 @@ use Illuminate\Console\Concerns\CreatesMatchingTest;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
+use Illuminate\Support\Str;
 
 #[AsCommand(name: 'yaangvu:base:service')]
 class ServiceMakeCommand extends GeneratorCommand
@@ -109,5 +110,17 @@ class ServiceMakeCommand extends GeneratorCommand
         return [
             ['model', 'm', InputOption::VALUE_NONE, 'Generate a resource controller for the given model.'],
         ];
+    }
+
+    protected function getPath($name): string
+    {
+        $path = $this->rootNamespace() . '\\'
+            . Str::pluralStudly($this->type) . '\\'
+            . $this->arrName['last'];
+        $path = str_replace('\\', '/', $path);
+
+        return $this->laravel->basePath($path)
+            . ($this->type === 'Model' ? '' : $this->type)
+            . '.php';
     }
 }

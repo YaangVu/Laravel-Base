@@ -15,6 +15,6 @@ return [
         'ttl' => 86400 // 1 day
     ],
     'generator' => [
-        'rootNamespace' => 'Domains'
+        'rootNamespace' => 'Domains\\'
     ]
 ];
