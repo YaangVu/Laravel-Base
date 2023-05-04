@@ -95,7 +95,7 @@ trait GeneratorHelper
      */
     protected function qualifyClass($name): string
     {
-        return $this->getDefaultNamespace($this->rootNamespace()) . "\\" . $this->arrName['last'] . $this->type;
+        return $this->getDefaultNamespace($this->rootNamespace()) . "\\"  . $this->arrName['last'] . $this->type;
     }
 
 }

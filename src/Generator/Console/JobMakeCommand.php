@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
 use YaangVu\LaravelBase\Generator\GeneratorHelper;
 
-//use Illuminate\Console\GeneratorCommand;
+
 
 #[AsCommand(name: 'yaangvu:base:job')]
 class  JobMakeCommand extends \Illuminate\Foundation\Console\JobMakeCommand
