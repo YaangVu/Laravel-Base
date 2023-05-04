@@ -55,10 +55,10 @@ class BaseMakeCommand extends GeneratorCommand
 
         $this->call('yaangvu:base:controller',
                     [
-                        'name'        => $this->arrName['first'] . '/' . $this->arrName['last'],
-                        '--service'   => true,
-                        '--model'     => true,
-                        '--swagger'   => $this->option('swagger'),
+                        'name'      => $this->arrName['first'] . '/' . $this->arrName['last'],
+                        '--service' => true,
+                        '--model'   => true,
+                        '--swagger' => $this->option('swagger'),
                     ]);
 
     }

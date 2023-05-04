@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
 use YaangVu\LaravelBase\Generator\GeneratorHelper;
 
-//use Illuminate\Console\GeneratorCommand;
+
 
 #[AsCommand(name: 'yaangvu:base:mail')]
 class MailMakeCommand extends \Illuminate\Foundation\Console\MailMakeCommand

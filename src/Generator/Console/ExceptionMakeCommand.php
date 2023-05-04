@@ -33,7 +33,6 @@ class ExceptionMakeCommand extends \Illuminate\Foundation\Console\ExceptionMakeC
      */
     protected $type = 'Exception';
 
-
     public function handle()
     {
         $this->setup();

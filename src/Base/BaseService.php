@@ -274,6 +274,7 @@ class BaseService implements Service
      */
     public function get(bool $paginated = true): LengthAwarePaginator|Collection
     {
+        
         if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->table . '-' . Request::serialize()))
             return Cache::get($cachedKey);
 
@@ -608,4 +609,6 @@ class BaseService implements Service
         }
         // TODO
     }
+
+    
 }

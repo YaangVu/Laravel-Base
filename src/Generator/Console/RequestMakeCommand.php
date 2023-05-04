@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
 use YaangVu\LaravelBase\Generator\GeneratorHelper;
 
-//use Illuminate\Console\GeneratorCommand;
+
 
 #[AsCommand(name: 'yaangvu:base:request')]
 class RequestMakeCommand extends \Illuminate\Foundation\Console\RequestMakeCommand
@@ -32,7 +32,6 @@ class RequestMakeCommand extends \Illuminate\Foundation\Console\RequestMakeComma
      * @var string
      */
     protected $type = 'Request';
-
 
     public function handle()
     {

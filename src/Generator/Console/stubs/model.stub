@@ -9,3 +9,4 @@ class {{ class }} extends Model
 {
     use HasFactory;
 }
+
