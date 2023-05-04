@@ -2,16 +2,20 @@
 
 namespace YaangVu\LaravelBase\Generator\Console;
 
-use Illuminate\Console\GeneratorCommand;
-use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Input\InputOption;
-use YaangVu\LaravelBase\Generator\GeneratorHelper;
+
+use Illuminate\Console\Concerns\CreatesMatchingTest;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Attribute\AsCommand;
+use YaangVu\LaravelBase\Generator\GeneratorHelper;
+
 
 #[AsCommand(name: 'yaangvu:base:cast')]
 class CastMakeCommand extends \Illuminate\Foundation\Console\CastMakeCommand
 {
-    use GeneratorHelper;
+
+    use CreatesMatchingTest, GeneratorHelper;
+
+
     /**
      * The console command name.
      *
@@ -24,7 +28,8 @@ class CastMakeCommand extends \Illuminate\Foundation\Console\CastMakeCommand
      *
      * @var string
      */
-    protected $description = 'Create a new custom Eloquent cast class';
+
+    protected $description = 'Create a new cast class';
 
     /**
      * The type of class being generated.
@@ -46,7 +51,6 @@ class CastMakeCommand extends \Illuminate\Foundation\Console\CastMakeCommand
             . Str::pluralStudly($this->type) . '\\'
             . $this->arrName['last'];
         $path = str_replace('\\', '/', $path);
-
         return $this->laravel->basePath($path)
             . ($this->type === 'Model' ? '' : $this->type)
             . '.php';

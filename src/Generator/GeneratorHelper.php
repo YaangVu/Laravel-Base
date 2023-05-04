@@ -26,7 +26,6 @@ trait GeneratorHelper
         $this->rootNamespace = $rootNamespaceConf;
 
         $this->arrName = $this->parseNameInput($this->getNameInput());
-
     }
 
     /**

@@ -9,8 +9,8 @@ use YaangVu\LaravelBase\Generator\GeneratorHelper;
 
 //use Illuminate\Console\GeneratorCommand;
 
-#[AsCommand(name: 'yaangvu:base:exception')]
-class ExceptionMakeCommand extends \Illuminate\Foundation\Console\ExceptionMakeCommand
+#[AsCommand(name: 'yaangvu:base:listener')]
+class  ListenerMakeCommand extends \Illuminate\Foundation\Console\ListenerMakeCommand
 {
     use CreatesMatchingTest, GeneratorHelper;
 
@@ -19,19 +19,20 @@ class ExceptionMakeCommand extends \Illuminate\Foundation\Console\ExceptionMakeC
      *
      * @var string
      */
-    protected $name = 'yaangvu:base:exception';
+    protected $name = 'yaangvu:base:listener';
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new exception class';
+    protected $description = 'Create a new listener class';
     /**
      * The type of class being generated.
      *
      * @var string
      */
-    protected $type = 'Exception';
+    protected $type = 'Listener';
+
 
     public function handle()
     {

@@ -2,30 +2,30 @@
 
 namespace YaangVu\LaravelBase\Generator\Console;
 
-use Illuminate\Console\GeneratorCommand;
-use Illuminate\Foundation\Console\RequestMakeCommand as ConsoleRequestMakeCommand;
-use Symfony\Component\Console\Attribute\AsCommand;
-
-use YaangVu\LaravelBase\Generator\GeneratorHelper;
+use Illuminate\Console\Concerns\CreatesMatchingTest;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Attribute\AsCommand;
+use YaangVu\LaravelBase\Generator\GeneratorHelper;
+
+
+
 #[AsCommand(name: 'yaangvu:base:request')]
-class RequestMakeCommand extends ConsoleRequestMakeCommand
+class RequestMakeCommand extends \Illuminate\Foundation\Console\RequestMakeCommand
 {
-    use GeneratorHelper;
+    use CreatesMatchingTest, GeneratorHelper;
+
     /**
      * The console command name.
      *
      * @var string
      */
     protected $name = 'yaangvu:base:request';
-
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new form request class';
-
+    protected $description = 'Create a new request class';
     /**
      * The type of class being generated.
      *
@@ -33,23 +33,6 @@ class RequestMakeCommand extends ConsoleRequestMakeCommand
      */
     protected $type = 'Request';
 
-    protected function getDefaultNamespace($rootNamespace)
-    {
-        return $rootNamespace.'\Requests';
-    }
-
-    protected function getPath($name): string
-    {
-        $path = $this->rootNamespace() . '\\'
-            . Str::pluralStudly($this->type) . '\\'
-            . $this->arrName['last'];
-        $path = str_replace('\\', '/', $path);
-
-        return $this->laravel->basePath($path)
-            . ($this->type === 'Model' ? '' : $this->type)
-            . '.php';
-    }
-    
     public function handle()
     {
         $this->setup();
@@ -57,4 +40,15 @@ class RequestMakeCommand extends ConsoleRequestMakeCommand
     }
 
 
+    protected function getPath($name): string
+    {
+        $path = $this->rootNamespace() . '\\'
+            . Str::pluralStudly($this->type) . '\\'
+            . $this->arrName['last'];
+        $path = str_replace('\\', '/', $path);
+        return $this->laravel->basePath($path)
+            . ($this->type === 'Model' ? '' : $this->type)
+            . '.php';
+    }
 }
+
