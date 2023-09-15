@@ -34,6 +34,8 @@ class RouterServiceProvider extends ServiceProvider
                 Route::patch("$name/delete/ids", "$controller@deleteByIds")->name('delete-by-ids');
                 Route::patch("$name/delete/uuids", "$controller@deleteByUuids")->name('delete-by-uuids');
             });
+
+            return $this;
         });
     }
 
