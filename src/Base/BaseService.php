@@ -143,11 +143,13 @@ class BaseService implements Service
         }
 
         // If using NoSQL or SQL with table has created_by column then Set created_by is current user
-        if (!str_contains($this->driver, 'sql') || Schema::hasColumn($this->table, 'created_by'))
+        if (!str_contains($this->driver, 'sql')
+            || Schema::connection($this->model->getConnectionName())->hasColumn($this->table, 'created_by'))
             $this->model->setAttribute('created_by', Auth::id());
 
-        // Set default uuid
-        if (!str_contains($this->driver, 'sql') || Schema::hasColumn($this->table, 'uuid'))
+        // If using NoSQL or SQL with table has uuid column then Set uuid
+        if (!str_contains($this->driver, 'sql')
+            || Schema::connection($this->model->getConnectionName())->hasColumn($this->table, 'uuid'))
             $this->model->setAttribute('uuid', $request->uuid ?? Uuid::uuid4());
 
         try {
@@ -274,7 +276,7 @@ class BaseService implements Service
      */
     public function get(bool $paginated = true): LengthAwarePaginator|Collection
     {
-        
+
         if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->table . '-' . Request::serialize()))
             return Cache::get($cachedKey);
 
@@ -610,5 +612,5 @@ class BaseService implements Service
         // TODO
     }
 
-    
+
 }
