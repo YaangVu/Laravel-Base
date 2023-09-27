@@ -20,7 +20,7 @@ class PostgresOperator implements Operator
             OperatorPatternEnum::GE => '>=',
             OperatorPatternEnum::LT => '<',
             OperatorPatternEnum::LE => '<=',
-            OperatorPatternEnum::LIKE => 'I_LIKE',
+            OperatorPatternEnum::LIKE => 'ILIKE',
         };
     }
 }
