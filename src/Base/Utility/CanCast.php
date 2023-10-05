@@ -48,7 +48,7 @@ trait CanCast
      *
      * @return float|int|Carbon|string
      */
-    public function cast(mixed $value, CastEnum $type = null): float|int|Carbon|string
+    public function cast(mixed $value, ?CastEnum $type = null): float|int|Carbon|string|null
     {
         return match ($type) {
             CastEnum::DATE => Carbon::parse($value)->toDateString(),
