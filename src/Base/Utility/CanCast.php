@@ -43,10 +43,10 @@ trait CanCast
      * @Author yaangvu
      * @Date   Aug 07, 2022
      *
-     * @param mixed    $value
-     * @param CastEnum $type
+     * @param mixed $value
+     * @param CastEnum|null $type
      *
-     * @return float|int|Carbon|string
+     * @return float|int|Carbon|string|null
      */
     public function cast(mixed $value, ?CastEnum $type = null): float|int|Carbon|string|null
     {
