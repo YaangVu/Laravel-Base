@@ -24,13 +24,14 @@ use YaangVu\LaravelBase\Base\Enum\OperatorPatternEnum;
 use YaangVu\LaravelBase\Base\Facade\Param;
 use YaangVu\LaravelBase\Base\Facade\Pdo;
 use YaangVu\LaravelBase\Base\Utility\CanCast;
+use YaangVu\LaravelBase\Base\Utility\HasRequest;
 use YaangVu\LaravelBase\Base\Utility\Validatable;
 use YaangVu\LaravelBase\Exception\QueryException;
 use YaangVu\LaravelBase\Exception\SystemException;
 
 class BaseService implements Service
 {
-    use Macroable, Validatable, CanCast;
+    use Macroable, Validatable, CanCast, HasRequest;
 
     protected Builder $builder;
 
