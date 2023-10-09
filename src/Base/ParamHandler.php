@@ -10,13 +10,15 @@ use Illuminate\Support\Str;
 use YaangVu\LaravelBase\Base\DataObject\Sort;
 use YaangVu\LaravelBase\Base\Enum\ClauseEnum;
 use YaangVu\LaravelBase\Base\Utility\Query\HasCondition;
+use YaangVu\LaravelBase\Base\Utility\Query\HasEagerLoad;
+use YaangVu\LaravelBase\Base\Utility\Query\HasKeywordSearch;
 use YaangVu\LaravelBase\Base\Utility\Query\HasSelection;
 use YaangVu\LaravelBase\Base\Utility\Query\Pageable;
 use YaangVu\LaravelBase\Base\Utility\Query\Sortable;
 
 class ParamHandler
 {
-    use HasCondition, Sortable, HasSelection, Pageable;
+    use HasCondition, Sortable, HasSelection, Pageable, HasKeywordSearch, HasEagerLoad;
 
     /**
      * List Keys of parameter will be excluded before query into database
@@ -29,7 +31,17 @@ class ParamHandler
         $this->setSeparator(config('laravel-base.query.separator'))
              ->setNullableValue(config('laravel-base.query.nullable_value'))
              ->setLimit(config('laravel-base.query.limit'))
-             ->setExcludedKeys(['limit', 'sort', 'page', 'select'])
+             ->setExcludedKeys(['limit',
+                                'sort',
+                                'page',
+                                'select',
+                                'keyword',
+                                'with',
+                                'with_count',
+                                'with_sum',
+                                'with_avg',
+                                'with_min',
+                                'with_max'])
              ->setDefaultSort();
     }
 
@@ -125,11 +137,18 @@ class ParamHandler
     public function parseParam(string $key, mixed $value): static
     {
         return match (Str::lower($key)) {
-            ClauseEnum::LIMIT->value => $this->setLimit($value),
-            ClauseEnum::PAGE->value => $this->setPage($value),
-            ClauseEnum::SELECT->value => $this->parseSelections($value),
-            ClauseEnum::SORT->value => $this->parseSorts($value),
-            default => $this->parseCondition($key, $value)
+            ClauseEnum::LIMIT->value      => $this->setLimit($value),
+            ClauseEnum::PAGE->value       => $this->setPage($value),
+            ClauseEnum::SELECT->value     => $this->parseSelections($value),
+            ClauseEnum::SORT->value       => $this->parseSorts($value),
+            ClauseEnum::KEYWORD->value    => $this->setKeyword($value),
+            ClauseEnum::WITH->value       => $this->setWith($value),
+            ClauseEnum::WITH_COUNT->value => $this->setWithCount($value),
+            ClauseEnum::WITH_AVG->value   => $this->setWithAvg($value),
+            ClauseEnum::WITH_SUM->value   => $this->setWithSum($value),
+            ClauseEnum::WITH_MAX->value   => $this->setWithMax($value),
+            ClauseEnum::WITH_MIN->value   => $this->setWithMin($value),
+            default                       => $this->parseCondition($key, $value)
         };
     }
 

@@ -6,11 +6,14 @@
 
 namespace YaangVu\LaravelBase\Base\Facade;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Facade;
 use YaangVu\LaravelBase\Base\DataObject\Condition;
 use YaangVu\LaravelBase\Base\DataObject\Sort;
 use YaangVu\LaravelBase\Base\ParamHandler;
 use YaangVu\LaravelBase\Base\Utility\Query\HasCondition;
+use YaangVu\LaravelBase\Base\Utility\Query\HasEagerLoad;
+use YaangVu\LaravelBase\Base\Utility\Query\HasKeywordSearch;
 use YaangVu\LaravelBase\Base\Utility\Query\HasSelection;
 use YaangVu\LaravelBase\Base\Utility\Query\Pageable;
 use YaangVu\LaravelBase\Base\Utility\Query\Sortable;
@@ -74,6 +77,23 @@ use YaangVu\LaravelBase\Base\Utility\Query\Sortable;
  *
  * |---------------------------------------------------------------------------------------------------------
  *
+ * @method static Builder addKeywordQuery(Builder $builder, string $operator = 'like')
+ * @link HasKeywordSearch::addKeywordQuery()
+ *
+ * @method static mixed getKeyword()
+ * @link HasKeywordSearch::getKeyword()
+ *
+ * @method static static setKeyword(mixed $keyword)
+ * @link HasKeywordSearch::setKeyword()
+ *
+ * @method static array getSearchKeys()
+ * @link HasKeywordSearch::getSearchKeys()
+ *
+ * @method static static setSearchKeys(array $searchKeys)
+ * @link HasKeywordSearch::setSearchKeys()
+ *
+ * |---------------------------------------------------------------------------------------------------------
+ *
  * @method static ParamHandler parseSelections(string|array $selections)
  * @link HasSelection::parseSelections()
  *
@@ -100,6 +120,11 @@ use YaangVu\LaravelBase\Base\Utility\Query\Sortable;
  * @method static ParamHandler exclude(string $key)
  * @link ParamHandler::exclude()
  * |---------------------------------------------------------------------------------------------------------
+ *
+ * @method static Builder addEagerLoading(Builder $builder)
+ * @link HasEagerLoad::addEagerLoading()
+ *
+ *  |---------------------------------------------------------------------------------------------------------
  */
 class Param extends Facade
 {

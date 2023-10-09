@@ -7,6 +7,7 @@
 namespace YaangVu\LaravelBase\Provider;
 
 use Illuminate\Support\ServiceProvider;
+use YaangVu\LaravelBase\Base\Contract\Operator;
 use YaangVu\LaravelBase\Base\Provider\RequestServiceProvider;
 use YaangVu\LaravelBase\Base\Provider\RouterServiceProvider;
 
@@ -35,6 +36,12 @@ class BaseServiceProvider extends ServiceProvider
         $this->publishConfig();
         $this->publishBaseClasses();
         $this->mergeConfigFrom($configPath, 'laravel-base');
+
+        $this->app->bind(Operator::class, function ($app, $params) {
+            $operatorClass = config('laravel-base.operator.' . $params['driver']);
+
+            return new $operatorClass();
+        });
     }
 
     /**

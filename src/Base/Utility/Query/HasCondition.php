@@ -50,6 +50,53 @@ trait HasCondition
     }
 
     /**
+     * Parse request param to condition, used to query into database
+     *
+     * @Author      yaangvu
+     * @Date        Feb 21, 2023
+     *
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return $this
+     */
+    public function parseCondition(string $key, mixed $value): static
+    {
+        // If $value is empty or null and can not be null then return
+        if (($value === '' || $value === null) && $this->nullable() === false) return $this;
+
+        switch (substr_count($key, $this->getSeparator())) {
+            // If $query has formatted like: ${column}__${operator}
+            case 1:
+                [$table, $column, $operatorValue] = [null, ...explode($this->getSeparator(), $key)];
+                break;
+
+            // If $query has formatted like: ${table}__${column}__${operator}
+            case 2:
+                [$table, $column, $operatorValue] = explode($this->getSeparator(), $key);
+                break;
+
+            // If $query has formatted like: ${column}
+            default:
+                $table         = null;
+                $column        = $key;
+                $operatorValue = OperatorPatternEnum::EQUAL->value;
+                break;
+        }
+
+        $operatorPattern = OperatorPatternEnum::from($operatorValue);
+
+        // If $column is one of $excludedKeys then return
+        if (in_array($column, Param::getExcludedKeys())) return $this;
+
+        $condition = new Condition();
+        $condition->setTable($table)->setColumn(($table ? "$table." : '') . $column)->setValue($value)
+                  ->setOperatorPattern($operatorPattern);
+
+        return $this->addCondition($condition);
+    }
+
+    /**
      * Nullable parameter value
      *
      * @Author      yaangvu
@@ -117,57 +164,5 @@ trait HasCondition
         $this->conditions[] = $condition;
 
         return $this;
-    }
-
-    /**
-     * Parse request param to condition, used to query into database
-     *
-     * @Author      yaangvu
-     * @Date        Feb 21, 2023
-     *
-     * @param string $key
-     * @param mixed  $value
-     *
-     * @return $this
-     */
-    public function parseCondition(string $key, mixed $value): static
-    {
-        // If $value is empty or null and can not be null then return
-        if (($value === '' || $value === null) && $this->nullable() === false)
-            return $this;
-
-        switch (substr_count($key, $this->getSeparator())) {
-            // If $query has formatted like: ${column}__${operator}
-            case 1:
-                [$table, $column, $operatorValue] = [null, ...explode($this->getSeparator(), $key)];
-                break;
-
-            // If $query has formatted like: ${table}__${column}__${operator}
-            case 2:
-                [$table, $column, $operatorValue] = explode($this->getSeparator(), $key);
-                break;
-
-            // If $query has formatted like: ${column}
-            default:
-                $table         = null;
-                $column        = $key;
-                $operatorValue = OperatorPatternEnum::EQUAL->value;
-                break;
-        }
-
-        $operatorPattern = OperatorPatternEnum::from($operatorValue);
-
-        // If $column is one of $excludedKeys then return
-        if (in_array($column, Param::getExcludedKeys()))
-            return $this;
-
-
-        $condition = new Condition();
-        $condition->setTable($table)
-                  ->setColumn(($table ? "$table." : '') . $column)
-                  ->setValue($value)
-                  ->setOperatorPattern($operatorPattern);
-
-        return $this->addCondition($condition);
     }
 }

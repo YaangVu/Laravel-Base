@@ -11,16 +11,18 @@ use YaangVu\LaravelBase\Base\Enum\OperatorPatternEnum;
 
 class SqliteOperator implements Operator
 {
-
+    /**
+     * @inheritDoc
+     */
     public function make(OperatorPatternEnum $pattern): string
     {
         return match ($pattern) {
             OperatorPatternEnum::EQUAL => '=',
-            OperatorPatternEnum::GT => '>',
-            OperatorPatternEnum::GE => '>=',
-            OperatorPatternEnum::LT => '<',
-            OperatorPatternEnum::LE => '<=',
-            OperatorPatternEnum::LIKE => 'LIKE',
+            OperatorPatternEnum::GT    => '>',
+            OperatorPatternEnum::GE    => '>=',
+            OperatorPatternEnum::LT    => '<',
+            OperatorPatternEnum::LE    => '<=',
+            OperatorPatternEnum::LIKE  => 'LIKE',
         };
     }
 }
