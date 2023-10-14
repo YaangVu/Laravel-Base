@@ -116,16 +116,18 @@ class BaseService implements Service
         }
 
         // If using NoSQL or SQL with table has created_by column then Set created_by is current user
-        if (!str_contains($this->driver, 'sql') || Schema::connection($this->model->getConnectionName())
-                                                         ->hasColumn($this->table,
-                                                                     'created_by')) $this->model->setAttribute('created_by',
-                                                                                                               Auth::id());
+        if (!str_contains($this->driver, 'sql')
+            || Schema::connection($this->model->getConnectionName())
+                     ->hasColumn($this->table,
+                                 'created_by')) $this->model->setAttribute('created_by',
+                                                                           Auth::id());
 
         // If using NoSQL or SQL with table has uuid column then Set uuid
-        if (!str_contains($this->driver, 'sql') || Schema::connection($this->model->getConnectionName())
-                                                         ->hasColumn($this->table,
-                                                                     'uuid')) $this->model->setAttribute('uuid',
-                                                                                                         $request->uuid ?? Uuid::uuid4());
+        if (!str_contains($this->driver, 'sql')
+            || Schema::connection($this->model->getConnectionName())
+                     ->hasColumn($this->table,
+                                 'uuid')) $this->model->setAttribute('uuid',
+                                                                     $request->uuid ?? Uuid::uuid4());
 
         try {
             $this->model->save();
@@ -170,8 +172,10 @@ class BaseService implements Service
      */
     final function changeableColumn(string $column): bool
     {
-        return $this->fillAbles === ['*'] || (in_array($column, $this->fillAbles) && !in_array($column,
-                                                                                               $this->guarded));
+        return $this->fillAbles === ['*']
+               || (in_array($column, $this->fillAbles)
+                   && !in_array($column,
+                                $this->guarded));
     }
 
     /**
@@ -226,10 +230,15 @@ class BaseService implements Service
      */
     public function find(int|string $id): Model
     {
-        if ($this instanceof ShouldCache && Cache::has(
+        if ($this instanceof ShouldCache
+            && Cache::has(
                 $cachedKey = $this->table . "-$id")) return Cache::get($cachedKey);
 
         Param::parseParams();
+
+        // Add Eager Loading
+        $this->builder = Param::addEagerLoading($this->builder);
+
         $entity = $this->builder->findOrFail($id, Param::getSelections());
 
         $this->postFind($id, $entity);
@@ -242,7 +251,8 @@ class BaseService implements Service
      */
     public function get(bool $paginated = true): LengthAwarePaginator|Collection
     {
-        if ($this instanceof ShouldCache && Cache::has(
+        if ($this instanceof ShouldCache
+            && Cache::has(
                 $cachedKey = $this->table . '-' . Request::serialize())) return Cache::get($cachedKey);
 
         Param::parseParams();
@@ -298,7 +308,8 @@ class BaseService implements Service
     public function postGet(mixed $response): void
     {
         // Cache data
-        if ($this instanceof ShouldCache && !Cache::has(
+        if ($this instanceof ShouldCache
+            && !Cache::has(
                 $cachedKey = $this->table . '-' . Request::serialize())) Cache::put($cachedKey, $response,
                                                                                     min($this->ttl, 3600));
         // TODO
@@ -420,7 +431,8 @@ class BaseService implements Service
      */
     public function findByUuid(string $uuid): Model
     {
-        if ($this instanceof ShouldCache && Cache::has(
+        if ($this instanceof ShouldCache
+            && Cache::has(
                 $cachedKey = $this->table . "-uuid-$uuid")) return Cache::get($cachedKey);
 
         Param::parseParams();
@@ -443,7 +455,8 @@ class BaseService implements Service
      */
     public function postFindByUuid(string $uuid, Model $model): void
     {
-        if ($this instanceof ShouldCache && !Cache::has(
+        if ($this instanceof ShouldCache
+            && !Cache::has(
                 $cachedKey = $this->table . "-uuid-$uuid")) Cache::put($cachedKey, $model, $this->ttl);
         // TODO
     }
@@ -562,7 +575,8 @@ class BaseService implements Service
             if ($transaction) DB::rollBack();
 
             throw new QueryException(['message' => __('laravel-base.can-not-del',
-                                                      ['attribute' => __('laravel-base.entity')]) . ": $request->uuids"],
+                                                      ['attribute' => __('laravel-base.entity')])
+                                                   . ": $request->uuids"],
                                      $e);
         }
     }

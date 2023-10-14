@@ -17,12 +17,11 @@ trait HasKeywordSearch
         if (!$this->getKeyword() || !$this->getSearchKeys()) return $builder;
 
         $keyword = $this->getKeyword();
-        foreach ($this->getSearchKeys() as $key)
-            $builder = $builder->where(function (Builder $builder) use ($key, $keyword, $operator) {
-                $builder->orWhere($key, $operator, "%$keyword%");
-            });
 
-        return $builder;
+        return $builder->where(function (Builder $builder) use ($keyword, $operator) {
+            foreach ($this->getSearchKeys() as $key)
+                $builder->orWhere($key, $operator, "%$keyword%");
+        });
     }
 
     public function getKeyword(): mixed
