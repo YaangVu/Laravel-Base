@@ -18,21 +18,21 @@ class RouterServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        Route::macro('base', function (string $name, string $controller) {
-            $routeNameGroup = str_replace('/', '', trim($name, '/'));
-            Route::name("base.api.$routeNameGroup.")->group(function () use ($name, $controller) {
-                Route::get("$name", "$controller@index")->name('index');
-                Route::get("$name/{id}", "$controller@show")->name('show');
-                Route::post("$name", "$controller@store")->name('store');
-                Route::put("$name/{id}", "$controller@update")->name('put-update');
-                Route::patch("$name/{id}", "$controller@update")->name('update');
-                Route::delete("$name/{id}", "$controller@destroy")->name('destroy');
+        Route::macro('base', function (string $uri, string $controller, ?string $name = null) {
+            $routeNameGroup = $name ?? str_replace('/', '', trim($uri, '/'));
+            Route::name("base.api.$routeNameGroup.")->group(function () use ($uri, $controller) {
+                Route::get("$uri", "$controller@index")->name('index');
+                Route::get("$uri/{id}", "$controller@show")->name('show');
+                Route::post("$uri", "$controller@store")->name('store');
+                Route::put("$uri/{id}", "$controller@update")->name('put-update');
+                Route::patch("$uri/{id}", "$controller@update")->name('update');
+                Route::delete("$uri/{id}", "$controller@destroy")->name('destroy');
 
                 // Add more route
-                Route::get("$name/uuid/{uuid}", "$controller@showByUuid")->name('show-by-uuid');
-                Route::delete("$name/uuid/{uuid}", "$controller@deleteByUuid")->name('destroy-by-uuid');
-                Route::patch("$name/delete/ids", "$controller@deleteByIds")->name('delete-by-ids');
-                Route::patch("$name/delete/uuids", "$controller@deleteByUuids")->name('delete-by-uuids');
+                Route::get("$uri/uuid/{uuid}", "$controller@showByUuid")->name('show-by-uuid');
+                Route::delete("$uri/uuid/{uuid}", "$controller@deleteByUuid")->name('destroy-by-uuid');
+                Route::patch("$uri/delete/ids", "$controller@deleteByIds")->name('delete-by-ids');
+                Route::patch("$uri/delete/uuids", "$controller@deleteByUuids")->name('delete-by-uuids');
             });
 
             return $this;
