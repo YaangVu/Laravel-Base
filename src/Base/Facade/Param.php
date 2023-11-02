@@ -80,8 +80,8 @@ use YaangVu\LaravelBase\Base\Utility\Query\Sortable;
  *
  * |---------------------------------------------------------------------------------------------------------
  *
- * @method static Builder addKeywordQuery(Builder $builder, string $operator = 'like')
- * @link HasKeywordSearch::addKeywordQuery()
+ * @method static Builder buildFindByKeyword(Builder $builder, string $operator = 'like')
+ * @link HasKeywordSearch::buildFindByKeyword()
  *
  * @method static mixed getKeyword()
  * @link HasKeywordSearch::getKeyword()
@@ -126,6 +126,24 @@ use YaangVu\LaravelBase\Base\Utility\Query\Sortable;
  *
  * @method static Builder relate(Builder $builder)
  * @link HasRelationship::relate()
+ *
+ * @method static Builder addWith(string|array $with)
+ * @link HasRelationship::addWith()
+ *
+ * @method static Builder addWithCount(string|array $with)
+ * @link HasRelationship::addWith()
+ *
+ * @method static Builder addWithAvg(string|array $with)
+ * @link HasRelationship::addWith()
+ *
+ * @method static Builder addWithSum(string|array $with)
+ * @link HasRelationship::addWith()
+ *
+ * @method static Builder addWithMax(string|array $with)
+ * @link HasRelationship::addWith()
+ *
+ * @method static Builder addWithMin(string|array $with)
+ * @link HasRelationship::addWith()
  *
  *  |---------------------------------------------------------------------------------------------------------
  */

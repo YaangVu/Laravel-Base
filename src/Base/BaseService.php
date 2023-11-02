@@ -114,25 +114,18 @@ class BaseService implements Service
 
         foreach ($requestArr as $column => $value) {
             if ($this->changeableColumn($column))
-                $this->model->{$column} = $this->cast($value,
-                                                      $this->getCastType($column));
+                $this->model->{$column} = $this->cast($value, $this->getCastType($column));
         }
 
         // If using NoSQL or SQL with table has created_by column then Set created_by is current user
         if (!str_contains($this->driver, 'sql')
-            || Schema::connection($this->model->getConnectionName())
-                     ->hasColumn($this->table,
-                                 'created_by'))
-            $this->model->setAttribute('created_by',
-                                       Auth::id());
+            || Schema::connection($this->model->getConnectionName())->hasColumn($this->table, 'created_by'))
+            $this->model->setAttribute('created_by', Auth::id());
 
         // If using NoSQL or SQL with table has uuid column then Set uuid
         if (!str_contains($this->driver, 'sql')
-            || Schema::connection($this->model->getConnectionName())
-                     ->hasColumn($this->table,
-                                 'uuid'))
-            $this->model->setAttribute('uuid',
-                                       $request->uuid ?? Uuid::uuid4());
+            || Schema::connection($this->model->getConnectionName())->hasColumn($this->table, 'uuid'))
+            $this->model->setAttribute('uuid', $request->uuid ?? Uuid::uuid4());
 
         try {
             $this->model->save();
@@ -265,6 +258,26 @@ class BaseService implements Service
         if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->table . '-' . Request::serialize()))
             return Cache::get($cachedKey);
 
+        $this->buildGetQuery();
+
+        try {
+            $response = $paginated ? $this->builder->paginate(Param::getLimit()) : $this->builder->get();
+
+            $this->postGet($response);
+
+            return $response;
+        } catch (Exception $e) {
+            throw new SystemException($e->getMessage() ?? __('laravel-base.server-error'), $e);
+        }
+    }
+
+    /**
+     * Build the Builder for Get All Query
+     *
+     * @return Builder
+     */
+    public function buildGetQuery(): Builder
+    {
         Param::parseParams();
 
         if ($this->alias)
@@ -290,21 +303,13 @@ class BaseService implements Service
         }
 
         // Add condition when has $keyword search
-        $this->builder = Param::addKeywordQuery($this->builder, $this->operator->make(OperatorPatternEnum::LIKE));
+        $this->builder = Param::buildFindByKeyword($this->builder, $this->operator->make(OperatorPatternEnum::LIKE));
 
         // Sort data
         foreach (Param::getSorts() as $sort)
             $this->builder->orderBy($sort->getColumn(), $sort->getType());
 
-        try {
-            $response = $paginated ? $this->builder->paginate(Param::getLimit()) : $this->builder->get();
-
-            $this->postGet($response);
-
-            return $response;
-        } catch (Exception $e) {
-            throw new SystemException($e->getMessage() ?? __('laravel-base.server-error'), $e);
-        }
+        return $this->builder;
     }
 
     /**
@@ -321,8 +326,7 @@ class BaseService implements Service
     {
         // Cache data
         if ($this instanceof ShouldCache && !Cache::has($cachedKey = $this->table . '-' . Request::serialize()))
-            Cache::put($cachedKey, $response,
-                       min($this->ttl, 3600));
+            Cache::put($cachedKey, $response, min($this->ttl, 3600));
         // TODO
     }
 

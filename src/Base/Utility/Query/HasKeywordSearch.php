@@ -12,9 +12,18 @@ trait HasKeywordSearch
     private array $searchKeys = [];
     private mixed $keyword    = null;
 
-    public function addKeywordQuery(Builder $builder, string $operator = 'like'): Builder
+    /**
+     * Add keyword for Builder search query
+     *
+     * @param Builder $builder
+     * @param string  $operator
+     *
+     * @return Builder
+     */
+    public function buildFindByKeyword(Builder $builder, string $operator = 'like'): Builder
     {
-        if (!$this->getKeyword() || !$this->getSearchKeys()) return $builder;
+        if (!$this->getKeyword() || !$this->getSearchKeys())
+            return $builder;
 
         $keyword = $this->getKeyword();
 

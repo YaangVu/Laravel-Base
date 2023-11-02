@@ -23,12 +23,18 @@ trait HasRelationship
      */
     public function relate(Builder $builder): Builder
     {
-        if ($this->getWith()) $builder = $builder->with($this->getWith());
-        if ($this->getWithCount()) $builder = $builder->withCount($this->getWithCount());
-        if ($this->getWithAvg()) $builder = $builder->withAvg($this->getWithAvg(), $this->relationColumn);
-        if ($this->getWithSum()) $builder = $builder->withSum($this->getWithSum(), $this->relationColumn);
-        if ($this->getWithMin()) $builder = $builder->withMin($this->getWithMin(), $this->relationColumn);
-        if ($this->getWithMax()) $builder = $builder->withMax($this->getWithMax(), $this->relationColumn);
+        if ($this->getWith())
+            $builder = $builder->with($this->getWith());
+        if ($this->getWithCount())
+            $builder = $builder->withCount($this->getWithCount());
+        if ($this->getWithAvg())
+            $builder = $builder->withAvg($this->getWithAvg(), $this->relationColumn);
+        if ($this->getWithSum())
+            $builder = $builder->withSum($this->getWithSum(), $this->relationColumn);
+        if ($this->getWithMin())
+            $builder = $builder->withMin($this->getWithMin(), $this->relationColumn);
+        if ($this->getWithMax())
+            $builder = $builder->withMax($this->getWithMax(), $this->relationColumn);
 
         return $builder;
     }
@@ -103,5 +109,99 @@ trait HasRelationship
         [$this->withMax, $this->relationColumn] = explode('__', $withMax);
 
         return $this;
+    }
+
+    /**
+     * Add more $with relationship
+     *
+     * @param string|array $with
+     *
+     * @return $this
+     */
+    public function addWith(string|array $with): static
+    {
+        return $this->setWith(array_merge($this->convertToArray($this->getWith()), $this->convertToArray($with)));
+    }
+
+    /**
+     * Convert data to array
+     *
+     * @param string|array $data
+     *
+     * @return string[]
+     */
+    private function convertToArray(string|array $data): array
+    {
+        return is_array($data) ? $data : [$data];
+    }
+
+    /**
+     * Add more $withCount relationship
+     *
+     * @param string|array $withCount
+     *
+     * @return $this
+     */
+    public function addWithCount(string|array $withCount): static
+    {
+        return $this->setWithCount(
+            array_merge($this->convertToArray($this->getWithCount()), $this->convertToArray($withCount))
+        );
+    }
+
+    /**
+     * Add more $withSum relationship
+     *
+     * @param string|array $withAvg
+     *
+     * @return $this
+     */
+    public function addWithAvg(string|array $withAvg): static
+    {
+        return $this->setWithAvg(
+            array_merge($this->convertToArray($this->getWithAvg()), $this->convertToArray($withAvg))
+        );
+    }
+
+    /**
+     * Add more $with relationship
+     *
+     * @param string|array $withSum
+     *
+     * @return $this
+     */
+    public function addWithSum(string|array $withSum): static
+    {
+        return $this->setWithSum(
+            array_merge($this->convertToArray($this->getWithSum()), $this->convertToArray($withSum))
+        );
+    }
+
+    /**
+     * Add more $withMax relationship
+     *
+     * @param string|array $withMax
+     *
+     * @return $this
+     */
+    public function addWithMax(string|array $withMax): static
+    {
+        return $this->setWithMax(
+            array_merge($this->convertToArray($this->getWithMax()), $this->convertToArray($withMax))
+        );
+    }
+
+    /**
+     * Add more $withMin relationship
+     *
+     * @param string|array $withMin
+     *
+     * @return $this
+     */
+    public function addWithMin(string|array $withMin): static
+    {
+        return $this->setWithMin(
+            array_merge($this->convertToArray($this->getWithMin()), $this->convertToArray($withMin))
+        );
     }
 }
