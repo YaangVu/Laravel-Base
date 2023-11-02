@@ -4,7 +4,7 @@ namespace YaangVu\LaravelBase\Base\Utility\Query;
 
 use Illuminate\Database\Eloquent\Builder;
 
-trait HasEagerLoad
+trait HasRelationship
 {
     private string|array $with           = '';
     private string|array $withCount      = '';
@@ -21,7 +21,7 @@ trait HasEagerLoad
      *
      * @return Builder
      */
-    public function addEagerLoading(Builder $builder): Builder
+    public function relate(Builder $builder): Builder
     {
         if ($this->getWith()) $builder = $builder->with($this->getWith());
         if ($this->getWithCount()) $builder = $builder->withCount($this->getWithCount());

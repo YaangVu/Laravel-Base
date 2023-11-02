@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 use YaangVu\LaravelBase\Base\DataObject\Sort;
 use YaangVu\LaravelBase\Base\Enum\ClauseEnum;
 use YaangVu\LaravelBase\Base\Utility\Query\HasCondition;
-use YaangVu\LaravelBase\Base\Utility\Query\HasEagerLoad;
+use YaangVu\LaravelBase\Base\Utility\Query\HasRelationship;
 use YaangVu\LaravelBase\Base\Utility\Query\HasKeywordSearch;
 use YaangVu\LaravelBase\Base\Utility\Query\HasSelection;
 use YaangVu\LaravelBase\Base\Utility\Query\Pageable;
@@ -18,7 +18,7 @@ use YaangVu\LaravelBase\Base\Utility\Query\Sortable;
 
 class ParamHandler
 {
-    use HasCondition, Sortable, HasSelection, Pageable, HasKeywordSearch, HasEagerLoad;
+    use HasCondition, Sortable, HasSelection, Pageable, HasKeywordSearch, HasRelationship;
 
     /**
      * List Keys of parameter will be excluded before query into database

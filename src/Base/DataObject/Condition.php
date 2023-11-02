@@ -10,10 +10,15 @@ use YaangVu\LaravelBase\Base\Enum\OperatorPatternEnum;
 
 class Condition
 {
-    private ?string             $table = null;
-    private string              $column;
-    private OperatorPatternEnum $operatorPattern;
-    private mixed               $value;
+    // private ?string             $table = null;
+    // private string              $column;
+    // private OperatorPatternEnum $operatorPattern;
+    // private mixed               $value;
+
+    public function __construct(private string $column, private OperatorPatternEnum $operatorPattern,
+                                private mixed  $value, private ?string $table)
+    {
+    }
 
     /**
      * @return string|null

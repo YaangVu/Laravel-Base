@@ -12,7 +12,7 @@ use YaangVu\LaravelBase\Base\DataObject\Condition;
 use YaangVu\LaravelBase\Base\DataObject\Sort;
 use YaangVu\LaravelBase\Base\ParamHandler;
 use YaangVu\LaravelBase\Base\Utility\Query\HasCondition;
-use YaangVu\LaravelBase\Base\Utility\Query\HasEagerLoad;
+use YaangVu\LaravelBase\Base\Utility\Query\HasRelationship;
 use YaangVu\LaravelBase\Base\Utility\Query\HasKeywordSearch;
 use YaangVu\LaravelBase\Base\Utility\Query\HasSelection;
 use YaangVu\LaravelBase\Base\Utility\Query\Pageable;
@@ -62,6 +62,9 @@ use YaangVu\LaravelBase\Base\Utility\Query\Sortable;
  *
  * @method static ParamHandler setConditions(Condition[] $conditions)
  * @link HasCondition::setConditions()
+ *
+ * @method static ParamHandler addCondition(Condition $condition)
+ * @link HasCondition::addCondition()
  *
  * @method static string getSeparator()
  * @link HasCondition::getSeparator()
@@ -121,8 +124,8 @@ use YaangVu\LaravelBase\Base\Utility\Query\Sortable;
  * @link ParamHandler::exclude()
  * |---------------------------------------------------------------------------------------------------------
  *
- * @method static Builder addEagerLoading(Builder $builder)
- * @link HasEagerLoad::addEagerLoading()
+ * @method static Builder relate(Builder $builder)
+ * @link HasRelationship::relate()
  *
  *  |---------------------------------------------------------------------------------------------------------
  */

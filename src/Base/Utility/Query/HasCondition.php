@@ -63,7 +63,8 @@ trait HasCondition
     public function parseCondition(string $key, mixed $value): static
     {
         // If $value is empty or null and can not be null then return
-        if (($value === '' || $value === null) && $this->nullable() === false) return $this;
+        if (($value === '' || $value === null) && $this->nullable() === false)
+            return $this;
 
         switch (substr_count($key, $this->getSeparator())) {
             // If $query has formatted like: ${column}__${operator}
@@ -87,11 +88,13 @@ trait HasCondition
         $operatorPattern = OperatorPatternEnum::from($operatorValue);
 
         // If $column is one of $excludedKeys then return
-        if (in_array($column, Param::getExcludedKeys())) return $this;
+        if (in_array($column, Param::getExcludedKeys()))
+            return $this;
 
-        $condition = new Condition();
-        $condition->setTable($table)->setColumn(($table ? "$table." : '') . $column)->setValue($value)
-                  ->setOperatorPattern($operatorPattern);
+        $column    = ($table ? "$table." : '') . $column;
+        $condition = new Condition($column, $operatorPattern, $value, $table);
+        // $condition->setTable($table)->setColumn(($table ? "$table." : '') . $column)->setValue($value)
+        //           ->setOperatorPattern($operatorPattern);
 
         return $this->addCondition($condition);
     }
@@ -101,7 +104,6 @@ trait HasCondition
      *
      * @Author      yaangvu
      * @Date        Feb 28, 2023
-     *
      * @return bool
      */
     private function nullable(): bool
