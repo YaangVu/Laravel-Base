@@ -132,7 +132,7 @@ trait HasRelationship
      */
     private function convertToArray(string|array $data): array
     {
-        return is_array($data) ? $data : [$data];
+        return $data ? (is_array($data) ? $data : [$data]) : [];
     }
 
     /**
