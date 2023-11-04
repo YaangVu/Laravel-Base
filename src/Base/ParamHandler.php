@@ -99,7 +99,7 @@ class ParamHandler
      *
      * @return $this
      */
-    public function exclude(...$keys): static
+    public function exclude(string ...$keys): static
     {
         foreach ($keys as $key)
             $this->excludedKeys[] = $key;

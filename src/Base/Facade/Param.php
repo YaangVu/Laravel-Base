@@ -120,7 +120,7 @@ use YaangVu\LaravelBase\Base\Utility\Query\Sortable;
  * @method static ParamHandler setExcludedKeys(string[] $excludedKeys)
  * @link ParamHandler::setExcludedKeys()
  *
- * @method static ParamHandler exclude(string|array $keys)
+ * @method static ParamHandler exclude(string ...$keys)
  * @link ParamHandler::exclude()
  * |---------------------------------------------------------------------------------------------------------
  *
