@@ -95,13 +95,14 @@ class ParamHandler
      * @Author yaangvu
      * @Date   Feb 16, 2023
      *
-     * @param string $key
+     * @param string|string[] $keys
      *
      * @return $this
      */
-    public function exclude(string $key): static
+    public function exclude(...$keys): static
     {
-        $this->excludedKeys[] = $key;
+        foreach ($keys as $key)
+            $this->excludedKeys[] = $key;
 
         return $this;
     }
