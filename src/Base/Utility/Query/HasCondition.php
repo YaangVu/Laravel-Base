@@ -62,7 +62,7 @@ trait HasCondition
      */
     public function parseCondition(string $key, mixed $value): static
     {
-        // If $value is empty or null and can not be null then return
+        // If $value is empty or null and cannot be null, then return
         if (($value === '' || $value === null) && $this->nullable() === false)
             return $this;
 
