@@ -197,7 +197,7 @@ trait HasRelationship
         $reqRelations = $this->convertToArray($reqRelations);
         $relations    = [];
         foreach ($reqRelations as $reqRelation) {
-            if (str_contains($this->getSeparator(), $reqRelation))
+            if (str_contains($reqRelation, $this->getSeparator()))
                 [$relationString, $column] = explode('__', $reqRelation);
             else {
                 $relationString = $reqRelation;
