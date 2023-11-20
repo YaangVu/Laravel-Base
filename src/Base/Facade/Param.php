@@ -12,8 +12,8 @@ use YaangVu\LaravelBase\Base\DataObject\Condition;
 use YaangVu\LaravelBase\Base\DataObject\Sort;
 use YaangVu\LaravelBase\Base\ParamHandler;
 use YaangVu\LaravelBase\Base\Utility\Query\HasCondition;
-use YaangVu\LaravelBase\Base\Utility\Query\HasRelationship;
 use YaangVu\LaravelBase\Base\Utility\Query\HasKeywordSearch;
+use YaangVu\LaravelBase\Base\Utility\Query\HasRelationship;
 use YaangVu\LaravelBase\Base\Utility\Query\HasSelection;
 use YaangVu\LaravelBase\Base\Utility\Query\Pageable;
 use YaangVu\LaravelBase\Base\Utility\Query\Sortable;
@@ -130,20 +130,38 @@ use YaangVu\LaravelBase\Base\Utility\Query\Sortable;
  * @method static Builder addWith(string|array $with)
  * @link HasRelationship::addWith()
  *
+ * @method static Builder setWith(array $with)
+ * @link HasRelationship::setWith()
+ *
  * @method static Builder addWithCount(string|array $with)
- * @link HasRelationship::addWith()
+ * @link HasRelationship::addWithCount()
+ *
+ * @method static Builder setWithCount(array $withCount)
+ * @link HasRelationship::setWithCount()
  *
  * @method static Builder addWithAvg(string|array $with)
- * @link HasRelationship::addWith()
+ * @link HasRelationship::addWithAvg()
+ *
+ * @method static Builder setWithAvg(array $withAvg)
+ * @link HasRelationship::setWithAvg()
  *
  * @method static Builder addWithSum(string|array $with)
- * @link HasRelationship::addWith()
+ * @link HasRelationship::addWithSum()
+ *
+ * @method static Builder setWithSum(array $withSum)
+ * @link HasRelationship::setWithSum()
  *
  * @method static Builder addWithMax(string|array $with)
- * @link HasRelationship::addWith()
+ * @link HasRelationship::addWithMax()
+ *
+ * @method static Builder setWithMax(array $withMax)
+ * @link HasRelationship::setWithMax()
  *
  * @method static Builder addWithMin(string|array $with)
- * @link HasRelationship::addWith()
+ * @link HasRelationship::addWithMin()
+ *
+ * @method static Builder setWithMin(array $withMin)
+ * @link HasRelationship::setWithMin()
  *
  *  |---------------------------------------------------------------------------------------------------------
  */
