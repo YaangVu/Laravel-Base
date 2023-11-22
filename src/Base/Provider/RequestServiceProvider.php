@@ -20,8 +20,12 @@ class RequestServiceProvider extends ServiceProvider
     {
         Request::macro('serialize', function () {
             $serialization = '';
-            foreach (\request()->toArray() as $key => $value)
-                $serialization .= ":$key:$value";
+            foreach (\request()->toArray() as $key => $values) {
+                if (!is_array($values))
+                    $values = [$values];
+                foreach ($values as $value)
+                    $serialization .= ":$key:$value";
+            }
 
             return trim($serialization, ':');
         });
