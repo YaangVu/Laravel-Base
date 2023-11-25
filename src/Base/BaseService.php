@@ -117,12 +117,12 @@ class BaseService implements Service
                 $this->model->{$column} = $this->cast($value, $this->getCastType($column));
         }
 
-        // If using NoSQL or SQL with table has created_by column then Set created_by is current user
+        // If using NoSQL or SQL with table has created_by column, then Set created_by is current user
         if (!str_contains($this->driver, 'sql')
             || Schema::connection($this->model->getConnectionName())->hasColumn($this->table, 'created_by'))
             $this->model->setAttribute('created_by', Auth::id());
 
-        // If using NoSQL or SQL with table has uuid column then Set uuid
+        // If using NoSQL or SQL with table has uuid column, then Set uuid
         if (!str_contains($this->driver, 'sql')
             || Schema::connection($this->model->getConnectionName())->hasColumn($this->table, 'uuid'))
             $this->model->setAttribute('uuid', $request->uuid ?? Uuid::uuid4());
@@ -173,6 +173,9 @@ class BaseService implements Service
      */
     final function changeableColumn(string $column): bool
     {
+        if (in_array($column, Param::getExcludedKeys()))
+            return false;
+
         return $this->fillAbles === ['*']
                || (in_array($column, $this->fillAbles) && !in_array($column, $this->guarded));
     }
