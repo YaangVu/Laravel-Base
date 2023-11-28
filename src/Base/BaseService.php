@@ -106,6 +106,8 @@ class BaseService implements Service
         if ($transaction)
             DB::beginTransaction();
 
+        $this->preAdd($request);
+
         // Validate request before process
         if ($this->validateStoreRequest($request) !== true)
             return $this->model;
@@ -141,6 +143,19 @@ class BaseService implements Service
 
             throw new QueryException($e->getMessage() ?? __('laravel-base.server-error'), $e);
         }
+    }
+
+    /**
+     * Do something before run add() function
+     *
+     * @param object $request
+     * @param bool   $transaction
+     *
+     * @return object
+     */
+    public function preAdd(object &$request, bool $transaction = false): object
+    {
+        return $request;
     }
 
     /**
@@ -205,6 +220,8 @@ class BaseService implements Service
         if ($transaction)
             DB::beginTransaction();
 
+        $this->preUpdate($id, $request);
+
         // Validate
         if ($this->validateUpdateRequest($id, $request) !== true)
             return $this->model;
@@ -234,12 +251,28 @@ class BaseService implements Service
     }
 
     /**
+     * Do something before run update() function
+     *
+     * @param int|string $id
+     * @param object     $request
+     * @param bool       $transaction
+     *
+     * @return object
+     */
+    public function preUpdate(int|string $id, object &$request, bool $transaction = false): object
+    {
+        return $request;
+    }
+
+    /**
      * @inheritDoc
      */
     public function find(int|string $id): Model
     {
         if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->table . "-$id"))
             return Cache::get($cachedKey);
+
+        $this->preFind($id);
 
         Param::parseParams();
 
@@ -261,6 +294,8 @@ class BaseService implements Service
         if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->table . '-' . Request::serialize()))
             return Cache::get($cachedKey);
 
+        $this->preGet($paginated);
+
         $this->buildGetQuery();
 
         try {
@@ -272,6 +307,18 @@ class BaseService implements Service
         } catch (Exception $e) {
             throw new SystemException($e->getMessage() ?? __('laravel-base.server-error'), $e);
         }
+    }
+
+    /**
+     * Do something before run update() function
+     *
+     * @param bool $paginate
+     *
+     * @return mixed
+     */
+    public function preGet(bool $paginate = true): mixed
+    {
+        return null;
     }
 
     /**
@@ -334,6 +381,18 @@ class BaseService implements Service
     }
 
     /**
+     * Do something before run find() function
+     *
+     * @param int|string $id
+     *
+     * @return mixed
+     */
+    public function preFind(int|string $id): mixed
+    {
+        return null;
+    }
+
+    /**
      *  Do something after get the record
      *
      * @Author      yaangvu
@@ -375,6 +434,8 @@ class BaseService implements Service
         if ($transaction)
             DB::beginTransaction();
 
+        $this->prePutUpdate($id, $request, $transaction);
+
         // Validate
         if ($this->validatePutUpdateRequest($id, $request) !== true)
             return $this->model;
@@ -409,6 +470,20 @@ class BaseService implements Service
                 DB::rollBack();
             throw new SystemException($e->getMessage() ?? __('laravel-base.server-error'), $e);
         }
+    }
+
+    /**
+     * Do something before run update() function
+     *
+     * @param int|string $id
+     * @param object     $request
+     * @param bool       $transaction
+     *
+     * @return object
+     */
+    public function prePutUpdate(int|string $id, object &$request, bool $transaction = false): object
+    {
+        return $request;
     }
 
     /**
@@ -463,6 +538,8 @@ class BaseService implements Service
         if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->table . "-uuid-$uuid"))
             return Cache::get($cachedKey);
 
+        $this->preFindByUuid($uuid);
+
         Param::parseParams();
 
         $entity = $this->builder->where('uuid', '=', $uuid)->firstOrFail(Param::getSelections());
@@ -470,6 +547,18 @@ class BaseService implements Service
         $this->postFindByUuid($uuid, $entity);
 
         return $entity;
+    }
+
+    /**
+     * Do something before run findByUuid() function
+     *
+     * @param string $uuid
+     *
+     * @return mixed
+     */
+    public function preFindByUuid(string $uuid): mixed
+    {
+        return null;
     }
 
     /**
@@ -496,6 +585,8 @@ class BaseService implements Service
         if ($transaction)
             DB::beginTransaction();
 
+        $this->preDelete($id, $transaction);
+
         $data = $this->find($id);
         try {
             $deleted = $data->delete();
@@ -515,6 +606,19 @@ class BaseService implements Service
                 ], $e
             );
         }
+    }
+
+    /**
+     * Do something before run delete() function
+     *
+     * @param int|string $id
+     * @param bool       $transaction
+     *
+     * @return object
+     */
+    public function preDelete(int|string $id, bool $transaction = false): mixed
+    {
+        return null;
     }
 
     /**
@@ -556,6 +660,8 @@ class BaseService implements Service
     {
         if ($transaction)
             DB::beginTransaction();
+
+        $this->preDeleteByIds($request, $transaction);
         $this->doValidate($request, ['ids' => 'required']);
         $ids = explode(',', $request->ids ?? '');
 
@@ -578,6 +684,19 @@ class BaseService implements Service
                 ], $e
             );
         }
+    }
+
+    /**
+     * Do something before run deleteByIds() function
+     *
+     * @param object $request
+     * @param bool   $transaction
+     *
+     * @return object
+     */
+    public function preDeleteByIds(object &$request, bool $transaction = false): object
+    {
+        return $request;
     }
 
     /**
@@ -606,6 +725,9 @@ class BaseService implements Service
     {
         if ($transaction)
             DB::beginTransaction();
+
+        $this->preDeleteByUuids($request, $transaction);
+
         $uuids = explode(',', $request->uuids ?? '');
 
         $data = $this->model->query()->whereIn('uuid', $uuids);
@@ -627,6 +749,19 @@ class BaseService implements Service
                 ], $e
             );
         }
+    }
+
+    /**
+     * Do something before run deleteByUuids() function
+     *
+     * @param object $request
+     * @param bool   $transaction
+     *
+     * @return object
+     */
+    public function preDeleteByUuids(object &$request, bool $transaction = false): object
+    {
+        return $request;
     }
 
     /**
