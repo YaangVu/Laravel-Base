@@ -208,7 +208,7 @@ class BaseService implements Service
     {
         // Cache data
         if ($this instanceof ShouldCache)
-            Cache::put($this->table . "-$model->$this->key", $model, $this->ttl);
+            Cache::put($this->table . "-$model->getAttribute($this->key)", $model, $this->ttl);
         // TODO
     }
 
@@ -422,7 +422,7 @@ class BaseService implements Service
     {
         // Cache data
         if ($this instanceof ShouldCache)
-            Cache::put($this->table . "-$model->$this->key", $model, $this->ttl);
+            Cache::put($this->table . "-$model->getAttribute($this->key)", $model, $this->ttl);
         // TODO
     }
 
@@ -500,7 +500,7 @@ class BaseService implements Service
     {
         // Cache data
         if ($this instanceof ShouldCache)
-            Cache::put($this->table . "-$model->$this->key", $model, $this->ttl);
+            Cache::put($this->table . "-$model->getAttribute($this->key)", $model, $this->ttl);
         // TODO
     }
 
