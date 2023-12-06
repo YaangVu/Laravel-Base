@@ -29,7 +29,7 @@ use YaangVu\LaravelBase\Base\Utility\HasRequest;
 use YaangVu\LaravelBase\Base\Utility\Validatable;
 use YaangVu\LaravelBase\Exception\QueryException;
 use YaangVu\LaravelBase\Exception\SystemException;
-
+use Illuminate\Cache\TaggedCache;
 class BaseService implements Service
 {
     use Macroable, Validatable, CanCast, HasRequest;
@@ -83,6 +83,8 @@ class BaseService implements Service
      */
     private Operator $operator;
 
+    private TaggedCache $cache;
+
     /**
      * @throws BindingResolutionException
      */
@@ -96,6 +98,7 @@ class BaseService implements Service
         $this->driver    = $model->getConnection()->getDriverName();
         $this->ttl       = config('laravel-base.cache.ttl');
         $this->operator  = app()->make(Operator::class, ['driver' => $this->driver]);
+        $this->cache     = Cache::tags($model->getTable());
     }
 
     /**
@@ -209,7 +212,7 @@ class BaseService implements Service
         $id = $model->getAttribute($this->key);
         // Cache data
         if ($this instanceof ShouldCache)
-            Cache::put($this->table . "-$id", $model, $this->ttl);
+            $this->cache->put($this->table . "-$id", $model, $this->ttl);
         // TODO
     }
 
@@ -270,8 +273,8 @@ class BaseService implements Service
      */
     public function find(int|string $id): Model
     {
-        if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->table . "-$id"))
-            return Cache::get($cachedKey);
+        if ($this instanceof ShouldCache && $this->cache->has($cachedKey = $this->table . "-$id"))
+            return $this->cache->get($cachedKey);
 
         $this->preFind($id);
 
@@ -292,8 +295,8 @@ class BaseService implements Service
      */
     public function get(bool $paginated = true): LengthAwarePaginator|Collection
     {
-        if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->table . '-' . Request::serialize()))
-            return Cache::get($cachedKey);
+        if ($this instanceof ShouldCache && $this->cache->has($cachedKey = $this->table . '-' . Request::serialize()))
+            return $this->cache->get($cachedKey);
 
         $this->preGet($paginated);
 
@@ -376,8 +379,8 @@ class BaseService implements Service
     public function postGet(mixed $response): void
     {
         // Cache data
-        if ($this instanceof ShouldCache && !Cache::has($cachedKey = $this->table . '-' . Request::serialize()))
-            Cache::put($cachedKey, $response, min($this->ttl, 3600));
+        if ($this instanceof ShouldCache && !$this->cache->has($cachedKey = $this->table . '-' . Request::serialize()))
+            $this->cache->put($cachedKey, $response, min($this->ttl, 3600));
         // TODO
     }
 
@@ -404,8 +407,8 @@ class BaseService implements Service
      */
     public function postFind(int|string $id, Model $model): void
     {
-        if ($this instanceof ShouldCache && !Cache::has($cachedKey = $this->table . "-$id"))
-            Cache::put($cachedKey, $model, $this->ttl);
+        if ($this instanceof ShouldCache && !$this->cache->has($cachedKey = $this->table . "-$id"))
+            $this->cache->put($cachedKey, $model, $this->ttl);
         // TODO
     }
 
@@ -423,7 +426,7 @@ class BaseService implements Service
     {
         // Cache data
         if ($this instanceof ShouldCache)
-            Cache::put($this->table . "-$id", $model, $this->ttl);
+            $this->cache->put($this->table . "-$id", $model, $this->ttl);
         // TODO
     }
 
@@ -501,7 +504,7 @@ class BaseService implements Service
     {
         // Cache data
         if ($this instanceof ShouldCache)
-            Cache::put($this->table . "-$id", $model, $this->ttl);
+            $this->cache->put($this->table . "-$id", $model, $this->ttl);
         // TODO
     }
 
@@ -536,8 +539,8 @@ class BaseService implements Service
      */
     public function findByUuid(string $uuid): Model
     {
-        if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->table . "-uuid-$uuid"))
-            return Cache::get($cachedKey);
+        if ($this instanceof ShouldCache && $this->cache->has($cachedKey = $this->table . "-uuid-$uuid"))
+            return $this->cache->get($cachedKey);
 
         $this->preFindByUuid($uuid);
 
@@ -573,8 +576,8 @@ class BaseService implements Service
      */
     public function postFindByUuid(string $uuid, Model $model): void
     {
-        if ($this instanceof ShouldCache && !Cache::has($cachedKey = $this->table . "-uuid-$uuid"))
-            Cache::put($cachedKey, $model, $this->ttl);
+        if ($this instanceof ShouldCache && !$this->cache->has($cachedKey = $this->table . "-uuid-$uuid"))
+            $this->cache->put($cachedKey, $model, $this->ttl);
         // TODO
     }
 
@@ -634,7 +637,7 @@ class BaseService implements Service
     {
         // Remove Cached data
         if ($this instanceof ShouldCache)
-            Cache::forget($this->table . "-$id");
+            $this->cache->forget($this->table . "-$id");
         // TODO
     }
 
@@ -650,7 +653,7 @@ class BaseService implements Service
     {
         // Remove Cached data
         if ($this instanceof ShouldCache)
-            Cache::forget($this->table . "-uuid-$uuid");
+            $this->cache->flush();
         // TODO
     }
 
@@ -714,7 +717,7 @@ class BaseService implements Service
         if ($this instanceof ShouldCache) {
             $ids = explode(',', $request->ids ?? '');
             foreach ($ids as $id)
-                Cache::forget($this->table . "-$id");
+                $this->cache->flush();
         }
         // TODO
     }
@@ -779,7 +782,7 @@ class BaseService implements Service
         if ($this instanceof ShouldCache) {
             $uuids = explode(',', $request->uuids ?? '');
             foreach ($uuids as $uuid)
-                Cache::forget($this->table . "-uuid-$uuid");
+                $this->cache->flush();
         }
         // TODO
     }
