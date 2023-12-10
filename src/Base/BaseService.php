@@ -11,6 +11,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -26,61 +27,67 @@ use YaangVu\LaravelBase\Base\Enum\OperatorPatternEnum;
 use YaangVu\LaravelBase\Base\Facade\Param;
 use YaangVu\LaravelBase\Base\Utility\CanCast;
 use YaangVu\LaravelBase\Base\Utility\HasRequest;
+use YaangVu\LaravelBase\Base\Utility\ObjectToArray;
 use YaangVu\LaravelBase\Base\Utility\Validatable;
+use YaangVu\LaravelBase\Exception\NotFoundException;
 use YaangVu\LaravelBase\Exception\QueryException;
-use YaangVu\LaravelBase\Exception\SystemException;
+
 class BaseService implements Service
 {
-    use Macroable, Validatable, CanCast, HasRequest;
+    use Macroable, Validatable, CanCast, HasRequest, ObjectToArray;
 
+    /**
+     * Default value of each column, will be used in putUpdate() function
+     *
+     * @var array{string: string}
+     */
+    public array      $defaultValue = [];
     protected Builder $builder;
-
     /**
      * The fill able attributes
      *
      * @var string[]
      */
     private array $fillAbles;
-
     /**
      * The guarded attributes
      *
      * @var string[]
      */
     private array $guarded;
-
     /**
      * The primary key for the model.
      *
      * @var string
      */
     private string $key;
-
     /**
      *  The table associated with the model.
      *
      * @var string
      */
     private string $table;
-
     /**
      * The PDO driver name.
      *
      * @var string
      */
     private string $driver;
-
     /**
      * Cache time to live in seconds
      *
      * @var int
      */
     private int $ttl;
-
     /**
      * @var Operator
      */
     private Operator $operator;
+
+    /**
+     * @var string
+     */
+    private string $cacheTag;
 
     /**
      * @throws BindingResolutionException
@@ -95,6 +102,7 @@ class BaseService implements Service
         $this->driver    = $model->getConnection()->getDriverName();
         $this->ttl       = config('laravel-base.cache.ttl');
         $this->operator  = app()->make(Operator::class, ['driver' => $this->driver]);
+        $this->cacheTag  = $this->table;
     }
 
     /**
@@ -136,11 +144,19 @@ class BaseService implements Service
                 DB::commit();
 
             return $this->model;
+        } catch (\Illuminate\Database\QueryException $e) {
+            throw new QueryException(
+                message: __('laravel-base.can-not-add'),
+                error:   $e->getMessage()
+            );
         } catch (Exception $e) {
+            throw new QueryException(
+                message: __('laravel-base.server-error'),
+                error:   $e->getMessage()
+            );
+        } finally {
             if ($transaction)
                 DB::rollBack();
-
-            throw new QueryException($e->getMessage() ?? __('laravel-base.server-error'), $e);
         }
     }
 
@@ -155,24 +171,6 @@ class BaseService implements Service
     public function preAdd(object &$request, bool $transaction = false): object
     {
         return $request;
-    }
-
-    /**
-     * Convert request to array
-     *
-     * @Author yaangvu
-     * @Date   Aug 07, 2022
-     *
-     * @param object $request
-     *
-     * @return array
-     */
-    final function toArray(object $request): array
-    {
-        if ($request instanceof Request || $request instanceof Model)
-            return $request->toArray();
-        else
-            return (array)$request;
     }
 
     /**
@@ -208,7 +206,7 @@ class BaseService implements Service
         $id = $model->getAttribute($this->key);
         // Cache data
         if ($this instanceof ShouldCache)
-            Cache::tags($this->table)->put($this->table . "-$id", $model, $this->ttl);
+            Cache::put($this->table . "-$id", $model, $this->ttl);
         // TODO
     }
 
@@ -243,10 +241,19 @@ class BaseService implements Service
                 DB::commit();
 
             return $model;
+        } catch (\Illuminate\Database\QueryException $e) {
+            throw new QueryException(
+                message: __('laravel-base.can-not-update'),
+                error:   $e->getMessage()
+            );
         } catch (Exception $e) {
+            throw new QueryException(
+                message: __('laravel-base.server-error'),
+                error:   $e->getMessage()
+            );
+        } finally {
             if ($transaction)
                 DB::rollBack();
-            throw new SystemException($e->getMessage() ?? __('laravel-base.server-error'), $e);
         }
     }
 
@@ -269,8 +276,8 @@ class BaseService implements Service
      */
     public function find(int|string $id): Model
     {
-        if ($this instanceof ShouldCache && Cache::tags($this->table)->has($cachedKey = $this->table . "-$id"))
-            return Cache::tags($this->table)->get($cachedKey);
+        if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->table . "-$id"))
+            return Cache::get($cachedKey);
 
         $this->preFind($id);
 
@@ -278,12 +285,25 @@ class BaseService implements Service
 
         // Add Eager Loading
         $this->builder = Param::relate($this->builder);
+        try {
+            $entity = $this->builder->findOrFail($id, Param::getSelections());
 
-        $entity = $this->builder->findOrFail($id, Param::getSelections());
+            $this->postFind($id, $entity);
 
-        $this->postFind($id, $entity);
-
-        return $entity;
+            return $entity;
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundException(
+                message: __('laravel-base.not-found') . ": $id",
+                error:   $e->getMessage()
+            );
+        } catch (Exception $e) {
+            throw new QueryException(
+                message: __('laravel-base.server-error'),
+                error:   $e->getMessage()
+            );
+        } finally {
+            // Do something
+        }
     }
 
     /**
@@ -291,8 +311,9 @@ class BaseService implements Service
      */
     public function get(bool $paginated = true): LengthAwarePaginator|Collection
     {
-        if ($this instanceof ShouldCache && Cache::tags($this->table)->has($cachedKey = $this->table . '-' . Request::serialize()))
-            return Cache::tags($this->table)->get($cachedKey);
+        if ($this instanceof ShouldCache
+            && Cache::tags($this->cacheTag)->has($cachedKey = $this->table . '-' . Request::serialize()))
+            return Cache::tags($this->cacheTag)->get($cachedKey);
 
         $this->preGet($paginated);
 
@@ -304,8 +325,18 @@ class BaseService implements Service
             $this->postGet($response);
 
             return $response;
+        } catch (\Illuminate\Database\QueryException $e) {
+            throw new QueryException(
+                message: __('laravel-base.query-error'),
+                error:   $e->getMessage()
+            );
         } catch (Exception $e) {
-            throw new SystemException($e->getMessage() ?? __('laravel-base.server-error'), $e);
+            throw new QueryException(
+                message: __('laravel-base.server-error'),
+                error:   $e->getMessage()
+            );
+        } finally {
+            // Do something
         }
     }
 
@@ -375,8 +406,11 @@ class BaseService implements Service
     public function postGet(mixed $response): void
     {
         // Cache data
-        if ($this instanceof ShouldCache && !Cache::tags($this->table)->has($cachedKey = $this->table . '-' . Request::serialize()))
-            Cache::tags($this->table)->put($cachedKey, $response, min($this->ttl, 3600));
+        if (
+            $this instanceof ShouldCache
+            && !Cache::tags($this->cacheTag)->has($cachedKey = $this->table . '-' . Request::serialize())
+        )
+            Cache::tags($this->cacheTag)->put($cachedKey, $response, min($this->ttl, 3600));
         // TODO
     }
 
@@ -403,8 +437,8 @@ class BaseService implements Service
      */
     public function postFind(int|string $id, Model $model): void
     {
-        if ($this instanceof ShouldCache && !Cache::tags($this->table)->has($cachedKey = $this->table . "-$id"))
-            Cache::tags($this->table)->put($cachedKey, $model, $this->ttl);
+        if ($this instanceof ShouldCache && !Cache::has($cachedKey = $this->table . "-$id"))
+            Cache::put($cachedKey, $model, $this->ttl);
         // TODO
     }
 
@@ -422,7 +456,7 @@ class BaseService implements Service
     {
         // Cache data
         if ($this instanceof ShouldCache)
-            Cache::tags($this->table)->put($this->table . "-$id", $model, $this->ttl);
+            Cache::put($this->table . "-$id", $model, $this->ttl);
         // TODO
     }
 
@@ -440,35 +474,42 @@ class BaseService implements Service
         if ($this->validatePutUpdateRequest($id, $request) !== true)
             return $this->model;
 
-        //TODO
-
         $model = $this->find($id);
-        // $modelArr = $model->toArray();
-        //
-        // foreach ($modelArr as $column => $value) {
-        //     // Ignore data if it can be not modified
-        //     if ($column === $this->key || $column === 'uuid' || $column === 'created_by')
-        //         continue;
-        //     if ($this->fillAbles === ['*'] || !in_array($column, $this->fillAbles))
-        //         continue;
-        //     if (in_array($column, $this->guarded))
-        //         continue;
-        //
-        //     $model->{$column} = $this->cast($value, $this->getCastType($column));
-        // }
+        $attrs = $model->getAttributes();
+
+        foreach ($attrs as $column => $value) {
+            // If is changable column and has exist data in request, then update
+            if ($this->changeableColumn($column) && isset($request->{$column}))
+                $model->{$column} = $this->cast($request->{$column}, $this->getCastType($column));
+            // if not, but DB connection is nosql, then remove old data
+            elseif (!str_contains($this->driver, 'sql'))
+                unset($model->{$column});
+            // else set to default null value
+            else
+                $model->{$column} = $this->defaultValue[$column] ?? null;
+        }
 
         try {
-            // $model->save();
+            $model->save();
 
             $this->postPutUpdate($id, $request, $model);
             if ($transaction)
                 DB::commit();
 
             return $model;
+        } catch (\Illuminate\Database\QueryException $e) {
+            throw new QueryException(
+                message: __('laravel-base.can-not-update'),
+                error:   $e->getMessage()
+            );
         } catch (Exception $e) {
+            throw new QueryException(
+                message: __('laravel-base.server-error'),
+                error:   $e->getMessage()
+            );
+        } finally {
             if ($transaction)
                 DB::rollBack();
-            throw new SystemException($e->getMessage() ?? __('laravel-base.server-error'), $e);
         }
     }
 
@@ -500,7 +541,7 @@ class BaseService implements Service
     {
         // Cache data
         if ($this instanceof ShouldCache)
-            Cache::tags($this->table)->put($this->table . "-$id", $model, $this->ttl);
+            Cache::put($this->table . "-$id", $model, $this->ttl);
         // TODO
     }
 
@@ -519,14 +560,19 @@ class BaseService implements Service
                 DB::commit();
 
             return $deleted;
+        } catch (\Illuminate\Database\QueryException $e) {
+            throw new QueryException(
+                message: __('laravel-base.can-not-delete') . ": $uuid",
+                error:   $e->getMessage()
+            );
         } catch (Exception $e) {
+            throw new QueryException(
+                message: __('laravel-base.server-error'),
+                error:   $e->getMessage()
+            );
+        } finally {
             if ($transaction)
                 DB::rollBack();
-            throw new SystemException(
-                [
-                    'message' => __('laravel-base.can-not-del', ['attribute' => __('laravel-base.entity')]) . ": $uuid"
-                ], $e
-            );
         }
     }
 
@@ -535,18 +581,32 @@ class BaseService implements Service
      */
     public function findByUuid(string $uuid): Model
     {
-        if ($this instanceof ShouldCache && Cache::tags($this->table)->has($cachedKey = $this->table . "-uuid-$uuid"))
-            return Cache::tags($this->table)->get($cachedKey);
+        if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->table . "-uuid-$uuid"))
+            return Cache::get($cachedKey);
 
         $this->preFindByUuid($uuid);
 
         Param::parseParams();
 
-        $entity = $this->builder->where('uuid', '=', $uuid)->firstOrFail(Param::getSelections());
+        try {
+            $entity = $this->builder->where('uuid', '=', $uuid)->firstOrFail(Param::getSelections());
 
-        $this->postFindByUuid($uuid, $entity);
+            $this->postFindByUuid($uuid, $entity);
 
-        return $entity;
+            return $entity;
+        } catch (\Illuminate\Database\QueryException $e) {
+            throw new QueryException(
+                message: __('laravel-base.not-found') . ": $uuid",
+                error:   $e->getMessage()
+            );
+        } catch (Exception $e) {
+            throw new QueryException(
+                message: __('laravel-base.server-error'),
+                error:   $e->getMessage()
+            );
+        } finally {
+            // Do something
+        }
     }
 
     /**
@@ -558,6 +618,7 @@ class BaseService implements Service
      */
     public function preFindByUuid(string $uuid): mixed
     {
+        // Do something
         return null;
     }
 
@@ -572,8 +633,8 @@ class BaseService implements Service
      */
     public function postFindByUuid(string $uuid, Model $model): void
     {
-        if ($this instanceof ShouldCache && !Cache::tags($this->table)->has($cachedKey = $this->table . "-uuid-$uuid"))
-            Cache::tags($this->table)->put($cachedKey, $model, $this->ttl);
+        if ($this instanceof ShouldCache && !Cache::has($cachedKey = $this->table . "-uuid-$uuid"))
+            Cache::put($cachedKey, $model, $this->ttl);
         // TODO
     }
 
@@ -595,16 +656,19 @@ class BaseService implements Service
                 DB::commit();
 
             return $deleted;
+        } catch (\LogicException|\Illuminate\Database\QueryException $e) {
+            throw new QueryException(
+                message: __('laravel-base.can-not-delete') . ": $id",
+                error:   $e->getMessage()
+            );
         } catch (Exception $e) {
+            throw new QueryException(
+                message: __('laravel-base.server-error'),
+                error:   $e->getMessage()
+            );
+        } finally {
             if ($transaction)
                 DB::rollBack();
-
-            throw new QueryException(
-                [
-                    'message' => __('laravel-base.can-not-del',
-                                    ['attribute' => __('laravel-base.entity')]) . ": $id"
-                ], $e
-            );
         }
     }
 
@@ -632,8 +696,10 @@ class BaseService implements Service
     public function postDelete(int|string $id): void
     {
         // Remove Cached data
-        if ($this instanceof ShouldCache)
-            Cache::tags($this->table)->flush();
+        if ($this instanceof ShouldCache) {
+            Cache::forget($this->table . "-$id");
+            Cache::tags($this->cacheTag)->flush();
+        }
         // TODO
     }
 
@@ -648,8 +714,10 @@ class BaseService implements Service
     public function postDeleteByUuid(string $uuid): void
     {
         // Remove Cached data
-        if ($this instanceof ShouldCache)
-            Cache::tags($this->table)->flush();
+        if ($this instanceof ShouldCache) {
+            Cache::forget($this->table . "-uuid-$uuid");
+            Cache::tags($this->cacheTag)->flush();
+        }
         // TODO
     }
 
@@ -673,16 +741,19 @@ class BaseService implements Service
                 DB::commit();
 
             return $deleted;
+        } catch (\Illuminate\Database\QueryException $e) {
+            throw new QueryException(
+                message: __('laravel-base.can-not-delete') . ": $request->ids",
+                error:   $e->getMessage()
+            );
         } catch (Exception $e) {
+            throw new QueryException(
+                message: __('laravel-base.server-error'),
+                error:   $e->getMessage()
+            );
+        } finally {
             if ($transaction)
                 DB::rollBack();
-
-            throw new QueryException(
-                [
-                    'message' => __('laravel-base.can-not-del',
-                                    ['attribute' => __('laravel-base.entity')]) . ": $request->ids"
-                ], $e
-            );
         }
     }
 
@@ -712,8 +783,10 @@ class BaseService implements Service
         // Remove Cached data
         if ($this instanceof ShouldCache) {
             $ids = explode(',', $request->ids ?? '');
-            foreach ($ids as $id)
-                Cache::tags($this->table)->flush();
+            foreach ($ids as $id) {
+                Cache::forget($this->table . "-$id");
+                Cache::tags($this->cacheTag)->flush();
+            }
         }
         // TODO
     }
@@ -738,16 +811,19 @@ class BaseService implements Service
                 DB::commit();
 
             return $deleted;
+        } catch (\Illuminate\Database\QueryException|\LogicException $e) {
+            throw new QueryException(
+                message: __('laravel-base.can-not-del') . ": $request->uuids",
+                error:   $e->getMessage()
+            );
         } catch (Exception $e) {
+            throw new QueryException(
+                message: __('laravel-base.server-error'),
+                error:   $e->getMessage()
+            );
+        } finally {
             if ($transaction)
                 DB::rollBack();
-
-            throw new QueryException(
-                [
-                    'message' => __('laravel-base.can-not-del',
-                                    ['attribute' => __('laravel-base.entity')]) . ": $request->uuids"
-                ], $e
-            );
         }
     }
 
@@ -777,8 +853,10 @@ class BaseService implements Service
         // Remove Cached data
         if ($this instanceof ShouldCache) {
             $uuids = explode(',', $request->uuids ?? '');
-            foreach ($uuids as $uuid)
-                Cache::tags($this->table)->flush();
+            foreach ($uuids as $uuid) {
+                Cache::forget($this->table . "-uuid-$uuid");
+                Cache::tags($this->cacheTag)->flush();
+            }
         }
         // TODO
     }

@@ -3,37 +3,39 @@
 namespace YaangVu\LaravelBase\Exception;
 
 use Exception;
-use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
-class BaseException extends HttpResponseException
+class BaseException extends Exception
 {
-    protected bool $shouldCapture = false;
+    public int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
 
-    public function __construct(string|array $message,
-                                ?Exception   $e = null,
-                                int          $code = Response::HTTP_INTERNAL_SERVER_ERROR)
+    public function __construct(string     $message = "", int $code = 0,
+                                ?Throwable $previous = null, private readonly string $error = '')
     {
-        if (is_null($e))
-            $e = new Exception(is_string($message) ? $message : json_encode($message));
-
-        if (!is_array($message))
-            $message = ['message' => $message];
-
-        Log::error("BaseException debug: $e \n --------------> Messages: ", $message);
-
-        if (env('APP_ENV') != 'production') {
-            $message['error'] = $e->getMessage() ?? '';
-            $message['code']  = $e->getCode() ?? '';
-            $message['file']  = $e->getFile() ?? '';
-            $message['line']  = $e->getLine() ?? '';
-            $message['trace'] = $e->getTraceAsString() ?? '';
-        }
-
-        $response = response()->json($message)->setStatusCode($code);
-
-        parent::__construct($response);
+        parent::__construct($message, $code, $previous);
     }
 
+    public function render($request): JsonResponse
+    {
+        $response = [
+            'message' => $this->getMessage(),
+            'error'   => $this->getError(),
+            'code'    => $this->getCode(),
+            'file'    => $this->getFile(),
+            'line'    => $this->getLine(),
+            'trace'   => $this->getTrace(),
+        ];
+
+        Log::error($this->getMessage(), $response);
+
+        return response()->json($response)->setStatusCode($this->statusCode);
+    }
+
+    public function getError(): string
+    {
+        return $this->error;
+    }
 }
