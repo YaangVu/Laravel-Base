@@ -5,11 +5,10 @@
  */
 
 return [
-    'entity'         => 'Entity',
     'server-error'   => 'Internal Server Error',
-    'can-not-del'    => 'Entity can not be deleted',
-    'can-not-add'    => 'Entity can not be added',
-    'can-not-update' => 'Entity can not be updated',
-    'not-found'      => 'Entity can not be found',
+    'can-not-del'    => 'The :attribute can not be deleted',
+    'can-not-add'    => 'The :attribute can not be added',
+    'can-not-update' => 'The :attribute can not be updated',
+    'not-found'      => 'The :attribute can not be found',
     'query-error'    => 'Query Error'
 ];
