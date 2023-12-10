@@ -35,6 +35,7 @@ class BaseServiceProvider extends ServiceProvider
         $configPath = __DIR__ . '/../config/laravel-base.php';
         $this->publishConfig();
         $this->publishBaseClasses();
+        $this->publicLang();
         $this->mergeConfigFrom($configPath, 'laravel-base');
 
         $this->app->bind(Operator::class, function ($app, $params) {
@@ -47,13 +48,13 @@ class BaseServiceProvider extends ServiceProvider
     /**
      * Publish the config file
      */
-    protected function publishConfig()
+    protected function publishConfig(): void
     {
         $configPath = __DIR__ . '/../config/laravel-base.php';
         $this->publishes([$configPath => config_path('laravel-base.php')], 'config');
     }
 
-    public function publishBaseClasses()
+    public function publishBaseClasses(): void
     {
         // Publish BaseController
         $controllerPath = __DIR__ . '/../Base/Publish/Controller.php';
@@ -62,5 +63,12 @@ class BaseServiceProvider extends ServiceProvider
         // Publish BaseService
         $servicePath = __DIR__ . '/../Base/Publish/Service.php';
         $this->publishes([$servicePath => app_path('Base/Service.php')], 'base');
+    }
+
+    public function publicLang(): void
+    {
+        // Publish Lang folder
+        $langPath = __DIR__ . '/../lang';
+        $this->publishes([$langPath => resource_path('lang')], 'lang');
     }
 }
