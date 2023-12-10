@@ -23,6 +23,7 @@ trait Validatable
      * @param bool   $throwable
      *
      * @return bool|array
+     * @throws BadRequestException
      */
     public function validateStoreRequest(object $request, array $rules = [], array $messages = [],
                                          array  $customAttributes = [], bool $throwable = true): bool|array
@@ -41,6 +42,7 @@ trait Validatable
      * @param bool   $throwable
      *
      * @return bool|array
+     * @throws BadRequestException
      */
     public static function doValidate(object $request, array $rules = [], array $messages = [],
                                       array  $customAttributes = [], bool $throwable = true): bool|array
@@ -57,7 +59,8 @@ trait Validatable
             return true;
 
         if ($throwable)
-            throw new BadRequestException(['messages' => $validator->errors()->toArray()]);
+            throw new
+            BadRequestException(__('laravel-base.request-not-valid'), messages: $validator->errors()->toArray());
         else
             return $validator->errors()->toArray();
     }
@@ -73,6 +76,7 @@ trait Validatable
      * @param bool       $throwable
      *
      * @return bool|array
+     * @throws BadRequestException
      */
     public function validateUpdateRequest(int|string $id, object $request, array $rules = [], array $messages = [],
                                           array      $customAttributes = [], bool $throwable = true): bool|array
@@ -94,6 +98,7 @@ trait Validatable
      * @param bool       $throwable
      *
      * @return bool|array
+     * @throws BadRequestException
      */
     public function validatePutUpdateRequest(int|string $id, object $request, array $rules = [], array $messages = [],
                                              array      $customAttributes = [], bool $throwable = true): bool|array
