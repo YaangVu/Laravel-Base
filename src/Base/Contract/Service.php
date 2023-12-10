@@ -6,18 +6,23 @@
 
 namespace YaangVu\LaravelBase\Base\Contract;
 
+use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use YaangVu\LaravelBase\Exception\NotFoundException;
+use YaangVu\LaravelBase\Exception\QueryException;
+use YaangVu\LaravelBase\Exception\BadRequestException;
 
 interface Service
 {
     /**
-     * Get list of all items
+     * Get a list of all items
      *
      * @param bool $paginated
      *
      * @return LengthAwarePaginator|Collection
+     * @throws QueryException
      */
     public function get(bool $paginated = true): LengthAwarePaginator|Collection;
 
@@ -27,6 +32,8 @@ interface Service
      * @param int|string $id
      *
      * @return Model
+     * @throws QueryException
+     * @throws NotFoundException
      */
     public function find(int|string $id): Model;
 
@@ -36,6 +43,7 @@ interface Service
      * @param string $uuid
      *
      * @return Model
+     * @throws QueryException
      */
     public function findByUuid(string $uuid): Model;
 
@@ -46,6 +54,8 @@ interface Service
      * @param bool   $transaction
      *
      * @return Model
+     * @throws QueryException
+     * @throws BadRequestException
      */
     public function add(object $request, bool $transaction = false): Model;
 
@@ -57,6 +67,9 @@ interface Service
      * @param bool       $transaction
      *
      * @return Model
+     * @throws NotFoundException
+     * @throws QueryException
+     * @throws BadRequestException
      */
     public function update(int|string $id, object $request, bool $transaction = false): Model;
 
@@ -68,6 +81,9 @@ interface Service
      * @param bool       $transaction
      *
      * @return Model
+     * @throws NotFoundException
+     * @throws QueryException
+     * @throws BadRequestException
      */
     public function putUpdate(int|string $id, object $request, bool $transaction = false): Model;
 
@@ -78,6 +94,8 @@ interface Service
      * @param bool       $transaction
      *
      * @return bool
+     * @throws NotFoundException
+     * @throws QueryException
      */
     public function delete(int|string $id, bool $transaction = false): bool;
 
@@ -88,6 +106,7 @@ interface Service
      * @param bool   $transaction
      *
      * @return bool
+     * @throws QueryException
      */
     public function deleteByUuid(string $uuid, bool $transaction = false): bool;
 
@@ -98,6 +117,7 @@ interface Service
      * @param bool   $transaction
      *
      * @return bool
+     * @throws QueryException
      */
     public function deleteByIds(object $request, bool $transaction = false): bool;
 
@@ -108,6 +128,7 @@ interface Service
      * @param bool   $transaction
      *
      * @return bool
+     * @throws QueryException
      */
     public function deleteByUuids(object $request, bool $transaction = false): bool;
 }
