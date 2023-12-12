@@ -66,7 +66,7 @@ class BaseService implements Service
      *
      * @var string
      */
-    private string $table;
+    protected string $table;
     /**
      * The PDO driver name.
      *
@@ -147,12 +147,12 @@ class BaseService implements Service
         } catch (\Illuminate\Database\QueryException $e) {
             throw new QueryException(
                 message: __('laravel-base.can-not-add', ['attribute' => $this->table]),
-                error:   $e->getMessage()
+                previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
                 message: __('laravel-base.server-error'),
-                error:   $e->getMessage()
+                previous: $e
             );
         } finally {
             if ($transaction)
@@ -244,12 +244,12 @@ class BaseService implements Service
         } catch (\Illuminate\Database\QueryException $e) {
             throw new QueryException(
                 message: __('laravel-base.can-not-update', ['attribute' => "$this->table: $id"]),
-                error:   $e->getMessage()
+                previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
                 message: __('laravel-base.server-error'),
-                error:   $e->getMessage()
+                previous: $e
             );
         } finally {
             if ($transaction)
@@ -294,12 +294,12 @@ class BaseService implements Service
         } catch (ModelNotFoundException $e) {
             throw new NotFoundException(
                 message: __('laravel-base.not-found', ['attribute' => "$this->table: $id"]),
-                error:   $e->getMessage()
+                previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
                 message: __('laravel-base.server-error'),
-                error:   $e->getMessage()
+                previous: $e
             );
         } finally {
             // Do something
@@ -328,12 +328,12 @@ class BaseService implements Service
         } catch (\Illuminate\Database\QueryException $e) {
             throw new QueryException(
                 message: __('laravel-base.query-error'),
-                error:   $e->getMessage()
+                previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
                 message: __('laravel-base.server-error'),
-                error:   $e->getMessage()
+                previous: $e
             );
         } finally {
             // Do something
@@ -500,12 +500,12 @@ class BaseService implements Service
         } catch (\Illuminate\Database\QueryException $e) {
             throw new QueryException(
                 message: __('laravel-base.can-not-update', ['attribute' => "$this->table: $id"]),
-                error:   $e->getMessage()
+                previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
                 message: __('laravel-base.server-error'),
-                error:   $e->getMessage()
+                previous: $e
             );
         } finally {
             if ($transaction)
@@ -563,12 +563,12 @@ class BaseService implements Service
         } catch (\Illuminate\Database\QueryException $e) {
             throw new QueryException(
                 message: __('laravel-base.can-not-delete', ['attribute' => "$this->table: $uuid"]),
-                error:   $e->getMessage()
+                previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
                 message: __('laravel-base.server-error'),
-                error:   $e->getMessage()
+                previous: $e
             );
         } finally {
             if ($transaction)
@@ -597,12 +597,12 @@ class BaseService implements Service
         } catch (\Illuminate\Database\QueryException $e) {
             throw new QueryException(
                 message: __('laravel-base.not-found', ['attribute' => "$this->table: $uuid"]),
-                error:   $e->getMessage()
+                previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
                 message: __('laravel-base.server-error'),
-                error:   $e->getMessage()
+                previous: $e
             );
         } finally {
             // Do something
@@ -659,12 +659,12 @@ class BaseService implements Service
         } catch (\LogicException|\Illuminate\Database\QueryException $e) {
             throw new QueryException(
                 message: __('laravel-base.can-not-delete', ['attribute' => "$this->table: $id"]),
-                error:   $e->getMessage()
+                previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
                 message: __('laravel-base.server-error'),
-                error:   $e->getMessage()
+                previous: $e
             );
         } finally {
             if ($transaction)
@@ -744,12 +744,12 @@ class BaseService implements Service
         } catch (\Illuminate\Database\QueryException $e) {
             throw new QueryException(
                 message: __('laravel-base.can-not-delete', ['attribute' => "$this->table: $request->ids"]),
-                error:   $e->getMessage()
+                previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
                 message: __('laravel-base.server-error'),
-                error:   $e->getMessage()
+                previous: $e
             );
         } finally {
             if ($transaction)
@@ -814,12 +814,12 @@ class BaseService implements Service
         } catch (\Illuminate\Database\QueryException|\LogicException $e) {
             throw new QueryException(
                 message: __('laravel-base.can-not-del', ['attribute' => "$this->table: $request->uuids"]),
-                error:   $e->getMessage()
+                previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
                 message: __('laravel-base.server-error'),
-                error:   $e->getMessage()
+                previous: $e
             );
         } finally {
             if ($transaction)
@@ -860,5 +860,4 @@ class BaseService implements Service
         }
         // TODO
     }
-
 }
