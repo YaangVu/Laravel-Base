@@ -146,12 +146,12 @@ class BaseService implements Service
             return $this->model;
         } catch (\Illuminate\Database\QueryException $e) {
             throw new QueryException(
-                message: __('laravel-base.can-not-add', ['attribute' => $this->table]),
+                message:  __('laravel-base.can-not-add', ['attribute' => $this->table]),
                 previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
-                message: __('laravel-base.server-error'),
+                message:  __('laravel-base.server-error'),
                 previous: $e
             );
         } finally {
@@ -243,12 +243,12 @@ class BaseService implements Service
             return $model;
         } catch (\Illuminate\Database\QueryException $e) {
             throw new QueryException(
-                message: __('laravel-base.can-not-update', ['attribute' => "$this->table: $id"]),
+                message:  __('laravel-base.can-not-update', ['attribute' => "$this->table: $id"]),
                 previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
-                message: __('laravel-base.server-error'),
+                message:  __('laravel-base.server-error'),
                 previous: $e
             );
         } finally {
@@ -293,12 +293,12 @@ class BaseService implements Service
             return $entity;
         } catch (ModelNotFoundException $e) {
             throw new NotFoundException(
-                message: __('laravel-base.not-found', ['attribute' => "$this->table: $id"]),
+                message:  __('laravel-base.not-found', ['attribute' => "$this->table: $id"]),
                 previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
-                message: __('laravel-base.server-error'),
+                message:  __('laravel-base.server-error'),
                 previous: $e
             );
         } finally {
@@ -327,12 +327,12 @@ class BaseService implements Service
             return $response;
         } catch (\Illuminate\Database\QueryException $e) {
             throw new QueryException(
-                message: __('laravel-base.query-error'),
+                message:  __('laravel-base.query-error'),
                 previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
-                message: __('laravel-base.server-error'),
+                message:  __('laravel-base.server-error'),
                 previous: $e
             );
         } finally {
@@ -499,12 +499,12 @@ class BaseService implements Service
             return $model;
         } catch (\Illuminate\Database\QueryException $e) {
             throw new QueryException(
-                message: __('laravel-base.can-not-update', ['attribute' => "$this->table: $id"]),
+                message:  __('laravel-base.can-not-update', ['attribute' => "$this->table: $id"]),
                 previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
-                message: __('laravel-base.server-error'),
+                message:  __('laravel-base.server-error'),
                 previous: $e
             );
         } finally {
@@ -562,12 +562,12 @@ class BaseService implements Service
             return $deleted;
         } catch (\Illuminate\Database\QueryException $e) {
             throw new QueryException(
-                message: __('laravel-base.can-not-delete', ['attribute' => "$this->table: $uuid"]),
+                message:  __('laravel-base.can-not-delete', ['attribute' => "$this->table: $uuid"]),
                 previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
-                message: __('laravel-base.server-error'),
+                message:  __('laravel-base.server-error'),
                 previous: $e
             );
         } finally {
@@ -596,12 +596,12 @@ class BaseService implements Service
             return $entity;
         } catch (\Illuminate\Database\QueryException $e) {
             throw new QueryException(
-                message: __('laravel-base.not-found', ['attribute' => "$this->table: $uuid"]),
+                message:  __('laravel-base.not-found', ['attribute' => "$this->table: $uuid"]),
                 previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
-                message: __('laravel-base.server-error'),
+                message:  __('laravel-base.server-error'),
                 previous: $e
             );
         } finally {
@@ -658,12 +658,12 @@ class BaseService implements Service
             return $deleted;
         } catch (\LogicException|\Illuminate\Database\QueryException $e) {
             throw new QueryException(
-                message: __('laravel-base.can-not-delete', ['attribute' => "$this->table: $id"]),
+                message:  __('laravel-base.can-not-delete', ['attribute' => "$this->table: $id"]),
                 previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
-                message: __('laravel-base.server-error'),
+                message:  __('laravel-base.server-error'),
                 previous: $e
             );
         } finally {
@@ -743,12 +743,12 @@ class BaseService implements Service
             return $deleted;
         } catch (\Illuminate\Database\QueryException $e) {
             throw new QueryException(
-                message: __('laravel-base.can-not-delete', ['attribute' => "$this->table: $request->ids"]),
+                message:  __('laravel-base.can-not-delete', ['attribute' => "$this->table: $request->ids"]),
                 previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
-                message: __('laravel-base.server-error'),
+                message:  __('laravel-base.server-error'),
                 previous: $e
             );
         } finally {
@@ -813,12 +813,12 @@ class BaseService implements Service
             return $deleted;
         } catch (\Illuminate\Database\QueryException|\LogicException $e) {
             throw new QueryException(
-                message: __('laravel-base.can-not-del', ['attribute' => "$this->table: $request->uuids"]),
+                message:  __('laravel-base.can-not-del', ['attribute' => "$this->table: $request->uuids"]),
                 previous: $e
             );
         } catch (Exception $e) {
             throw new QueryException(
-                message: __('laravel-base.server-error'),
+                message:  __('laravel-base.server-error'),
                 previous: $e
             );
         } finally {
@@ -860,4 +860,21 @@ class BaseService implements Service
         }
         // TODO
     }
+
+    /**
+     * @return int
+     */
+    public function getTtl(): int
+    {
+        return $this->ttl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCacheTag(): string
+    {
+        return $this->cacheTag;
+    }
+
 }
