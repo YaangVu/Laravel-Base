@@ -276,7 +276,7 @@ class BaseService implements Service
      */
     public function find(int|string $id): Model
     {
-        if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->table . "-$id"))
+        if ($this instanceof ShouldCache && Cache::has($cachedKey = $this->table . ":$id:" . Request::serialize()))
             return Cache::get($cachedKey);
 
         $this->preFind($id);
@@ -312,7 +312,7 @@ class BaseService implements Service
     public function get(bool $paginated = true): LengthAwarePaginator|Collection
     {
         if ($this instanceof ShouldCache
-            && Cache::tags($this->cacheTag)->has($cachedKey = $this->table . '-' . Request::serialize()))
+            && Cache::tags($this->cacheTag)->has($cachedKey = $this->table . ':' . Request::serialize()))
             return Cache::tags($this->cacheTag)->get($cachedKey);
 
         $this->preGet($paginated);
@@ -408,7 +408,7 @@ class BaseService implements Service
         // Cache data
         if (
             $this instanceof ShouldCache
-            && !Cache::tags($this->cacheTag)->has($cachedKey = $this->table . '-' . Request::serialize())
+            && !Cache::tags($this->cacheTag)->has($cachedKey = $this->table . ':' . Request::serialize())
         )
             Cache::tags($this->cacheTag)->put($cachedKey, $response, min($this->ttl, 3600));
         // TODO
@@ -437,7 +437,7 @@ class BaseService implements Service
      */
     public function postFind(int|string $id, Model $model): void
     {
-        if ($this instanceof ShouldCache && !Cache::has($cachedKey = $this->table . "-$id"))
+        if ($this instanceof ShouldCache && !Cache::has($cachedKey = $this->table . ":$id:" . Request::serialize()))
             Cache::put($cachedKey, $model, $this->ttl);
         // TODO
     }
