@@ -48,19 +48,19 @@ class BaseService implements Service
      *
      * @var string[]
      */
-    private array $fillAbles;
+    protected array $fillAbles;
     /**
      * The guarded attributes
      *
      * @var string[]
      */
-    private array $guarded;
+    protected array $guarded;
     /**
      * The primary key for the model.
      *
      * @var string
      */
-    private string $key;
+    protected string $key;
     /**
      *  The table associated with the model.
      *
@@ -72,22 +72,22 @@ class BaseService implements Service
      *
      * @var string
      */
-    private string $driver;
+    protected string $driver;
     /**
      * Cache time to live in seconds
      *
      * @var int
      */
-    private int $ttl;
+    protected int $ttl;
     /**
      * @var Operator
      */
-    private Operator $operator;
+    protected Operator $operator;
 
     /**
      * @var string
      */
-    private string $cacheTag;
+    protected string $cacheTag;
 
     /**
      * @throws BindingResolutionException
