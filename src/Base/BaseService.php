@@ -362,22 +362,46 @@ class BaseService implements Service
             else // Else cast $value follow the $casts
                 $value = $this->cast($cond->getValue(), $this->getCastType($cond->getColumn()));
 
-            $this->builder->where($cond->getColumn(), $operator, $value);
+            $this->builder = $this->filter($this->builder, $cond->getColumn(), $operator, $value);
         }
 
         // Add condition when has $keyword search
-        if (ParamHandler::hasMacro('customBuildFindByKeyword'))
-            $this->builder = Param::customBuildFindByKeyword($this->builder,
-                                                             $this->operator->make(OperatorPatternEnum::LIKE));
-        else
-            $this->builder = Param::buildFindByKeyword($this->builder,
-                                                       $this->operator->make(OperatorPatternEnum::LIKE));
+        $this->builder = $this->filterByKeyword($this->builder, $this->operator->make(OperatorPatternEnum::LIKE));
 
         // Sort data
         foreach (Param::getSorts() as $sort)
             $this->builder->orderBy($sort->getColumn(), $sort->getType());
 
         return $this->builder;
+    }
+
+    /**
+     * @param Builder      $builder
+     * @param string|array $columns
+     * @param string       $operator
+     * @param mixed|null   $value
+     *
+     * @return Builder
+     */
+    protected function filter(Builder $builder, string|array $columns, string $operator = '=',
+                              mixed   $value = null): Builder
+    {
+        // check if exists function customFilter then call it
+        if (method_exists($this, 'customFilter'))
+            return $this->customFilter($this->builder, $columns, $operator, $value);
+
+        if (is_array($columns)) {
+            $builder->where(function ($builder) use ($columns, $operator, $value) {
+                foreach ($columns as $column) {
+                    $builder->orWhere($column, $operator, $value);
+                }
+            });
+        }
+        else {
+            $builder->where($columns, $operator, $value);
+        }
+
+        return $builder;
     }
 
     /**
@@ -443,6 +467,24 @@ class BaseService implements Service
         if ($this instanceof ShouldCache)
             Cache::put($this->table . ":$id", $model, $this->ttl);
         // TODO
+    }
+
+    /**
+     * Add keyword for a Builder search query
+     *
+     * @param Builder $builder
+     * @param string  $operator
+     *
+     * @return Builder
+     */
+    public function filterByKeyword(Builder $builder, string $operator = 'like'): Builder
+    {
+        if (!Param::getKeyword() || !Param::getSearchKeys())
+            return $builder;
+
+        $keyword = Param::getKeyword();
+
+        return $builder = $this->filter($builder, Param::getSearchKeys(), $operator, "%$keyword%");
     }
 
     /**

@@ -2,8 +2,6 @@
 
 namespace YaangVu\LaravelBase\Base\Utility\Query;
 
-use Illuminate\Database\Eloquent\Builder;
-
 trait HasKeywordSearch
 {
     /**
@@ -11,27 +9,6 @@ trait HasKeywordSearch
      */
     private array $searchKeys = [];
     private mixed $keyword    = null;
-
-    /**
-     * Add keyword for a Builder search query
-     *
-     * @param Builder $builder
-     * @param string  $operator
-     *
-     * @return Builder
-     */
-    public function buildFindByKeyword(Builder $builder, string $operator = 'like'): Builder
-    {
-        if (!$this->getKeyword() || !$this->getSearchKeys())
-            return $builder;
-
-        $keyword = $this->getKeyword();
-
-        return $builder->where(function (Builder $builder) use ($keyword, $operator) {
-            foreach ($this->getSearchKeys() as $key)
-                $builder->orWhere($key, $operator, "%$keyword%");
-        });
-    }
 
     public function getKeyword(): mixed
     {

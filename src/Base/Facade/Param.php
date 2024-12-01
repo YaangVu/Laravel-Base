@@ -80,9 +80,6 @@ use YaangVu\LaravelBase\Base\Utility\Query\Sortable;
  *
  * |---------------------------------------------------------------------------------------------------------
  *
- * @method static Builder buildFindByKeyword(Builder $builder, string $operator = 'like')
- * @link HasKeywordSearch::buildFindByKeyword()
- *
  * @method static mixed getKeyword()
  * @link HasKeywordSearch::getKeyword()
  *
