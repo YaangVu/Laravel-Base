@@ -13,7 +13,7 @@ trait HasKeywordSearch
     private mixed $keyword    = null;
 
     /**
-     * Add keyword for Builder search query
+     * Add keyword for a Builder search query
      *
      * @param Builder $builder
      * @param string  $operator

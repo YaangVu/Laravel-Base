@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Traits\Macroable;
+use LogicException;
 use Ramsey\Uuid\Uuid;
 use YaangVu\LaravelBase\Base\Contract\Operator;
 use YaangVu\LaravelBase\Base\Contract\Service;
@@ -94,7 +95,8 @@ class BaseService implements Service
      */
     public function __construct(private readonly Model $model, private readonly ?string $alias = null)
     {
-        $this->builder   = $model->newQuery();
+        $class           = get_class($model);
+        $this->builder   = $class::query();
         $this->fillAbles = $model->getFillable();
         $this->guarded   = $model->getGuarded();
         $this->key       = $model->getKeyName();
@@ -145,15 +147,10 @@ class BaseService implements Service
 
             return $this->model;
         } catch (\Illuminate\Database\QueryException $e) {
-            throw new QueryException(
-                message:  __('laravel-base.can-not-add', ['attribute' => $this->table]),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.can-not-add', ['attribute' => $this->table]),
+                previous:                     $e);
         } catch (Exception $e) {
-            throw new QueryException(
-                message:  __('laravel-base.server-error'),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.server-error'), previous: $e);
         } finally {
             if ($transaction)
                 DB::rollBack();
@@ -189,7 +186,8 @@ class BaseService implements Service
             return false;
 
         return $this->fillAbles === ['*']
-               || (in_array($column, $this->fillAbles) && !in_array($column, $this->guarded));
+               || (in_array($column, $this->fillAbles)
+                   && !in_array($column, $this->guarded));
     }
 
     /**
@@ -242,15 +240,10 @@ class BaseService implements Service
 
             return $model;
         } catch (\Illuminate\Database\QueryException $e) {
-            throw new QueryException(
-                message:  __('laravel-base.can-not-update', ['attribute' => "$this->table: $id"]),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.can-not-update', ['attribute' => "$this->table: $id"]),
+                previous:                     $e);
         } catch (Exception $e) {
-            throw new QueryException(
-                message:  __('laravel-base.server-error'),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.server-error'), previous: $e);
         } finally {
             if ($transaction)
                 DB::rollBack();
@@ -292,15 +285,10 @@ class BaseService implements Service
 
             return $entity;
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundException(
-                message:  __('laravel-base.not-found', ['attribute' => "$this->table: $id"]),
-                previous: $e
-            );
+            throw new NotFoundException(message: __('laravel-base.not-found', ['attribute' => "$this->table: $id"]),
+                previous:                        $e);
         } catch (Exception $e) {
-            throw new QueryException(
-                message:  __('laravel-base.server-error'),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.server-error'), previous: $e);
         } finally {
             // Do something
         }
@@ -326,15 +314,9 @@ class BaseService implements Service
 
             return $response;
         } catch (\Illuminate\Database\QueryException $e) {
-            throw new QueryException(
-                message:  __('laravel-base.query-error'),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.query-error'), previous: $e);
         } catch (Exception $e) {
-            throw new QueryException(
-                message:  __('laravel-base.server-error'),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.server-error'), previous: $e);
         } finally {
             // Do something
         }
@@ -374,8 +356,8 @@ class BaseService implements Service
         foreach (Param::getConditions() as $cond) {
             $operator = $this->operator->make($cond->getOperatorPattern());
 
+            // If search LIKE, the $value will be "%$value%"
             if ($cond->getOperatorPattern() === OperatorPatternEnum::LIKE)
-                // If search LIKE, the $value will be "%$value%"
                 $value = '%' . $cond->getValue() . '%';
             else // Else cast $value follow the $casts
                 $value = $this->cast($cond->getValue(), $this->getCastType($cond->getColumn()));
@@ -384,7 +366,12 @@ class BaseService implements Service
         }
 
         // Add condition when has $keyword search
-        $this->builder = Param::buildFindByKeyword($this->builder, $this->operator->make(OperatorPatternEnum::LIKE));
+        if (ParamHandler::hasMacro('customBuildFindByKeyword'))
+            $this->builder = Param::customBuildFindByKeyword($this->builder,
+                                                             $this->operator->make(OperatorPatternEnum::LIKE));
+        else
+            $this->builder = Param::buildFindByKeyword($this->builder,
+                                                       $this->operator->make(OperatorPatternEnum::LIKE));
 
         // Sort data
         foreach (Param::getSorts() as $sort)
@@ -406,10 +393,8 @@ class BaseService implements Service
     public function postGet(mixed $response): void
     {
         // Cache data
-        if (
-            $this instanceof ShouldCache
-            && !Cache::tags($this->cacheTag)->has($cachedKey = $this->table . ':' . Request::serialize())
-        )
+        if ($this instanceof ShouldCache
+            && !Cache::tags($this->cacheTag)->has($cachedKey = $this->table . ':' . Request::serialize()))
             Cache::tags($this->cacheTag)->put($cachedKey, $response, min($this->ttl, 3600));
         // TODO
     }
@@ -481,11 +466,11 @@ class BaseService implements Service
             // If is changable column and has exist data in request, then update
             if ($this->changeableColumn($column) && isset($request->{$column}))
                 $model->{$column} = $this->cast($request->{$column}, $this->getCastType($column));
-            // if not, but DB connection is nosql, then remove old data
             elseif (!str_contains($this->driver, 'sql'))
+                // if not, but DB connection is nosql, then remove old data
                 unset($model->{$column});
-            // else set to default null value
             else
+                // else set to default null value
                 $model->{$column} = $this->defaultValue[$column] ?? null;
         }
 
@@ -498,15 +483,10 @@ class BaseService implements Service
 
             return $model;
         } catch (\Illuminate\Database\QueryException $e) {
-            throw new QueryException(
-                message:  __('laravel-base.can-not-update', ['attribute' => "$this->table: $id"]),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.can-not-update', ['attribute' => "$this->table: $id"]),
+                previous:                     $e);
         } catch (Exception $e) {
-            throw new QueryException(
-                message:  __('laravel-base.server-error'),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.server-error'), previous: $e);
         } finally {
             if ($transaction)
                 DB::rollBack();
@@ -561,15 +541,10 @@ class BaseService implements Service
 
             return $deleted;
         } catch (\Illuminate\Database\QueryException $e) {
-            throw new QueryException(
-                message:  __('laravel-base.can-not-delete', ['attribute' => "$this->table: $uuid"]),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.can-not-delete', ['attribute' => "$this->table: $uuid"]),
+                previous:                     $e);
         } catch (Exception $e) {
-            throw new QueryException(
-                message:  __('laravel-base.server-error'),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.server-error'), previous: $e);
         } finally {
             if ($transaction)
                 DB::rollBack();
@@ -595,15 +570,10 @@ class BaseService implements Service
 
             return $entity;
         } catch (\Illuminate\Database\QueryException $e) {
-            throw new QueryException(
-                message:  __('laravel-base.not-found', ['attribute' => "$this->table: $uuid"]),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.not-found', ['attribute' => "$this->table: $uuid"]),
+                previous:                     $e);
         } catch (Exception $e) {
-            throw new QueryException(
-                message:  __('laravel-base.server-error'),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.server-error'), previous: $e);
         } finally {
             // Do something
         }
@@ -656,16 +626,11 @@ class BaseService implements Service
                 DB::commit();
 
             return $deleted;
-        } catch (\LogicException|\Illuminate\Database\QueryException $e) {
-            throw new QueryException(
-                message:  __('laravel-base.can-not-delete', ['attribute' => "$this->table: $id"]),
-                previous: $e
-            );
+        } catch (LogicException|\Illuminate\Database\QueryException $e) {
+            throw new QueryException(message: __('laravel-base.can-not-delete', ['attribute' => "$this->table: $id"]),
+                previous:                     $e);
         } catch (Exception $e) {
-            throw new QueryException(
-                message:  __('laravel-base.server-error'),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.server-error'), previous: $e);
         } finally {
             if ($transaction)
                 DB::rollBack();
@@ -742,15 +707,10 @@ class BaseService implements Service
 
             return $deleted;
         } catch (\Illuminate\Database\QueryException $e) {
-            throw new QueryException(
-                message:  __('laravel-base.can-not-delete', ['attribute' => "$this->table: $request->ids"]),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.can-not-delete',
+                                                 ['attribute' => "$this->table: $request->ids"]), previous: $e);
         } catch (Exception $e) {
-            throw new QueryException(
-                message:  __('laravel-base.server-error'),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.server-error'), previous: $e);
         } finally {
             if ($transaction)
                 DB::rollBack();
@@ -811,16 +771,11 @@ class BaseService implements Service
                 DB::commit();
 
             return $deleted;
-        } catch (\Illuminate\Database\QueryException|\LogicException $e) {
-            throw new QueryException(
-                message:  __('laravel-base.can-not-del', ['attribute' => "$this->table: $request->uuids"]),
-                previous: $e
-            );
+        } catch (\Illuminate\Database\QueryException|LogicException $e) {
+            throw new QueryException(message: __('laravel-base.can-not-del',
+                                                 ['attribute' => "$this->table: $request->uuids"]), previous: $e);
         } catch (Exception $e) {
-            throw new QueryException(
-                message:  __('laravel-base.server-error'),
-                previous: $e
-            );
+            throw new QueryException(message: __('laravel-base.server-error'), previous: $e);
         } finally {
             if ($transaction)
                 DB::rollBack();
