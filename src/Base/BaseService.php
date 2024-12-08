@@ -277,9 +277,9 @@ class BaseService implements Service
         Param::parseParams();
 
         // Add Eager Loading
-        $this->builder = Param::relate($this->builder);
+        $builder = Param::relate($this->builder);
         try {
-            $entity = $this->builder->findOrFail($id, Param::getSelections());
+            $entity = $builder->findOrFail($id, Param::getSelections());
 
             $this->postFind($id, $entity);
 
@@ -303,12 +303,19 @@ class BaseService implements Service
             && Cache::tags($this->cacheTag)->has($cachedKey = $this->table . ':' . Request::serialize()))
             return Cache::tags($this->cacheTag)->get($cachedKey);
 
+        Param::parseParams();
+
         $this->preGet($paginated);
 
-        $this->buildGetQuery();
+        // if $this->>model has Searchable trait, then use search
+        if (in_array("Laravel\Scout\Searchable", class_uses_recursive(get_class($this->model))) && Param::getKeyword())
+            $builder = $this->model->search(Param::getKeyword())
+                                   ->query(fn(Builder $builder) => $this->buildGetQuery($builder, false));
+        else
+            $builder = $this->buildGetQuery();
 
         try {
-            $response = $paginated ? $this->builder->paginate(Param::getLimit()) : $this->builder->get();
+            $response = $paginated ? $builder->paginate(Param::getLimit()) : $builder->get();
 
             $this->postGet($response);
 
@@ -337,20 +344,23 @@ class BaseService implements Service
     /**
      * Build the Builder for Get All Query
      *
+     * @param Builder|null $builder
+     * @param bool         $searchByKeyword
+     *
      * @return Builder
      */
-    public function buildGetQuery(): Builder
+    public function buildGetQuery(?Builder $builder = null, bool $searchByKeyword = true): Builder
     {
-        Param::parseParams();
+        $builder ??= $this->builder;
 
         if ($this->alias)
-            $this->builder->from($this->model->getTable(), $this->alias);
+            $builder->from($this->model->getTable(), $this->alias);
 
         // Add selections
-        $this->builder->select(Param::getSelections());
+        $builder->select(Param::getSelections());
 
         // Add Eager Loading
-        $this->builder = Param::relate($this->builder);
+        $builder = Param::relate($builder);
 
         // Add where condition
         foreach (Param::getConditions() as $cond) {
@@ -362,17 +372,18 @@ class BaseService implements Service
             else // Else cast $value follow the $casts
                 $value = $this->cast($cond->getValue(), $this->getCastType($cond->getColumn()));
 
-            $this->builder = $this->filter($this->builder, $cond->getColumn(), $operator, $value);
+            $builder = $this->filter($builder, $cond->getColumn(), $operator, $value);
         }
 
         // Add condition when has $keyword search
-        $this->builder = $this->filterByKeyword($this->builder, $this->operator->make(OperatorPatternEnum::LIKE));
+        if ($searchByKeyword)
+            $builder = $this->filterByKeyword($builder, $this->operator->make(OperatorPatternEnum::LIKE));
 
         // Sort data
         foreach (Param::getSorts() as $sort)
-            $this->builder->orderBy($sort->getColumn(), $sort->getType());
+            $builder->orderBy($sort->getColumn(), $sort->getType());
 
-        return $this->builder;
+        return $builder;
     }
 
     /**
@@ -388,7 +399,7 @@ class BaseService implements Service
     {
         // check if exists function customFilter then call it
         if (method_exists($this, 'customFilter'))
-            return $this->customFilter($this->builder, $columns, $operator, $value);
+            return $this->customFilter($builder, $columns, $operator, $value);
 
         if (is_array($columns)) {
             $builder->where(function ($builder) use ($columns, $operator, $value) {
@@ -606,7 +617,7 @@ class BaseService implements Service
         Param::parseParams();
 
         try {
-            $entity = $this->builder->where('uuid', '=', $uuid)->firstOrFail(Param::getSelections());
+            $entity = $builder->where('uuid', '=', $uuid)->firstOrFail(Param::getSelections());
 
             $this->postFindByUuid($uuid, $entity);
 
