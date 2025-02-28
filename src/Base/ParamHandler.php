@@ -56,12 +56,19 @@ class ParamHandler
      * @Author yaangvu
      * @Date   Feb 16, 2023
      *
-     * @param string $column
+     * @param string|null $column
      *
      * @return $this
      */
-    public function setDefaultSort(string $column = 'id'): static
+    public function setDefaultSort(string $column = null): static
     {
+        $databaseDriver = config('database.default');
+
+        $column ??= match ($databaseDriver) {
+            'mongodb' => '_id',
+            default   => 'id',
+        };
+
         $sort = new Sort();
         $sort->setColumn($column);
         $sort->setType('DESC');
